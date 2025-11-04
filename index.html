@@ -743,7 +743,7 @@
                 <div class="card-title">Rush</div>
                 <div class="card-sub">Автокэш-аут по своему множителю</div>
               </div>
-              <div class="chip">🚀 x1.0 – x50</div>
+              <div class="chip">🚀 x1.0 – x100</div>
             </div>
             <div class="card-footer">
               <button class="btn btn-primary" id="rush-open">Играть Rush</button>
@@ -1287,9 +1287,9 @@
      }
 
     function calcStepDelta() {
-      const base = 0.007;      // базовая скорость роста
-      const k = 0.004;         // плавное ускорение по мере роста x
-      const maxDelta = 0.08;   // ограничитель, чтобы наверху не улетало слишком быстро
+      const base = 0.0075;      // базовая скорость роста
+      const k = 0.0044;         // плавное ускорение по мере роста x
+      const maxDelta = 0.085;   // ограничитель, чтобы наверху не улетало слишком быстро
 
       let delta = base + k * (currentMulti - 1.0);
       if (delta > maxDelta) delta = maxDelta;
