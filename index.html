@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>OWY Play</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ВАЖНО: режем зум жестами / даблтапом -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <style>
     * {
@@ -19,6 +21,7 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      -webkit-text-size-adjust: 100%; /* чтоб iOS не увеличивал шрифт */
     }
 
     .app {
@@ -104,13 +107,13 @@
     .cards {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 16px;
     }
 
     .card {
       border-radius: 16px;
-      padding: 12px 14px;
+      padding: 16px 14px;
       background: radial-gradient(circle at top left, #182728, #090b0f);
       border: 1px solid rgba(255, 255, 255, 0.02);
       box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
@@ -120,7 +123,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .chip {
@@ -133,8 +136,9 @@
     }
 
     .card-title {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
+      margin-bottom: 2px;
     }
 
     .card-sub {
@@ -153,12 +157,13 @@
     .btn {
       border: none;
       outline: none;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 12px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.1s ease;
+      touch-action: manipulation; /* чтобы не срабатывал даблтап-zoom на кнопке */
     }
 
     .btn-primary {
@@ -192,7 +197,40 @@
       color: #9ea2b0;
     }
 
-    /* Нижнее меню */
+    /* Профиль */
+    .profile-card {
+      border-radius: 16px;
+      padding: 14px 14px;
+      background: radial-gradient(circle at top left, #151923, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+      margin-top: 10px;
+    }
+
+    .profile-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: #cfd2de;
+    }
+
+    .profile-line span:first-child {
+      color: #8c8f9a;
+    }
+
+    .profile-balance {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .profile-reset {
+      margin-top: 10px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* Нижнее меню: только Главная и Профиль */
     .bottom-nav {
       position: fixed;
       left: 50%;
@@ -512,67 +550,85 @@
     </header>
 
     <main class="content">
-      <div class="pill">
-        <div class="pill-dot"></div>
-        <span>Играй. Рискуй. Побеждай.</span>
-      </div>
+      <!-- ЭКРАН ГЛАВНАЯ -->
+      <section id="home-screen">
+        <div class="pill">
+          <div class="pill-dot"></div>
+          <span>Играй. Рискуй. Побеждай.</span>
+        </div>
 
-      <div class="section-title">Рекомендуем сейчас</div>
+        <div class="section-title">Рекомендуем сейчас</div>
 
-      <div class="cards">
-        <!-- Rush -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Rush</div>
-              <div class="card-sub">Автокэш-аут по своему множителю</div>
+        <div class="cards">
+          <!-- Rush -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Rush</div>
+                <div class="card-sub">Автокэш-аут по своему множителю</div>
+              </div>
+              <div class="chip">🚀 x1.0 – x50</div>
             </div>
-            <div class="chip">🚀 x1.0 – x50</div>
+            <div class="card-footer">
+              <button class="btn btn-primary" id="rush-open">Играть Rush</button>
+              <div class="tag-row">
+                <div class="tag">быстрая игра</div>
+                <div class="tag">риск / награда</div>
+              </div>
+            </div>
           </div>
-          <div class="card-footer">
-            <button class="btn btn-primary" id="rush-open">Играть Rush</button>
-            <div class="tag-row">
-              <div class="tag">быстрая игра</div>
-              <div class="tag">риск / награда</div>
+
+          <!-- Plinko -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Plinko</div>
+                <div class="card-sub">Low / Mid / High риск</div>
+              </div>
+              <div class="chip">🟢 Plinko</div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary" id="plinko-open">Играть Plinko</button>
+              <div class="tag-row">
+                <div class="tag">падающие шары</div>
+                <div class="tag">риск / награда</div>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <!-- Plinko -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Plinko</div>
-              <div class="card-sub">Low / Mid / High риск</div>
-            </div>
-            <div class="chip">🟢 Plinko</div>
+      <!-- ЭКРАН ПРОФИЛЬ -->
+      <section id="profile-screen" style="display:none;">
+        <div class="section-title">Профиль</div>
+        <div class="profile-card">
+          <div class="profile-line">
+            <span>Имя</span>
+            <span id="profile-name">Demo пользователь</span>
           </div>
-          <div class="card-footer">
-            <button class="btn btn-primary" id="plinko-open">Играть Plinko</button>
-            <div class="tag-row">
-              <div class="tag">падающие шары</div>
-              <div class="tag">риск / награда</div>
-            </div>
+          <div class="profile-line">
+            <span>OWY ID</span>
+            <span id="profile-id">—</span>
           </div>
+          <div class="profile-line">
+            <span>Баланс</span>
+            <span class="profile-balance" id="profile-balance">1 000 OWY</span>
+          </div>
+          <button class="btn btn-ghost profile-reset" id="profile-reset">
+            Сбросить демо баланс
+          </button>
         </div>
-      </div>
+      </section>
     </main>
 
+    <!-- НИЖНЕЕ МЕНЮ: только Главная и Профиль -->
     <nav class="bottom-nav">
       <div class="bottom-nav-inner">
-        <div class="nav-item active">
+        <div class="nav-item active" id="nav-home">
           <span>🏠</span>
           <div class="nav-label">Главная</div>
         </div>
-        <div class="nav-item">
-          <span>🎮</span>
-          <div class="nav-label">Игры</div>
-        </div>
-        <div class="nav-item">
-          <span>⚽</span>
-          <div class="nav-label">Ставки</div>
-        </div>
-        <div class="nav-item">
+        <div class="nav-item" id="nav-profile">
           <span>👤</span>
           <div class="nav-label">Профиль</div>
         </div>
@@ -665,9 +721,24 @@
   <script>
     // Telegram WebApp
     let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    if (tg) tg.expand();
+    let tgUser = null;
+    if (tg) {
+      tg.expand();
+      tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+    }
 
-    const balanceEl       = document.querySelector('.balance-value');
+    const balanceEl = document.querySelector('.balance-value');
+
+    // Экраны и навигация
+    const homeScreen    = document.getElementById('home-screen');
+    const profileScreen = document.getElementById('profile-screen');
+    const navHome       = document.getElementById('nav-home');
+    const navProfile    = document.getElementById('nav-profile');
+
+    const profileNameEl     = document.getElementById('profile-name');
+    const profileIdEl       = document.getElementById('profile-id');
+    const profileBalanceEl  = document.getElementById('profile-balance');
+    const profileResetBtn   = document.getElementById('profile-reset');
 
     // Rush элементы
     const rushOverlay     = document.getElementById('rush-overlay');
@@ -696,8 +767,68 @@
     const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
     const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
 
-    // Общий баланс (демо)
+    // ====== Баланс с сохранением (localStorage) ======
+    const STORAGE_KEY_BALANCE = 'owy_balance_v1';
     let demoBalance = 1000;
+
+    function loadBalance() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_BALANCE);
+        const val = parseInt(raw, 10);
+        if (!isNaN(val) && val >= 0) {
+          demoBalance = val;
+        }
+      } catch (e) {
+        demoBalance = 1000;
+      }
+    }
+
+    function saveBalance() {
+      try {
+        localStorage.setItem(STORAGE_KEY_BALANCE, String(demoBalance));
+      } catch (e) {}
+    }
+
+    function updateBalanceView() {
+      balanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
+      profileBalanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
+    }
+
+    // Инициализация профиля
+    function initProfile() {
+      if (tgUser) {
+        const name = (tgUser.first_name || '') + (tgUser.last_name ? (' ' + tgUser.last_name) : '');
+        profileNameEl.textContent = name || 'Игрок OWY';
+        profileIdEl.textContent   = tgUser.id;
+      } else {
+        profileNameEl.textContent = 'Demo пользователь';
+        profileIdEl.textContent   = '—';
+      }
+    }
+
+    profileResetBtn.addEventListener('click', () => {
+      demoBalance = 1000;
+      saveBalance();
+      updateBalanceView();
+    });
+
+    // Навигация Главная / Профиль
+    function setActiveTab(tab) {
+      if (tab === 'home') {
+        navHome.classList.add('active');
+        navProfile.classList.remove('active');
+        homeScreen.style.display = '';
+        profileScreen.style.display = 'none';
+      } else {
+        navProfile.classList.add('active');
+        navHome.classList.remove('active');
+        homeScreen.style.display = 'none';
+        profileScreen.style.display = '';
+      }
+    }
+
+    navHome.addEventListener('click', () => setActiveTab('home'));
+    navProfile.addEventListener('click', () => setActiveTab('profile'));
 
     // ===== Rush =====
     let rushTimer   = null;
@@ -708,11 +839,6 @@
     let autoCashout  = null;
     let crashHistory = [];
 
-    function updateBalanceView() {
-      balanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
-    }
-    updateBalanceView();
-
     function updateRushHistory() {
       if (!crashHistory.length) {
         rushHistoryEl.textContent = "История: —";
@@ -722,7 +848,6 @@
       rushHistoryEl.textContent =
         "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
     }
-    updateRushHistory();
 
     function resetRushForNewGame() {
       rushState = "idle";
@@ -802,6 +927,7 @@
       rushState = "running";
       rushBet   = betValue;
       demoBalance -= rushBet;
+      saveBalance();
       updateBalanceView();
 
       rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
@@ -854,6 +980,7 @@
 
       const winAmount = Math.floor(rushBet * currentMulti);
       demoBalance += winAmount;
+      saveBalance();
       updateBalanceView();
 
       crashHistory.push(crashMulti);
@@ -867,9 +994,8 @@
     rushCashoutBtn.addEventListener('click', cashoutRush);
 
     // ======== Plinko ========
-
-    const PLINKO_COLS = 9;   // количество слотов снизу
-    const PLINKO_ROWS = 16;  // "уровней" падения
+    const PLINKO_COLS = 9;
+    const PLINKO_ROWS = 16;
 
     const PLINKO_CONFIGS = {
       low:  { multipliers: [1.30, 1.15, 1.08, 1.03, 0.98, 1.03, 1.08, 1.15, 1.30] },
@@ -878,14 +1004,12 @@
     };
 
     let plinkoSelectedRisk = "mid";
-    let plinkoRunning = false;
 
-    // Пины по всей доске
     function renderPlinkoPegs() {
       plinkoPegsLayer.innerHTML = "";
 
       for (let r = 0; r < PLINKO_ROWS; r++) {
-        const yPerc = 5 + (r / (PLINKO_ROWS - 1)) * 80; // 5–85% по высоте
+        const yPerc = 5 + (r / (PLINKO_ROWS - 1)) * 80;
 
         const isOdd  = r % 2 === 1;
         const count  = isOdd ? PLINKO_COLS - 1 : PLINKO_COLS;
@@ -907,7 +1031,6 @@
       }
     }
 
-    // нижние слоты с иксами
     function renderPlinkoConfig() {
       const config = PLINKO_CONFIGS[plinkoSelectedRisk];
       plinkoMultsRow.innerHTML = "";
@@ -923,44 +1046,40 @@
       plinkoBoardEl.classList.add(plinkoSelectedRisk);
     }
 
-    // путь шарика: ряд за рядом, но с рандомом и склонностью к центру
     function generatePlinkoPath(cols, rows) {
-  let col = Math.floor(cols / 2);
-  const path = [];
+      let col = Math.floor(cols / 2);
+      const path = [];
 
-  for (let r = 0; r <= rows; r++) {
-    path.push({ col, row: r });
-    if (r === rows) break;
+      for (let r = 0; r <= rows; r++) {
+        path.push({ col, row: r });
+        if (r === rows) break;
 
-    const rnd = Math.random();
-    let dir = 0;
+        const rnd = Math.random();
+        let dir = 0;
 
-    // если почти край — сильнее толкаем к центру
-    if (col <= 1) {
-      if (rnd < 0.6) dir = 1;           // 60% вправо
-      else if (rnd < 0.8) dir = 0;      // 20% прямо
-      else dir = -1;                    // 20% ещё левее
-    } else if (col >= cols - 2) {
-      if (rnd < 0.6) dir = -1;          // 60% влево
-      else if (rnd < 0.8) dir = 0;
-      else dir = 1;
-    } else {
-      // в центре чаще прямо
-      if (rnd < 0.3)      dir = -1;
-      else if (rnd > 0.7) dir = 1;
-      else                dir = 0;
+        if (col <= 1) {
+          if (rnd < 0.6)      dir = 1;
+          else if (rnd < 0.8) dir = 0;
+          else                dir = -1;
+        } else if (col >= cols - 2) {
+          if (rnd < 0.6)      dir = -1;
+          else if (rnd < 0.8) dir = 0;
+          else                dir = 1;
+        } else {
+          if (rnd < 0.3)      dir = -1;
+          else if (rnd > 0.7) dir = 1;
+          else                dir = 0;
+        }
+
+        col += dir;
+        if (col < 0) col = 0;
+        if (col > cols - 1) col = cols - 1;
+      }
+
+      return path;
     }
 
-    col += dir;
-    if (col < 0) col = 0;
-    if (col > cols - 1) col = cols - 1;
-  }
-
-  return path;
-}
-
     function playPlinko() {
-     
       const bet = parseInt(plinkoBetInput.value, 10);
       if (isNaN(bet) || bet < 10) {
         plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
@@ -976,15 +1095,17 @@
       if (!config || !slots.length || slots.length !== config.multipliers.length) return;
 
       demoBalance -= bet;
+      saveBalance();
       updateBalanceView();
 
-      const layerRect = plinkoBallsLayer.getBoundingClientRect();
-      const slotRects = Array.from(slots).map(s => s.getBoundingClientRect());
+      const layerRect   = plinkoBallsLayer.getBoundingClientRect();
+      const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
       const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
+      const slotY       = slotRects[0].top - layerRect.top - 8;
 
       const colsCount = config.multipliers.length;
-      const path = generatePlinkoPath(colsCount, PLINKO_ROWS);
-      const finalCol   = path[path.length - 1].col;
+      const path      = generatePlinkoPath(colsCount, PLINKO_ROWS);
+      const finalCol  = path[path.length - 1].col;
       const multiplier = config.multipliers[finalCol];
 
       slots.forEach(s => s.classList.remove('active'));
@@ -996,16 +1117,15 @@
       const startX = layerRect.width / 2;
       ball.style.left = (startX - 5) + "px";
       ball.style.top  = "0px";
-      const slotY = slotRects[0].top - layerRect.top - 8; // чуть над подписью
 
       plinkoStatusEl.textContent = "Шарик падает... 🎯";
-   
+
       const totalSteps = path.length;
       const totalRows  = PLINKO_ROWS;
-      const stepDelay  = 190; // скорость падения
+      const stepDelay  = 190;
 
       path.forEach((step, index) => {
-        const rowRatio = step.row / totalRows; // 0..1 от верха до слотов
+        const rowRatio = step.row / totalRows;
         const y = slotY * rowRatio;
 
         const colIndex = step.col;
@@ -1024,6 +1144,7 @@
 
         const winAmount = Math.floor(bet * multiplier);
         demoBalance += winAmount;
+        saveBalance();
         updateBalanceView();
 
         if (multiplier < 1) {
@@ -1056,7 +1177,6 @@
     function closePlinko() {
       plinkoOverlay.style.display = "none";
       plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
-      plinkoRunning = false;
     }
 
     plinkoOpenBtn.addEventListener('click', openPlinko);
