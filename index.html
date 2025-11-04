@@ -2,1872 +2,1632 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>OWY Play 0.1.1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root {
-      --bg: #050608;
-      --bg-elevated: #111318;
-      --bg-soft: #171a21;
-      --accent: #1ddb6f;
-      --accent-soft: rgba(29, 219, 111, 0.2);
-      --accent-strong: rgba(29, 219, 111, 0.35);
-      --text: #f7f7f7;
-      --text-muted: #9ca3af;
-      --danger: #ff4b5c;
-      --border: #242731;
-      --card-radius: 18px;
-      --transition-fast: 0.15s ease-out;
-    }
+  <title>OWY Play</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+  <style>
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
-      height: 100%;
-      background: radial-gradient(circle at top, #101320 0, #050608 55%);
-      color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     }
 
     body {
+      background: #05060a;
+      color: #f5f5f5;
       display: flex;
-      justify-content: center;
-      align-items: stretch;
+      flex-direction: column;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      transition: background 0.25s ease;
+    }
+
+    body.theme-neon {
+      background: radial-gradient(circle at top, #061318, #040308 60%, #020105);
     }
 
     .app {
-      width: 100%;
-      max-width: 480px;
-      min-height: 100vh;
+      max-width: 420px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      background: linear-gradient(145deg, #050608 0, #050608 35%, #05070d 100%);
-      padding: 12px 12px 8px 12px;
+      min-height: 100vh;
+      border-left: 1px solid #14151a;
+      border-right: 1px solid #14151a;
+      position: relative;
     }
 
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      gap: 10px;
+    body.theme-neon .app {
+      border-color: rgba(29,219,111,0.35);
+      box-shadow: 0 0 20px rgba(29,219,111,0.2);
     }
 
-    .logo-block {
+    .splash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, #111821, #05060a 60%);
       display: flex;
       align-items: center;
+      justify-content: center;
+      z-index: 200;
+      flex-direction: column;
       gap: 8px;
     }
 
-    .logo-circle {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #52ff9a 0, #1ddb6f 45%, #0a8f45 100%);
+    .splash-logo {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 16px;
-      color: #02060a;
-      box-shadow:
-        0 0 12px rgba(29, 219, 111, 0.5),
-        0 0 36px rgba(29, 219, 111, 0.25);
-    }
-
-    .logo-text-main {
-      font-size: 15px;
+      gap: 10px;
       font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      font-size: 22px;
     }
 
-    .logo-text-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+    .splash-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #1ddb6f;
+      box-shadow: 0 0 16px rgba(29,219,111,0.9);
     }
 
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .splash-sub {
+      font-size: 12px;
+      color: #9ea2b0;
     }
 
-    .balance-pill {
-      margin-left: auto;
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: radial-gradient(circle at 0 0, rgba(29, 219, 111, 0.5) 0, rgba(29, 219, 111, 0.1) 36%, rgba(1, 7, 6, 0.9) 100%);
-      border: 1px solid rgba(46, 224, 120, 0.6);
+    .header {
+      padding: 16px 18px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      white-space: nowrap;
+      justify-content: space-between;
+      border-bottom: 1px solid #14151a;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1ddb6f;
+      box-shadow: 0 0 12px rgba(29, 219, 111, 0.8);
+    }
+
+    .balance {
+      text-align: right;
     }
 
     .balance-label {
-      text-transform: uppercase;
-      font-size: 10px;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
+      font-size: 11px;
+      color: #8c8f9a;
     }
 
     .balance-value {
-      font-weight: 700;
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: 600;
     }
 
-    .balance-currency {
-      font-size: 11px;
-      opacity: 0.7;
+    .balance-demo-tag {
+      font-size: 10px;
+      color: #5f6370;
     }
 
-    .profile-chip {
-      margin-left: 6px;
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: #0b0d12;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      cursor: pointer;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
-    }
-
-    .profile-chip.active {
-      border-color: var(--accent);
-      box-shadow:
-        0 0 0 1px rgba(29, 219, 111, 0.3),
-        0 0 14px rgba(29, 219, 111, 0.4);
-      background: radial-gradient(circle at 30% 0, rgba(29, 219, 111, 0.25) 0, #050608 60%);
-    }
-
-    .profile-chip:active {
-      transform: scale(0.96);
-    }
-
-    .screens {
+    .content {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 4px;
+      padding: 14px 18px 80px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
       margin-bottom: 8px;
     }
 
-    .screen {
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      height: 100%;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    @media (min-width: 420px) {
-      .cards-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .game-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--card-radius);
-      background: radial-gradient(circle at 0 0, rgba(29, 219, 111, 0.2) 0, #11121a 38%, #07070b 100%);
-      padding: 12px;
-      border: 1px solid var(--border);
+    .cards {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      border-radius: 18px;
+      padding: 26px 20px;
+      background: radial-gradient(circle at top left, #182728, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
       min-height: 120px;
-      cursor: pointer;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease;
     }
 
-    .game-card:hover {
-      transform: translateY(-1px);
-      border-color: var(--accent);
-      box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.8),
-        0 0 18px rgba(29, 219, 111, 0.35);
+    body.theme-neon .card {
+      background: radial-gradient(circle at top left, #10231e, #050309);
+      border-color: rgba(29,219,111,0.18);
     }
 
-    .game-card:active {
-      transform: translateY(0) scale(0.98);
+    .card:active {
+      transform: scale(0.98);
+      box-shadow: 0 8px 20px rgba(29,219,111,0.35);
+      border-color: rgba(29,219,111,0.4);
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 8px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .card-tag {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .card-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
+      align-items: center;
       margin-bottom: 10px;
-    }
-
-    .card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .card-pills {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-    }
-
-    .pill.accent {
-      border-color: rgba(29, 219, 111, 0.8);
-      background: rgba(29, 219, 111, 0.1);
-      color: var(--accent);
-    }
-
-    .rush-glow {
-      position: absolute;
-      inset: 10px -30px -20px -30px;
-      pointer-events: none;
-      opacity: 0.5;
-      background:
-        radial-gradient(circle at 20% 0, rgba(29, 219, 111, 0.28) 0, transparent 55%),
-        radial-gradient(circle at 80% 60%, rgba(59, 130, 246, 0.22) 0, transparent 60%),
-        radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.7) 0, transparent 70%);
-    }
-
-    .plinko-glow {
-      position: absolute;
-      inset: 10px -30px -20px -30px;
-      pointer-events: none;
-      opacity: 0.6;
-      background:
-        radial-gradient(circle at 0 0, rgba(29, 219, 111, 0.4) 0, transparent 55%),
-        radial-gradient(circle at 100% 0, rgba(234, 179, 8, 0.4) 0, transparent 55%),
-        radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.7) 0, transparent 70%);
-    }
-
-    .card-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .advice-card {
-      margin-top: 2px;
-      border-radius: var(--card-radius);
-      background: radial-gradient(circle at 0 0, rgba(29, 219, 111, 0.18) 0, rgba(15,23,42,0.95) 55%, #050608 100%);
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      padding: 10px 12px 11px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-    }
-
-    .advice-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .advice-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 12px rgba(29, 219, 111, 0.9);
-    }
-
-    .advice-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .advice-body {
-      font-size: 13px;
-      line-height: 1.35;
-    }
-
-    .advice-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: var(--text-muted);
-      opacity: 0.8;
-    }
-
-    .badge-soft {
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-    }
-
-    .screen-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      margin-top: 4px;
-    }
-
-    .screen-title {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .screen-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .chip-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
     }
 
     .chip {
       font-size: 11px;
-      padding: 5px 9px;
+      padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cfd2de;
     }
 
-    .chip.green {
-      border-color: rgba(29, 219, 111, 0.8);
-      background: rgba(29, 219, 111, 0.06);
-      color: var(--accent);
+    .card-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
     }
 
-    .stat-row {
+    .card-sub {
+      font-size: 13px;
+      color: #9ea2b0;
+    }
+
+    .card-footer {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .stat-row span:last-child {
-      color: var(--text);
-    }
-
-    .panel {
-      border-radius: var(--card-radius);
-      background: radial-gradient(circle at 0 -40%, rgba(29, 219, 111, 0.25) 0, rgba(15, 23, 42, 0.95) 48%, #050608 100%);
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      padding: 10px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
-    }
-
-    .panel-soft {
-      border-radius: var(--card-radius);
-      background: rgba(10, 12, 18, 0.95);
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      padding: 10px;
-      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.85);
-    }
-
-    .rush-multiplier {
-      font-size: 32px;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 4px;
-      letter-spacing: 0.04em;
-    }
-
-    .rush-multiplier.running {
-      color: var(--accent);
-      text-shadow:
-        0 0 12px rgba(29, 219, 111, 0.8),
-        0 0 28px rgba(29, 219, 111, 0.45);
-    }
-
-    .rush-multiplier.crashed {
-      color: var(--danger);
-      text-shadow:
-        0 0 10px rgba(255, 75, 92, 0.8),
-        0 0 26px rgba(248, 113, 113, 0.4);
-    }
-
-    .rush-status {
-      font-size: 12px;
-      text-align: center;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      min-height: 16px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(31, 41, 55, 0.9);
-      overflow: hidden;
-      margin-bottom: 4px;
-    }
-
-    .progress-inner {
-      width: 0;
-      height: 100%;
-      background: linear-gradient(90deg, rgba(29, 219, 111, 0.2), var(--accent));
-      box-shadow: 0 0 12px rgba(29, 219, 111, 0.7);
-      transition: width 0.06s linear;
-    }
-
-    .rush-meta-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .rush-meta-row span:last-child {
-      color: var(--text);
-    }
-
-    .field-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .field-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .field-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .field-label span:last-child {
-      opacity: 0.8;
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: 12px;
-      border: 1px solid rgba(31, 41, 55, 0.95);
-      padding: 6px 8px;
-      gap: 4px;
-    }
-
-    .input-wrapper input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      min-width: 0;
-    }
-
-    .input-wrapper span {
-      font-size: 11px;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .quick-row {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 2px;
-    }
-
-    .quick-btn {
-      flex: 1;
-      padding: 5px 0;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.8);
-      background: rgba(15, 23, 42, 0.95);
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      cursor: pointer;
-      transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .quick-btn:active {
-      transform: scale(0.97);
-    }
-
-    .quick-btn.primary {
-      border-color: rgba(29, 219, 111, 0.8);
-      background: rgba(29, 219, 111, 0.08);
-      color: var(--accent);
-      box-shadow: 0 0 12px rgba(29, 219, 111, 0.3);
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
+      margin-top: 10px;
     }
 
     .btn {
-      flex: 1;
-      padding: 9px 0;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      border: none;
+      outline: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.1s ease;
+      touch-action: manipulation;
     }
 
     .btn-primary {
-      border-color: rgba(29, 219, 111, 0.9);
-      background: radial-gradient(circle at 0 -30%, rgba(29, 219, 111, 0.6) 0, rgba(29, 219, 111, 0.12) 38%, #020617 100%);
-      color: var(--accent);
-      box-shadow:
-        0 0 18px rgba(29, 219, 111, 0.6),
-        0 12px 32px rgba(0, 0, 0, 0.95);
+      background: linear-gradient(135deg, #1ddb6f, #16a451);
+      color: #05060a;
+      box-shadow: 0 6px 16px rgba(29, 219, 111, 0.4);
     }
 
-    .btn-secondary {
-      border-color: rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text-muted);
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(29, 219, 111, 0.3);
     }
 
-    .btn-outline {
-      border-color: rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-muted);
+    .btn-ghost {
+      background: transparent;
+      color: #cfd2de;
     }
 
-    .btn-danger {
-      border-color: rgba(248, 113, 113, 0.9);
-      background: rgba(127, 29, 29, 0.3);
-      color: #fecaca;
-    }
-
-    .btn:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.9);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .history-title {
+    .hint-text {
       font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      color: #9ea2b0;
+      margin: 6px 0 12px;
+    }
+
+    .bottom-hint {
+      text-align: center;
+      font-size: 11px;
+      color: #8c909a;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .big-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      height: calc(100vh - 230px);
+      justify-content: space-around;
+    }
+
+    .big-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      min-height: unset;
+      padding: 26px 20px;
+    }
+
+    .profile-card {
+      border-radius: 16px;
+      padding: 16px 14px 16px;
+      background: radial-gradient(circle at top left, #151923, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+      margin-top: 10px;
+    }
+
+    body.theme-neon .profile-card {
+      background: radial-gradient(circle at top left, #101725, #05030a);
+      border-color: rgba(29,219,111,0.25);
+    }
+
+    .profile-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #cfd2de;
+    }
+
+    .profile-line span:first-child {
+      color: #8c8f9a;
+    }
+
+    .profile-balance {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .rank-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0 8px;
+      font-size: 12px;
+    }
+
+    .rank-badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(29,219,111,0.1);
+      border: 1px solid rgba(29,219,111,0.5);
+      color: #c2ffe0;
+      font-size: 11px;
+    }
+
+    .xp-bar {
+      margin-top: 4px;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1ddb6f, #16a451);
+      transition: width 0.2s ease;
+    }
+
+    .profile-section-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 14px 0 8px;
+    }
+
+    .profile-section-title .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1ddb6f;
+    }
+
+    .profile-field {
+      margin-bottom: 10px;
+    }
+
+    .profile-field label {
+      font-size: 12px;
+      color: #9ea2b0;
+      display: block;
       margin-bottom: 4px;
     }
 
-    .history-line {
+    .profile-field input,
+    .profile-field select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #20232b;
+      background: #080a0f;
+      color: #f5f5f5;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .profile-field input:focus,
+    .profile-field select:focus {
+      border-color: #1ddb6f;
+    }
+
+    .profile-buttons {
       display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      font-size: 11px;
-    }
-
-    .history-item {
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.8);
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .history-item.win {
-      border-color: rgba(29, 219, 111, 0.8);
-      color: var(--accent);
-    }
-
-    .history-item.loss {
-      border-color: rgba(248, 113, 113, 0.8);
-      color: #fecaca;
-    }
-
-    .tabs-bar {
-      position: sticky;
-      bottom: 0;
-      margin-top: auto;
-      border-radius: 16px;
-      background: rgba(3, 7, 18, 0.98);
-      border: 1px solid rgba(31, 41, 55, 0.95);
-      padding: 6px;
-      display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       gap: 6px;
-      backdrop-filter: blur(18px);
-      box-shadow:
-        0 -8px 24px rgba(0, 0, 0, 0.85),
-        0 0 20px rgba(15, 23, 42, 0.9);
+      margin-top: 6px;
     }
 
-    .tab-btn {
-      flex: 1;
-      border-radius: 999px;
-      border: none;
-      padding: 6px 0;
+    .profile-note {
       font-size: 11px;
+      color: #7f8491;
+      margin-top: 6px;
+    }
+
+    .stats-row {
+      font-size: 11px;
+      color: #9ea2b0;
+      margin-top: 4px;
+    }
+
+    .missions-list {
+      font-size: 11px;
+      color: #9ea2b0;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .missions-list li {
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mission-done {
+      color: #1ddb6f;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      width: 100%;
+      max-width: 420px;
+      padding: 6px 10px 10px;
+      background: linear-gradient(to top, #05060a, rgba(5, 6, 10, 0.85), transparent);
+    }
+
+    .bottom-nav-inner {
+      background: rgba(8, 10, 16, 0.95);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 4px;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: #7f8491;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 2px;
-      background: transparent;
-      color: var(--text-muted);
       cursor: pointer;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      padding: 4px 0;
+      border-radius: 12px;
     }
 
-    .tab-icon {
-      font-size: 15px;
+    .nav-item span {
+      font-size: 16px;
     }
 
-    .tab-label {
-      font-size: 9px;
-    }
-
-    .tab-btn.active {
-      color: var(--accent);
+    .nav-item.active {
+      color: #e7fdf0;
       background: rgba(29, 219, 111, 0.08);
-      box-shadow: 0 0 14px rgba(29, 219, 111, 0.6);
     }
 
-    .tab-btn:active {
-      transform: scale(0.95);
+    .nav-label {
+      font-size: 10px;
     }
 
-    .plinko-wrapper {
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 6, 10, 0.96);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .overlay-inner {
+      width: 100%;
+      max-width: 420px;
+      padding: 18px 18px 90px;
+    }
+
+    .overlay-header {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .overlay-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .rush-multiplier {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .rush-track-line {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .rush-rocket {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1ddb6f, #16a451);
+      box-shadow: 0 0 18px rgba(29, 219, 111, 0.8);
+      transition: width 0.05s linear;
+    }
+
+    .rush-status {
+      font-size: 12px;
+      color: #9ea2b0;
+      margin: 12px 0;
+      min-height: 32px;
+    }
+
+    .rush-history {
+      font-size: 11px;
+      color: #7f8491;
+      margin-bottom: 10px;
+      min-height: 14px;
+    }
+
+    .rush-input {
+      margin-bottom: 10px;
+    }
+
+    .rush-input label {
+      font-size: 12px;
+      color: #9ea2b0;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .rush-input input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #20232b;
+      background: #080a0f;
+      color: #f5f5f5;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .rush-input input:focus {
+      border-color: #1ddb6f;
+    }
+
+    .rush-buttons {
+      display: flex;
       gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    #rush-cashout[disabled] {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .auto-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+
+    .auto-checkbox input {
+      display: none;
+    }
+
+    .checkmark {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      flex-shrink: 0;
+      border-radius: 4px;
+      border: 1px solid #3a3d44;
+      background: #080a0f;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .auto-checkbox input:checked + .checkmark {
+      border-color: #1ddb6f;
+      background: #1ddb6f;
+      box-shadow: 0 0 10px rgba(29, 219, 111, 0.6);
+    }
+
+    .auto-checkbox input:checked + .checkmark::after {
+      content: "✓";
+      position: absolute;
+      left: 3px;
+      top: -1px;
+      font-size: 13px;
+      color: #05060a;
+      font-weight: bold;
+    }
+
+    .auto-label-text {
+      font-size: 12px;
+      color: #cfd2de;
+    }
+
+    .rush-x2-label {
+      font-size: 11px;
+      color: #ffb74d;
     }
 
     .plinko-board {
       position: relative;
-      border-radius: var(--card-radius);
-      background: radial-gradient(circle at 0 0, rgba(29, 219, 111, 0.35) 0, rgba(15, 23, 42, 0.96) 45%, #020617 100%);
-      padding: 10px 8px 12px 8px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
+      border-radius: 16px;
+      padding: 12px 8px 20px;
+      background: radial-gradient(circle at top, #172c24, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+      margin-bottom: 10px;
+      height: 340px;
       overflow: hidden;
-      min-height: 170px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.95);
     }
 
-    .plinko-rows {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-      gap: 5px;
-      margin-top: 4px;
-      margin-bottom: 6px;
+    .plinko-board.low {
+      background: radial-gradient(circle at top, #1a2730, #090b0f);
     }
 
-    .plinko-row {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
+    .plinko-board.mid {
+      background: radial-gradient(circle at top, #172c24, #090b0f);
     }
 
-    .peg {
+    .plinko-board.high {
+      background: radial-gradient(circle at top, #2b181d, #090b0f);
+    }
+
+    .plinko-pegs-layer {
+      position: absolute;
+      inset: 10px 10px 50px 10px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .plinko-peg {
+      position: absolute;
       width: 6px;
       height: 6px;
-      border-radius: 999px;
-      background: rgba(148, 163, 184, 0.7);
-      box-shadow: 0 0 6px rgba(148, 163, 184, 0.7);
+      border-radius: 50%;
+      background: #2f3b44;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .plinko-balls-layer {
+      position: absolute;
+      inset: 0 0 40px 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .plinko-ball {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1ddb6f;
+      box-shadow: 0 0 8px rgba(29, 219, 111, 0.9);
+      top: 0;
+      left: 50%;
+      margin-left: -5px;
+      transition: top 0.12s linear, left 0.12s linear;
     }
 
     .plinko-slots {
       display: flex;
       justify-content: space-between;
       gap: 4px;
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 6px;
+      z-index: 3;
     }
 
     .plinko-slot {
       flex: 1;
-      font-size: 11px;
+      min-width: 24px;
+      padding: 3px 2px;
+      border-radius: 999px;
+      background: #050709;
+      border: 1px solid #20232b;
       text-align: center;
-      padding-top: 4px;
-      color: var(--text-muted);
+      font-size: 10px;
+      color: #9ea2b0;
     }
 
-    .plinko-slot span {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.95);
-    }
-
-    .plinko-slot.win span {
-      border-color: rgba(29, 219, 111, 0.8);
-      background: rgba(29, 219, 111, 0.09);
-      color: var(--accent);
-      box-shadow: 0 0 14px rgba(29, 219, 111, 0.5);
-    }
-
-    .plinko-ball {
-      position: absolute;
-      top: 22px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #f9fafb;
-      box-shadow:
-        0 0 10px rgba(248, 250, 252, 0.9),
-        0 0 24px rgba(29, 219, 111, 0.7);
-      opacity: 0;
-      transition: top 0.08s linear, left 0.08s linear, opacity 0.12s ease-out;
-      z-index: 3;
-    }
-
-    .plinko-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .risk-row {
-      display: flex;
-      gap: 6px;
-    }
-
-    .risk-btn {
-      flex: 1;
-      padding: 5px 0;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.96);
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-      cursor: pointer;
-      transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
-    }
-
-    .risk-btn.active {
-      border-color: rgba(29, 219, 111, 0.9);
-      background: rgba(29, 219, 111, 0.09);
-      color: var(--accent);
-      box-shadow: 0 0 12px rgba(29, 219, 111, 0.5);
-    }
-
-    .risk-btn:active {
-      transform: scale(0.97);
-    }
-
-    .risk-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .profile-header-block {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, rgba(29, 219, 111, 0.8) 0, rgba(16, 185, 129, 0.6) 40%, rgba(17, 24, 39, 1) 100%);
-      border: 2px solid rgba(34, 197, 94, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 800;
-      color: #020617;
-      box-shadow:
-        0 0 24px rgba(34, 197, 94, 0.8),
-        0 0 40px rgba(16, 185, 129, 0.7);
-    }
-
-    .profile-main {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .profile-name {
-      font-size: 14px;
+    .plinko-slot.active {
+      background: linear-gradient(135deg, #1ddb6f, #16a451);
+      border-color: #1ddb6f;
+      color: #05060a;
+      box-shadow: 0 0 14px rgba(29, 219, 111, 0.8);
       font-weight: 600;
     }
 
-    .profile-rank {
+    .plinko-risk-active {
+      background: rgba(29, 219, 111, 0.15);
+      border-color: #1ddb6f;
+      color: #e7fdf0;
+    }
+
+    .plinko-history {
       font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--accent);
-    }
-
-    .xp-bar {
-      margin-top: 3px;
-      width: 100%;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(31,41,55,0.9);
-      overflow: hidden;
-    }
-
-    .xp-inner {
-      width: 0;
-      height: 100%;
-      background: linear-gradient(90deg, rgba(29,219,111,0.3), var(--accent));
-      box-shadow: 0 0 10px rgba(29,219,111,0.7);
-    }
-
-    .profile-meta-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 11px;
-      color: var(--text-muted);
+      color: #7f8491;
       margin-top: 4px;
-    }
-
-    .profile-meta-row span:last-child {
-      color: var(--text);
-    }
-
-    .profile-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .helper-text {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      line-height: 1.4;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 78px;
-      transform: translateX(-50%) translateY(30px);
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.98);
-      border: 1px solid rgba(55, 65, 81, 0.95);
-      color: var(--text);
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease-out, transform 0.18s ease-out;
-      z-index: 50;
-      max-width: 88vw;
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .toast.-error {
-      border-color: rgba(248, 113, 113, 0.9);
-      color: #fecaca;
-    }
-
-    .toast.-ok {
-      border-color: rgba(29, 219, 111, 0.9);
-      color: var(--accent);
-    }
-
-    .tag-demo {
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      font-size: 9px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #020617;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #111827;
-      border-radius: 999px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #1f2937;
+      min-height: 14px;
     }
   </style>
 </head>
 <body>
-<div class="app">
-  <div class="top-bar">
-    <div class="logo-block">
-      <div class="logo-circle">O</div>
-      <div class="logo-text">
-        <div class="logo-text-main">OWY Play</div>
-        <div class="logo-text-sub">Beta 0.1.1</div>
+  <div class="app">
+    <div class="splash" id="splash">
+      <div class="splash-logo">
+        <div class="splash-dot"></div>
+        <span>OWY Play</span>
       </div>
+      <div class="splash-sub">Always Await. Loading demo...</div>
     </div>
-    <div class="balance-pill" id="balancePill">
-      <span class="balance-label">Balance</span>
-      <span class="balance-value" id="balanceValue">0</span>
-      <span class="balance-currency">AWC</span>
-    </div>
-    <div class="profile-chip" id="profileChip">☻</div>
-  </div>
 
-  <div class="screens">
-    <div class="screen active" id="homeScreen">
-      <div class="cards-grid">
-        <div class="game-card" data-screen-target="rushScreen">
-          <div class="rush-glow"></div>
-          <div class="card-inner">
+    <header class="header">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span>OWY Play</span>
+      </div>
+      <div class="balance">
+        <div class="balance-label">Баланс</div>
+        <div class="balance-value">1 000 OWY</div>
+        <div class="balance-demo-tag">Demo режим • без реальных денег</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <section id="home-screen">
+        <div class="cards big-cards">
+          <div class="card big-card">
             <div class="card-header">
-              <div class="card-title">Rush</div>
-              <div class="card-tag">Auto cash-out</div>
-            </div>
-            <div class="card-subtitle">
-              Ставка, рост множителя и один шанс забрать демо-профит до того, как всё рухнет.
+              <div>
+                <div class="card-title">Rush</div>
+                <div class="card-sub">Автокэш-аут по своему множителю</div>
+              </div>
+              <div class="chip">🚀 x1.0 – x50</div>
             </div>
             <div class="card-footer">
-              <div class="card-pills">
-                <div class="pill accent">high tempo</div>
-                <div class="pill">demo only</div>
-              </div>
-              <div class="tag-demo">beta mode</div>
+              <button class="btn btn-primary" id="rush-open">Играть Rush</button>
             </div>
           </div>
-        </div>
 
-        <div class="game-card" data-screen-target="plinkoScreen">
-          <div class="plinko-glow"></div>
-          <div class="card-inner">
+          <div class="card big-card">
             <div class="card-header">
-              <div class="card-title">Plinko</div>
-              <div class="card-tag">Low / Mid / High</div>
-            </div>
-            <div class="card-subtitle">
-              Выбери риск, урони шар и смотри, в какой множитель он попадёт в этот раз.
+              <div>
+                <div class="card-title">Plinko</div>
+                <div class="card-sub">Low / Mid / High риск</div>
+              </div>
+              <div class="chip">🟢 Plinko</div>
             </div>
             <div class="card-footer">
-              <div class="card-pills">
-                <div class="pill accent">rng vibes</div>
-                <div class="pill">grid fun</div>
-              </div>
-              <div class="tag-demo">demo only</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="advice-card" id="adviceCard">
-        <div class="advice-header">
-          <div class="advice-label">
-            <div class="advice-dot"></div>
-            <span>OWY совет</span>
-          </div>
-          <span>demo · fun first</span>
-        </div>
-        <div class="advice-body" id="adviceText">
-          Играем только демо и только ради фана. Решения про реальные деньги всегда принимаем с холодной головой.
-        </div>
-        <div class="advice-meta">
-          <span>mode: chill</span>
-          <span id="adviceTag">совет дня</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="screen" id="rushScreen">
-      <div class="screen-header">
-        <div class="screen-title">Rush</div>
-        <div class="chip-row">
-          <div class="chip green">auto cash-out</div>
-          <div class="chip">demo only</div>
-        </div>
-      </div>
-      <div class="screen-subtitle">
-        Выстави ставку, запусти раунд и реши, когда забрать выигрыш до того, как множитель рухнет.
-      </div>
-
-      <div class="panel" id="rushMainPanel">
-        <div class="rush-multiplier" id="rushMultiplier">1.00×</div>
-        <div class="rush-status" id="rushStatus">Нажми «Старт», чтобы начать раунд.</div>
-        <div class="progress-bar">
-          <div class="progress-inner" id="rushProgress"></div>
-        </div>
-        <div class="rush-meta-row">
-          <span>Ставка: <strong id="rushBetInfo">0</strong> AWC</span>
-          <span>Max x: <strong id="rushMaxInfo">0.00×</strong></span>
-        </div>
-      </div>
-
-      <div class="panel-soft">
-        <div class="field-row">
-          <div class="field-group">
-            <div class="field-label">
-              <span>Ставка</span>
-              <span id="rushBalanceHint">Баланс: 0 AWC</span>
-            </div>
-            <div class="input-wrapper">
-              <input id="rushBetInput" type="number" min="1" step="1" inputmode="decimal" placeholder="Введите сумму">
-              <span>AWC</span>
-            </div>
-          </div>
-          <div class="field-group">
-            <div class="field-label">
-              <span>Авто-выход</span>
-              <span id="rushAutoHint">Опционально</span>
-            </div>
-            <div class="input-wrapper">
-              <input id="rushAutoInput" type="number" min="1.1" step="0.1" inputmode="decimal" placeholder="например 2.50">
-              <span>x</span>
+              <button class="btn btn-primary" id="plinko-open">Играть Plinko</button>
             </div>
           </div>
         </div>
 
-        <div class="quick-row">
-          <button class="quick-btn" data-rush-quick="0.1">10%</button>
-          <button class="quick-btn" data-rush-quick="0.25">25%</button>
-          <button class="quick-btn" data-rush-quick="0.5">50%</button>
-          <button class="quick-btn primary" data-rush-quick="1">MAX</button>
+        <div class="hint-text bottom-hint" id="hint-text">
+          🤖 OWY совет: попробуй Rush с небольшим автовыводом.
         </div>
+      </section>
 
-        <div class="btn-row">
-          <button class="btn btn-secondary" id="rushBackBtn">Назад</button>
-          <button class="btn btn-primary" id="rushStartBtn">Старт</button>
-          <button class="btn btn-outline" id="rushCashoutBtn" disabled>Забрать</button>
-        </div>
-      </div>
-
-      <div class="panel-soft">
-        <div class="history-title">История раундов</div>
-        <div class="history-line" id="rushHistory"></div>
-      </div>
-    </div>
-
-    <div class="screen" id="plinkoScreen">
-      <div class="screen-header">
-        <div class="screen-title">Plinko</div>
-        <div class="chip-row">
-          <div class="chip green">grid rng</div>
-          <div class="chip">demo only</div>
-        </div>
-      </div>
-      <div class="screen-subtitle">
-        Выбери риск, поставь демо и смотри, куда прилетит шар. Каждый риск — свой пул множителей.
-      </div>
-
-      <div class="plinko-wrapper">
-        <div class="plinko-board">
-          <div class="plinko-ball" id="plinkoBall"></div>
-
-          <div class="plinko-meta">
-            <span id="plinkoRiskLabel">Риск: Low</span>
-            <span id="plinkoLastPayout">Последний множитель: —</span>
+      <section id="profile-screen" style="display:none;">
+        <div class="section-title">Личный профиль</div>
+        <div class="profile-card">
+          <div class="profile-line">
+            <span>OWY ID</span>
+            <span id="profile-id">—</span>
+          </div>
+          <div class="profile-line">
+            <span>Баланс</span>
+            <span class="profile-balance" id="profile-balance">1 000 OWY</span>
           </div>
 
-          <div class="plinko-rows">
-            <div class="plinko-row">
-              <div class="peg"></div>
-            </div>
-            <div class="plinko-row">
-              <div class="peg"></div>
-              <div class="peg"></div>
-            </div>
-            <div class="plinko-row">
-              <div class="peg"></div>
-              <div class="peg"></div>
-              <div class="peg"></div>
-            </div>
-            <div class="plinko-row">
-              <div class="peg"></div>
-              <div class="peg"></div>
-              <div class="peg"></div>
-              <div class="peg"></div>
-            </div>
-            <div class="plinko-row">
-              <div class="peg"></div>
-              <div class="peg"></div>
-              <div class="peg"></div>
-              <div class="peg"></div>
-              <div class="peg"></div>
-            </div>
+          <div class="rank-row">
+            <span>Ранг: <span id="rank-label">BRONZE I</span></span>
+            <span id="xp-label">0 / 100 XP</span>
+          </div>
+          <div class="xp-bar">
+            <div class="xp-bar-fill" id="xp-bar-fill"></div>
           </div>
 
-          <div class="plinko-slots" id="plinkoSlots"></div>
+          <div class="stats-row" id="stats-row">
+            Rush: 0 игр • Plinko: 0 игр • Лучший множитель: x1.00
+          </div>
+
+          <div class="profile-section-title">
+            <span class="dot"></span>
+            <span>Миссии дня (демо)</span>
+          </div>
+          <ul class="missions-list">
+            <li id="mission-1"><span>⬜</span><span>Сыграй Rush 5 раз</span></li>
+            <li id="mission-2"><span>⬜</span><span>Сыграй Plinko 3 раза</span></li>
+            <li id="mission-3"><span>⬜</span><span>Сыграй обе игры сегодня</span></li>
+          </ul>
+
+          <div class="profile-section-title">
+            <span class="dot"></span>
+            <span>Персональные данные</span>
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-name">Отображаемое имя</label>
+            <input id="profile-name" type="text" placeholder="Как тебя называть в OWY">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-username">OWY username</label>
+            <input id="profile-username" type="text" placeholder="@nickname">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-birthdate">Дата рождения</label>
+            <input id="profile-birthdate" type="date">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-gender">Пол</label>
+            <select id="profile-gender">
+              <option value="">Не указывать</option>
+              <option value="male">Мужской</option>
+              <option value="female">Женский</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+
+          <div class="profile-buttons">
+            <button class="btn btn-primary" id="profile-save">Сохранить профиль</button>
+            <button class="btn btn-ghost" id="profile-topup">+500 OWY (демо)</button>
+            <button class="btn btn-ghost" id="profile-reset">Сбросить демо баланс</button>
+            <button class="btn btn-ghost" id="profile-feedback">✉ Написать в OWY Hub</button>
+          </div>
+
+          <div class="profile-note" id="profile-note">
+            Данные и баланс хранятся только у тебя на устройстве (localStorage).
+          </div>
         </div>
+      </section>
+    </main>
 
-        <div class="panel-soft">
-          <div class="field-row">
-            <div class="field-group">
-              <div class="field-label">
-                <span>Ставка</span>
-                <span id="plinkoBalanceHint">Баланс: 0 AWC</span>
-              </div>
-              <div class="input-wrapper">
-                <input id="plinkoBetInput" type="number" min="1" step="1" inputmode="decimal" placeholder="Введите сумму">
-                <span>AWC</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="risk-row">
-            <button class="risk-btn active" data-risk="low">Low</button>
-            <button class="risk-btn" data-risk="mid">Mid</button>
-            <button class="risk-btn" data-risk="high">High</button>
-          </div>
-          <div class="risk-hint" id="plinkoRiskHint">
-            Low: мягче разброс, меньше нулей, максимум до ~5x.
-          </div>
-
-          <div class="btn-row" style="margin-top:8px;">
-            <button class="btn btn-secondary" id="plinkoBackBtn">Назад</button>
-            <button class="btn btn-primary" id="plinkoDropBtn">Уронить шар</button>
-          </div>
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <div class="nav-item active" id="nav-home">
+          <span>🏠</span>
+          <div class="nav-label">Главная</div>
         </div>
-
-        <div class="panel-soft">
-          <div class="history-title">История Plinko</div>
-          <div class="history-line" id="plinkoHistory"></div>
+        <div class="nav-item" id="nav-profile">
+          <span>👤</span>
+          <div class="nav-label">Профиль</div>
         </div>
       </div>
-    </div>
+    </nav>
+  </div>
 
-    <div class="screen" id="profileScreen">
-      <div class="screen-header">
-        <div class="screen-title">Профиль</div>
-        <div class="chip-row">
-          <div class="chip">demo profile</div>
-          <div class="chip green">@arhipovvv</div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="profile-header-block">
-          <div class="avatar">O</div>
-          <div class="profile-main">
-            <div class="profile-name" id="profileName">OWY Player</div>
-            <div class="profile-rank" id="profileRank">rank · Rookie I</div>
-            <div class="xp-bar">
-              <div class="xp-inner" id="xpInner"></div>
-            </div>
-            <div class="profile-meta-row">
-              <span>XP</span>
-              <span id="xpLabel">0 / 100</span>
-            </div>
-          </div>
-        </div>
-        <div class="profile-meta-row" style="margin-top:10px;">
-          <span>Демо-баланс</span>
-          <span><strong id="profileBalance">0</strong> AWC</span>
-        </div>
-        <div class="profile-actions">
-          <button class="btn btn-outline" id="supportBtn">Поддержка</button>
-          <button class="btn btn-secondary" id="resetBalanceBtn">Сброс</button>
-          <button class="btn btn-primary" id="refillBalanceBtn">+1000 AWC</button>
-        </div>
-        <div class="helper-text">
-          Сейчас всё в демо-режиме. Баланс, ранг и XP хранятся локально у тебя на устройстве.
-        </div>
+  <div id="rush-overlay" class="overlay">
+    <div class="overlay-inner">
+      <div class="overlay-header">
+        <button class="btn btn-ghost" id="rush-back">← Назад</button>
+        <div class="overlay-title">Rush</div>
       </div>
 
-      <div class="panel-soft" style="margin-top:10px;">
-        <div class="history-title">OWY Play · Beta 0.1.1</div>
-        <div class="helper-text" style="margin-top:4px;">
-          · Две игры: Rush и Plinko<br>
-          · Только тёмная тема<br>
-          · Профиль с демо-балансом и ранговой системой (визуально)<br>
-          · Хранение в <strong>localStorage</strong> без сервера<br>
-        </div>
+      <div class="rush-multiplier" id="rush-multiplier">x1.00</div>
+
+      <div class="rush-track-line">
+        <div class="rush-rocket" id="rush-rocket"></div>
+      </div>
+
+      <div class="rush-status" id="rush-status">
+        Выбери ставку и жми старт
+      </div>
+
+      <div class="rush-history" id="rush-history">
+        История: —
+      </div>
+
+      <div class="rush-input">
+        <label class="auto-checkbox">
+          <input type="checkbox" id="rush-auto-enabled" checked>
+          <span class="checkmark"></span>
+          <span class="auto-label-text">Автовывод, x</span>
+        </label>
+        <input type="number" id="rush-auto" value="2.0" step="0.1" min="1.01">
+      </div>
+
+      <div class="rush-input">
+        <label class="auto-checkbox">
+          <input type="checkbox" id="rush-x2-risk">
+          <span class="checkmark"></span>
+          <span class="rush-x2-label">Режим x2 риск (больше крашей)</span>
+        </label>
+      </div>
+
+      <div class="rush-input">
+        <label for="rush-bet">Ставка, OWY</label>
+        <input type="number" id="rush-bet" value="10" min="10">
+      </div>
+
+      <div class="rush-buttons">
+        <button class="btn btn-primary" id="rush-start">Старт</button>
+        <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
       </div>
     </div>
   </div>
 
-  <div class="tabs-bar">
-    <button class="tab-btn active" data-screen-target="homeScreen" id="homeTab">
-      <div class="tab-icon">◆</div>
-      <div class="tab-label">Главная</div>
-    </button>
-    <button class="tab-btn" data-screen-target="rushScreen" id="rushTab">
-      <div class="tab-icon">↗︎</div>
-      <div class="tab-label">Rush</div>
-    </button>
-    <button class="tab-btn" data-screen-target="plinkoScreen" id="plinkoTab">
-      <div class="tab-icon">⬤</div>
-      <div class="tab-label">Plinko</div>
-    </button>
-    <button class="tab-btn" data-screen-target="profileScreen" id="profileTab">
-      <div class="tab-icon">☰</div>
-      <div class="tab-label">Профиль</div>
-    </button>
+  <div id="plinko-overlay" class="overlay">
+    <div class="overlay-inner">
+      <div class="overlay-header">
+        <button class="btn btn-ghost" id="plinko-back">← Назад</button>
+        <div class="overlay-title">Plinko</div>
+      </div>
+
+      <div class="plinko-board mid" id="plinko-board">
+        <div class="plinko-pegs-layer" id="plinko-pegs-layer"></div>
+        <div class="plinko-balls-layer" id="plinko-balls-layer"></div>
+        <div class="plinko-slots" id="plinko-mults-row"></div>
+      </div>
+
+      <div class="rush-status" id="plinko-status">
+        Выбирай риск и запускай шар 😉
+      </div>
+
+      <div class="plinko-history" id="plinko-history">
+        История: —
+      </div>
+
+      <div class="rush-input">
+        <label>Риск</label>
+        <div class="rush-buttons" id="plinko-risk-buttons">
+          <button class="btn btn-ghost" data-risk="low">Low</button>
+          <button class="btn btn-ghost plinko-risk-active" data-risk="mid">Mid</button>
+          <button class="btn btn-ghost" data-risk="high">High</button>
+        </div>
+      </div>
+
+      <div class="rush-input">
+        <label for="plinko-bet">Ставка, OWY</label>
+        <input type="number" id="plinko-bet" value="10" min="10">
+      </div>
+
+      <div class="rush-buttons">
+        <button class="btn btn-primary" id="plinko-start">Запустить шар</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="toast" id="toast"></div>
-
-<script>
-  const STORAGE_KEYS = {
-    balance: "owy_balance",
-    rank: "owy_rank",
-    xp: "owy_xp",
-    name: "owy_name"
-  };
-
-  const DEFAULTS = {
-    balance: 1000,
-    rank: "Rookie I",
-    xp: 0,
-    name: "OWY Player"
-  };
-
-  let balance = DEFAULTS.balance;
-  let rank = DEFAULTS.rank;
-  let xp = DEFAULTS.xp;
-  let playerName = DEFAULTS.name;
-
-  const balanceValueEl = document.getElementById("balanceValue");
-  const profileBalanceEl = document.getElementById("profileBalance");
-  const profileRankEl = document.getElementById("profileRank");
-  const xpInnerEl = document.getElementById("xpInner");
-  const xpLabelEl = document.getElementById("xpLabel");
-  const profileNameEl = document.getElementById("profileName");
-  const rushBalanceHintEl = document.getElementById("rushBalanceHint");
-  const plinkoBalanceHintEl = document.getElementById("plinkoBalanceHint");
-
-  const screens = {
-    home: document.getElementById("homeScreen"),
-    rush: document.getElementById("rushScreen"),
-    plinko: document.getElementById("plinkoScreen"),
-    profile: document.getElementById("profileScreen")
-  };
-
-  const tabs = {
-    home: document.getElementById("homeTab"),
-    rush: document.getElementById("rushTab"),
-    plinko: document.getElementById("plinkoTab"),
-    profile: document.getElementById("profileTab")
-  };
-
-  const profileChipEl = document.getElementById("profileChip");
-
-  const toastEl = document.getElementById("toast");
-
-  function showToast(message, type) {
-    toastEl.textContent = message;
-    toastEl.classList.remove("-error", "-ok");
-    if (type === "error") toastEl.classList.add("-error");
-    if (type === "ok") toastEl.classList.add("-ok");
-    toastEl.classList.add("show");
-    setTimeout(() => {
-      toastEl.classList.remove("show");
-    }, 1900);
-  }
-
-  function loadState() {
-    try {
-      const storedBalance = localStorage.getItem(STORAGE_KEYS.balance);
-      const storedRank = localStorage.getItem(STORAGE_KEYS.rank);
-      const storedXp = localStorage.getItem(STORAGE_KEYS.xp);
-      const storedName = localStorage.getItem(STORAGE_KEYS.name);
-      if (storedBalance !== null && !isNaN(parseFloat(storedBalance))) {
-        balance = parseFloat(storedBalance);
-      }
-      if (storedRank) rank = storedRank;
-      if (storedXp !== null && !isNaN(parseFloat(storedXp))) {
-        xp = parseFloat(storedXp);
-      }
-      if (storedName) playerName = storedName;
-    } catch (e) {}
-    syncUI();
-  }
-
-  function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEYS.balance, String(balance));
-      localStorage.setItem(STORAGE_KEYS.rank, rank);
-      localStorage.setItem(STORAGE_KEYS.xp, String(xp));
-      localStorage.setItem(STORAGE_KEYS.name, playerName);
-    } catch (e) {}
-  }
-
-  function formatBalance(v) {
-    return Math.floor(v).toLocaleString("ru-RU");
-  }
-
-  function syncUI() {
-    balanceValueEl.textContent = formatBalance(balance);
-    profileBalanceEl.textContent = formatBalance(balance);
-    profileRankEl.textContent = "rank · " + rank;
-    xpLabelEl.textContent = xp + " / 100";
-    xpInnerEl.style.width = Math.min(100, xp) + "%";
-    profileNameEl.textContent = playerName;
-    rushBalanceHintEl.textContent = "Баланс: " + formatBalance(balance) + " AWC";
-    plinkoBalanceHintEl.textContent = "Баланс: " + formatBalance(balance) + " AWC";
-  }
-
-  function changeScreen(targetId) {
-    Object.values(screens).forEach(s => s.classList.remove("active"));
-    Object.values(tabs).forEach(t => t.classList.remove("active"));
-    profileChipEl.classList.remove("active");
-    if (targetId === "homeScreen") {
-      screens.home.classList.add("active");
-      tabs.home.classList.add("active");
-    } else if (targetId === "rushScreen") {
-      screens.rush.classList.add("active");
-      tabs.rush.classList.add("active");
-    } else if (targetId === "plinkoScreen") {
-      screens.plinko.classList.add("active");
-      tabs.plinko.classList.add("active");
-    } else if (targetId === "profileScreen") {
-      screens.profile.classList.add("active");
-      tabs.profile.classList.add("active");
-      profileChipEl.classList.add("active");
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    let tgUser = null;
+    if (tg) {
+      tg.expand();
+      tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
     }
-  }
 
-  document.querySelectorAll("[data-screen-target]").forEach(el => {
-    el.addEventListener("click", () => {
-      const target = el.getAttribute("data-screen-target");
-      if (target) changeScreen(target);
+    const balanceEl = document.querySelector('.balance-value');
+    const splashEl = document.getElementById('splash');
+    setTimeout(() => { if (splashEl) splashEl.style.display = 'none'; }, 1300);
+
+    const homeScreen    = document.getElementById('home-screen');
+    const profileScreen = document.getElementById('profile-screen');
+    const navHome       = document.getElementById('nav-home');
+    const navProfile    = document.getElementById('nav-profile');
+    const hintTextEl    = document.getElementById('hint-text');
+
+    const profileIdEl      = document.getElementById('profile-id');
+    const profileBalanceEl = document.getElementById('profile-balance');
+    const profileResetBtn  = document.getElementById('profile-reset');
+    const profileTopupBtn  = document.getElementById('profile-topup');
+    const profileFeedbackBtn = document.getElementById('profile-feedback');
+    const profileNoteEl    = document.getElementById('profile-note');
+
+    const profileNameInput     = document.getElementById('profile-name');
+    const profileUsernameInput = document.getElementById('profile-username');
+    const profileBirthInput    = document.getElementById('profile-birthdate');
+    const profileGenderSelect  = document.getElementById('profile-gender');
+    const profileSaveBtn       = document.getElementById('profile-save');
+
+    const rankLabelEl   = document.getElementById('rank-label');
+    const xpLabelEl     = document.getElementById('xp-label');
+    const xpBarFillEl   = document.getElementById('xp-bar-fill');
+    const statsRowEl    = document.getElementById('stats-row');
+    const mission1El    = document.getElementById('mission-1');
+    const mission2El    = document.getElementById('mission-2');
+    const mission3El    = document.getElementById('mission-3');
+
+    const rushOverlay     = document.getElementById('rush-overlay');
+    const rushOpenBtn     = document.getElementById('rush-open');
+    const rushBackBtn     = document.getElementById('rush-back');
+    const rushMultEl      = document.getElementById('rush-multiplier');
+    const rushRocketEl    = document.getElementById('rush-rocket');
+    const rushStatusEl    = document.getElementById('rush-status');
+    const rushHistoryEl   = document.getElementById('rush-history');
+    const rushBetInput    = document.getElementById('rush-bet');
+    const rushAutoInput   = document.getElementById('rush-auto');
+    const rushAutoEnabled = document.getElementById('rush-auto-enabled');
+    const rushX2RiskEl    = document.getElementById('rush-x2-risk');
+    const rushStartBtn    = document.getElementById('rush-start');
+    const rushCashoutBtn  = document.getElementById('rush-cashout');
+
+    const plinkoOverlay    = document.getElementById('plinko-overlay');
+    const plinkoOpenBtn    = document.getElementById('plinko-open');
+    const plinkoBackBtn    = document.getElementById('plinko-back');
+    const plinkoStatusEl   = document.getElementById('plinko-status');
+    const plinkoHistoryEl  = document.getElementById('plinko-history');
+    const plinkoBetInput   = document.getElementById('plinko-bet');
+    const plinkoStartBtn   = document.getElementById('plinko-start');
+    const plinkoRiskBtns   = document.querySelectorAll('#plinko-risk-buttons button');
+    const plinkoBoardEl    = document.getElementById('plinko-board');
+    const plinkoMultsRow   = document.getElementById('plinko-mults-row');
+    const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
+    const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
+
+    function vibrate(ms) {
+      if (navigator && navigator.vibrate) {
+        navigator.vibrate(ms);
+      }
+    }
+
+    const STORAGE_KEY_BALANCE  = 'owy_balance_v1';
+    const STORAGE_KEY_PROFILE  = 'owy_profile_info_v1';
+    const STORAGE_KEY_STATS    = 'owy_stats_v1';
+
+    let demoBalance = 1000;
+
+    function loadBalance() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_BALANCE);
+        const val = parseInt(raw, 10);
+        if (!isNaN(val) && val >= 0) demoBalance = val;
+      } catch (e) {
+        demoBalance = 1000;
+      }
+    }
+
+    function saveBalance() {
+      try { localStorage.setItem(STORAGE_KEY_BALANCE, String(demoBalance)); } catch (e) {}
+    }
+
+    function updateBalanceView() {
+      balanceEl.textContent        = demoBalance.toLocaleString("ru-RU") + " OWY";
+      profileBalanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
+    }
+
+    let profileData = {
+      name: "",
+      username: "",
+      birthdate: "",
+      gender: ""
+    };
+
+    function loadProfileInfo() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_PROFILE);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          profileData = { ...profileData, ...parsed };
+        }
+      } catch (e) {}
+    }
+
+    function saveProfileInfo() {
+      try { localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profileData)); } catch (e) {}
+    }
+
+    let stats = {
+      rushPlays: 0,
+      plinkoPlays: 0,
+      bestMulti: 1.0,
+      xp: 0
+    };
+
+    function loadStats() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_STATS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          stats = { ...stats, ...parsed };
+        }
+      } catch (e) {}
+    }
+
+    function saveStats() {
+      try { localStorage.setItem(STORAGE_KEY_STATS, JSON.stringify(stats)); } catch (e) {}
+    }
+
+    function calcRank(xp) {
+      if (xp < 100)   return "BRONZE I";
+      if (xp < 200)   return "BRONZE II";
+      if (xp < 400)   return "SILVER I";
+      if (xp < 700)   return "SILVER II";
+      if (xp < 1100)  return "GOLD I";
+      return "OWY ELITE";
+    }
+
+    function calcXpProgress(xp) {
+      const level = Math.floor(xp / 100);
+      const start = level * 100;
+      const end   = start + 100;
+      const within = Math.min(Math.max(xp - start, 0), 100);
+      return { label: `${xp} / ${end} XP`, percent: (within / 100) * 100 };
+    }
+
+    function updateStatsView() {
+      const totalGames = stats.rushPlays + stats.plinkoPlays;
+
+      statsRowEl.textContent =
+        `Rush: ${stats.rushPlays} игр • Plinko: ${stats.plinkoPlays} игр • Лучший множитель: x${stats.bestMulti.toFixed(2)}`;
+
+      const rank = calcRank(stats.xp);
+      rankLabelEl.textContent = rank;
+      const prog = calcXpProgress(stats.xp);
+      xpLabelEl.textContent   = prog.label;
+      xpBarFillEl.style.width = `${prog.percent}%`;
+
+      const m1Done = stats.rushPlays >= 5;
+      const m2Done = stats.plinkoPlays >= 3;
+      const m3Done = stats.rushPlays > 0 && stats.plinkoPlays > 0;
+
+      mission1El.firstElementChild.textContent = m1Done ? "✅" : "⬜";
+      mission2El.firstElementChild.textContent = m2Done ? "✅" : "⬜";
+      mission3El.firstElementChild.textContent = m3Done ? "✅" : "⬜";
+
+      if (m1Done) mission1El.classList.add("mission-done");
+      if (m2Done) mission2El.classList.add("mission-done");
+      if (m3Done) mission3El.classList.add("mission-done");
+    }
+
+    function initProfile() {
+      if (tgUser) {
+        profileIdEl.textContent = tgUser.id;
+      } else {
+        profileIdEl.textContent = "—";
+      }
+
+      if (!profileData.name) {
+        if (tgUser) {
+          const name = (tgUser.first_name || '') +
+            (tgUser.last_name ? (' ' + tgUser.last_name) : '');
+          profileData.name = name || 'Игрок OWY';
+          if (!profileData.username && tgUser.username) {
+            profileData.username = '@' + tgUser.username;
+          }
+        } else {
+          profileData.name = 'Demo пользователь';
+        }
+      }
+
+      profileNameInput.value     = profileData.name || '';
+      profileUsernameInput.value = profileData.username || '';
+      profileBirthInput.value    = profileData.birthdate || '';
+      profileGenderSelect.value  = profileData.gender || '';
+    }
+
+    profileSaveBtn.addEventListener('click', () => {
+      profileData.name      = profileNameInput.value.trim();
+      profileData.username  = profileUsernameInput.value.trim();
+      profileData.birthdate = profileBirthInput.value;
+      profileData.gender    = profileGenderSelect.value;
+      saveProfileInfo();
+      profileNoteEl.textContent =
+        "Сохранено ✔ Данные хранятся только у тебя на устройстве.";
     });
-  });
 
-  profileChipEl.addEventListener("click", () => {
-    changeScreen("profileScreen");
-  });
+    profileResetBtn.addEventListener('click', () => {
+      demoBalance = 1000;
+      saveBalance();
+      updateBalanceView();
+    });
 
-  const adviceList = [
-    {
-      text: "Демо-фишки — это тренажёр. Всё серьёзное всегда делаем вне игры и с расчётами.",
-      tag: "mindset"
-    },
-    {
-      text: "Лимит по времени важнее лимита по балансу. Вышел из сессии — мозг благодарит.",
-      tag: "тайминг"
-    },
-    {
-      text: "Rush про импульс, Plinko про терпение. В жизни всё наоборот: сначала думай, потом лети.",
-      tag: "ирония"
-    },
-    {
-      text: "Если демо даёт эйфорию, в реале будет боль. Сохраняй дистанцию и ироничный взгляд.",
-      tag: "рефлексия"
-    },
-    {
-      text: "OWY Play — это про вайб интерфейса и UX, а не про «сорвать куш». Это важно.",
-      tag: "принцип"
-    }
-  ];
+    profileTopupBtn.addEventListener('click', () => {
+      demoBalance += 500;
+      saveBalance();
+      updateBalanceView();
+      profileNoteEl.textContent = "Докинуло +500 OWY для теста 💸";
+    });
 
-  const adviceTextEl = document.getElementById("adviceText");
-  const adviceTagEl = document.getElementById("adviceTag");
+    profileFeedbackBtn.addEventListener('click', () => {
+      const link = "https://t.me/arhipovvv";
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(link);
+      } else {
+        window.open(link, "_blank");
+      }
+    });
 
-  function rotateAdvice() {
-    const item = adviceList[Math.floor(Math.random() * adviceList.length)];
-    adviceTextEl.textContent = item.text;
-    adviceTagEl.textContent = item.tag;
-  }
-
-  setInterval(rotateAdvice, 14000);
-
-  let rushRunning = false;
-  let rushCrashed = false;
-  let rushInterval = null;
-  let rushCurrent = 1.0;
-  let rushCrashPoint = 1.0;
-  let rushBetAmount = 0;
-  let rushMaxMult = 0;
-  const rushMultiplierEl = document.getElementById("rushMultiplier");
-  const rushStatusEl = document.getElementById("rushStatus");
-  const rushProgressEl = document.getElementById("rushProgress");
-  const rushBetInputEl = document.getElementById("rushBetInput");
-  const rushAutoInputEl = document.getElementById("rushAutoInput");
-  const rushStartBtn = document.getElementById("rushStartBtn");
-  const rushCashoutBtn = document.getElementById("rushCashoutBtn");
-  const rushBackBtn = document.getElementById("rushBackBtn");
-  const rushHistoryEl = document.getElementById("rushHistory");
-  const rushBetInfoEl = document.getElementById("rushBetInfo");
-  const rushMaxInfoEl = document.getElementById("rushMaxInfo");
-
-  function randomCrashPoint() {
-    const r = Math.random();
-    if (r < 0.5) return 1 + Math.random() * 2.5;
-    if (r < 0.8) return 2 + Math.random() * 4;
-    if (r < 0.95) return 4 + Math.random() * 6;
-    if (r < 0.99) return 8 + Math.random() * 10;
-    return 15 + Math.random() * 15;
-  }
-
-  function resetRushView() {
-    rushRunning = false;
-    rushCrashed = false;
-    rushCurrent = 1.0;
-    rushCrashPoint = 1.0;
-    rushProgressEl.style.width = "0%";
-    rushMultiplierEl.textContent = "1.00×";
-    rushMultiplierEl.classList.remove("running", "crashed");
-    rushStatusEl.textContent = "Нажми «Старт», чтобы начать раунд.";
-    rushStartBtn.disabled = false;
-    rushCashoutBtn.disabled = true;
-    rushBetInfoEl.textContent = "0";
-    rushMaxInfoEl.textContent = "0.00×";
-  }
-
-  function startRushRound() {
-    if (rushRunning) return;
-    let bet = parseFloat(rushBetInputEl.value.replace(",", "."));
-    if (isNaN(bet) || bet <= 0) {
-      showToast("Введи корректную ставку", "error");
-      return;
-    }
-    if (bet > balance) {
-      showToast("Недостаточно AWC на демо-балансе", "error");
-      return;
+    function setActiveTab(tab) {
+      if (tab === 'home') {
+        navHome.classList.add('active');
+        navProfile.classList.remove('active');
+        homeScreen.style.display    = '';
+        profileScreen.style.display = 'none';
+      } else {
+        navProfile.classList.add('active');
+        navHome.classList.remove('active');
+        homeScreen.style.display    = 'none';
+        profileScreen.style.display = '';
+      }
     }
 
-    rushRunning = true;
-    rushCrashed = false;
-    rushCurrent = 1.0;
-    rushCrashPoint = randomCrashPoint();
-    rushBetAmount = bet;
-    rushMaxMult = 0;
-    balance -= bet;
-    syncUI();
-    saveState();
+    navHome.addEventListener('click', () => setActiveTab('home'));
+    navProfile.addEventListener('click', () => setActiveTab('profile'));
 
-    rushBetInfoEl.textContent = bet.toString();
-    rushMaxInfoEl.textContent = "0.00×";
+    const hintPhrases = [
+      "🤖 OWY совет: попробуй Rush с небольшим автовыводом.",
+      "🤖 OWY совет: Plinko High риск — только если готов к боли.",
+      "🤖 OWY совет: начни с Mid Plinko и посмотри, как сыпет.",
+      "🤖 OWY совет: не забывай забрать раньше краша 😉",
+      "🤖 OWY совет: чередуй Rush и Plinko, чтобы прочувствовать математику."
+    ];
 
-    rushMultiplierEl.classList.add("running");
-    rushMultiplierEl.classList.remove("crashed");
-    rushStatusEl.textContent = "Раунд идёт. Можешь забрать демо-выигрыш в любой момент.";
-    rushStartBtn.disabled = true;
-    rushCashoutBtn.disabled = false;
+    function initPhrases() {
+      hintTextEl.textContent =
+        hintPhrases[Math.floor(Math.random() * hintPhrases.length)];
+    }
 
-    let progressMax = Math.min(25, rushCrashPoint);
-    rushProgressEl.style.width = "0%";
+    let rushTimer    = null;
+    let rushState    = "idle";
+    let currentMulti = 1.0;
+    let crashMulti   = 1.0;
+    let rushBet      = 0;
+    let autoCashout  = null;
+    let crashHistory = [];
 
-    if (rushInterval) clearInterval(rushInterval);
-    const stepMs = 80;
+    function updateRushHistory() {
+      if (!crashHistory.length) {
+        rushHistoryEl.textContent = "История: —";
+        return;
+      }
+      const last = crashHistory.slice(-10);
+      rushHistoryEl.textContent =
+        "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
+    }
 
-    rushInterval = setInterval(() => {
-      if (!rushRunning) return;
-      const growthBase = 1.008;
-      const growthExtra = 0.001 * Math.min(40, rushCurrent);
-      rushCurrent *= growthBase + growthExtra;
-      rushCurrent = parseFloat(rushCurrent.toFixed(2));
-      if (rushCurrent > rushMaxMult) rushMaxMult = rushCurrent;
-      rushMultiplierEl.textContent = rushCurrent.toFixed(2) + "×";
-      rushMaxInfoEl.textContent = rushMaxMult.toFixed(2) + "×";
+    function resetRushForNewGame() {
+      rushState   = "idle";
+      currentMulti = 1.0;
+      crashMulti   = 1.0;
+      rushBet      = 0;
+      rushMultEl.textContent   = "x1.00";
+      rushRocketEl.style.width = "0%";
+      rushStatusEl.textContent = "Выбери ставку и жми старт";
+      rushStartBtn.disabled    = false;
+      rushCashoutBtn.disabled  = true;
+      if (rushTimer) {
+        clearInterval(rushTimer);
+        rushTimer = null;
+      }
+    }
 
-      const progress = Math.min(100, (rushCurrent / progressMax) * 100);
-      rushProgressEl.style.width = progress + "%";
+    function openRush() {
+      rushOverlay.style.display = "flex";
+      resetRushForNewGame();
+    }
 
-      const auto = parseFloat(rushAutoInputEl.value.replace(",", "."));
-      if (!isNaN(auto) && auto > 1 && rushCurrent >= auto && rushRunning && !rushCrashed) {
-        handleRushCashout(true);
+    function closeRush() {
+      rushOverlay.style.display = "none";
+      resetRushForNewGame();
+    }
+
+    rushOpenBtn.addEventListener('click', openRush);
+    rushBackBtn.addEventListener('click', closeRush);
+
+    function generateCrashMultiplier() {
+      const r0 = Math.random();
+      const x2risk = rushX2RiskEl.checked;
+      const r = x2risk ? Math.pow(r0, 0.6) : r0;
+
+      if (r < 0.05)   return 1.0;
+      if (r < 0.25)   return +(Math.random() * (1.20 - 1.01) + 1.01).toFixed(2);
+      if (r < 0.60)   return +(Math.random() * (2.0  - 1.20) + 1.20).toFixed(2);
+      if (r < 0.80)   return +(Math.random() * (3.0  - 2.0)  + 2.0 ).toFixed(2);
+      if (r < 0.92)   return +(Math.random() * (5.0  - 3.0)  + 3.0 ).toFixed(2);
+      if (r < 0.98)   return +(Math.random() * (10.0 - 5.0)  + 5.0 ).toFixed(2);
+      if (r < 0.995)  return +(Math.random() * (20.0 - 10.0) + 10.0).toFixed(2);
+      return            +(Math.random() * (50.0 - 20.0) + 20.0).toFixed(2);
+    }
+
+    function calcStepDelta() {
+      if (currentMulti < 1.2) return 0.005;
+      if (currentMulti < 1.5) return 0.01;
+      if (currentMulti < 2.0) return 0.02;
+      if (currentMulti < 3.0) return 0.04;
+      if (currentMulti < 5.0) return 0.06;
+      if (currentMulti < 8.0) return 0.09;
+      return 0.12;
+    }
+
+    let rushStartLocked = false;
+
+    function startRush() {
+      if (rushState === "running" || rushStartLocked) return;
+      rushStartLocked = true;
+      setTimeout(() => { rushStartLocked = false; }, 500);
+
+      const betValue = parseInt(rushBetInput.value, 10);
+      if (isNaN(betValue) || betValue < 10) {
+        rushStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
         return;
       }
 
-      if (rushCurrent >= rushCrashPoint) {
-        handleRushCrash();
+      if (betValue > demoBalance) {
+        rushStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+        return;
       }
-    }, stepMs);
-  }
 
-  function stopRushInterval() {
-    if (rushInterval) {
-      clearInterval(rushInterval);
-      rushInterval = null;
-    }
-  }
+      resetRushForNewGame();
 
-  function handleRushCrash() {
-    if (!rushRunning) return;
-    rushRunning = false;
-    rushCrashed = true;
-    stopRushInterval();
-    rushMultiplierEl.classList.remove("running");
-    rushMultiplierEl.classList.add("crashed");
-    rushStatusEl.textContent = "Crash! Множитель рухнул. Ставка ушла в демо-небытие.";
-    rushStartBtn.disabled = false;
-    rushCashoutBtn.disabled = true;
-    addRushHistoryItem(rushCrashPoint, false);
-    saveState();
-  }
-
-  function handleRushCashout(auto) {
-    if (!rushRunning || rushCrashed) return;
-    rushRunning = false;
-    stopRushInterval();
-    const payout = Math.floor(rushBetAmount * rushCurrent);
-    balance += payout;
-    syncUI();
-    saveState();
-    rushMultiplierEl.classList.remove("running");
-    rushStatusEl.textContent = (auto ? "Авто-выход " : "Выход ") + "по " + rushCurrent.toFixed(2) + "× · +" + (payout - rushBetAmount) + " AWC демо.";
-    rushStartBtn.disabled = false;
-    rushCashoutBtn.disabled = true;
-    addRushHistoryItem(rushCurrent, true);
-  }
-
-  function addRushHistoryItem(multiplier, win) {
-    const span = document.createElement("span");
-    span.className = "history-item " + (win ? "win" : "loss");
-    span.textContent = multiplier.toFixed(2) + "×";
-    rushHistoryEl.prepend(span);
-    const items = Array.from(rushHistoryEl.children);
-    if (items.length > 18) {
-      items[items.length - 1].remove();
-    }
-  }
-
-  document.querySelectorAll("[data-rush-quick]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const factor = parseFloat(btn.getAttribute("data-rush-quick") || "0");
-      const value = Math.floor(balance * factor);
-      const bet = Math.max(1, value || balance);
-      rushBetInputEl.value = String(bet);
-    });
-  });
-
-  rushStartBtn.addEventListener("click", startRushRound);
-  rushCashoutBtn.addEventListener("click", () => handleRushCashout(false));
-  rushBackBtn.addEventListener("click", () => {
-    if (rushRunning) return;
-    resetRushView();
-    changeScreen("homeScreen");
-  });
-
-  const plinkoSlotsEl = document.getElementById("plinkoSlots");
-  const plinkoBallEl = document.getElementById("plinkoBall");
-  const plinkoDropBtn = document.getElementById("plinkoDropBtn");
-  const plinkoBackBtn = document.getElementById("plinkoBackBtn");
-  const plinkoBetInputEl = document.getElementById("plinkoBetInput");
-  const plinkoRiskButtons = document.querySelectorAll(".risk-btn");
-  const plinkoRiskLabelEl = document.getElementById("plinkoRiskLabel");
-  const plinkoRiskHintEl = document.getElementById("plinkoRiskHint");
-  const plinkoLastPayoutEl = document.getElementById("plinkoLastPayout");
-  const plinkoHistoryEl = document.getElementById("plinkoHistory");
-
-  const plinkoConfigs = {
-    low: {
-      slots: [0.5, 0.7, 0.9, 1.1, 1.4, 1.8, 1.4, 1.1, 0.9, 0.7, 0.5],
-      label: "Риск: Low",
-      hint: "Low: плавный профиль, меньше нулей, максимум до ~5x.",
-      weights: [1, 2, 3, 4, 6, 7, 6, 4, 3, 2, 1]
-    },
-    mid: {
-      slots: [0, 0.5, 0.8, 1.2, 1.8, 3, 1.8, 1.2, 0.8, 0.5, 0],
-      label: "Риск: Mid",
-      hint: "Mid: баланс нулей и x3. Иногда очень приятно, иногда больно.",
-      weights: [1, 2, 4, 5, 7, 8, 7, 5, 4, 2, 1]
-    },
-    high: {
-      slots: [0, 0, 0.5, 1, 3, 8, 3, 1, 0.5, 0, 0],
-      label: "Риск: High",
-      hint: "High: много нулей, но шанс попасть в x8. Чистый RNG вайб.",
-      weights: [2, 3, 4, 6, 7, 8, 7, 6, 4, 3, 2]
-    }
-  };
-
-  let currentRisk = "low";
-  let plinkoAnimating = false;
-
-  function renderPlinkoSlots() {
-    const config = plinkoConfigs[currentRisk];
-    plinkoSlotsEl.innerHTML = "";
-    config.slots.forEach(mult => {
-      const slot = document.createElement("div");
-      slot.className = "plinko-slot";
-      const span = document.createElement("span");
-      span.textContent = mult === 0 ? "×0" : mult.toFixed(1) + "×";
-      slot.appendChild(span);
-      plinkoSlotsEl.appendChild(slot);
-    });
-  }
-
-  function chooseWeightedIndex(weights) {
-    const total = weights.reduce((a, b) => a + b, 0);
-    let r = Math.random() * total;
-    for (let i = 0; i < weights.length; i++) {
-      r -= weights[i];
-      if (r <= 0) return i;
-    }
-    return weights.length - 1;
-  }
-
-  function animatePlinko(resultIndex, multiplier, bet) {
-    if (plinkoAnimating) return;
-    plinkoAnimating = true;
-    plinkoDropBtn.disabled = true;
-
-    const boardRect = document.querySelector(".plinko-board").getBoundingClientRect();
-    const slotsRect = plinkoSlotsEl.getBoundingClientRect();
-    const slotWidth = slotsRect.width / plinkoConfigs[currentRisk].slots.length;
-    const targetX = slotsRect.left + slotWidth * (resultIndex + 0.5);
-    const startX = boardRect.left + boardRect.width / 2;
-    const deltaX = targetX - startX;
-
-    let steps = 7;
-    let currentStep = 0;
-    let currentY = 22;
-    plinkoBallEl.style.opacity = "1";
-    plinkoBallEl.style.left = "50%";
-    plinkoBallEl.style.top = currentY + "px";
-
-    const maxY = 120;
-    const stepY = (maxY - currentY) / steps;
-
-    const interval = setInterval(() => {
-      currentStep++;
-      const progress = currentStep / steps;
-      const x = startX + deltaX * progress;
-      currentY += stepY;
-      const boardLeft = boardRect.left;
-      plinkoBallEl.style.left = (x - boardLeft) + "px";
-      plinkoBallEl.style.top = currentY + "px";
-      if (currentStep >= steps) {
-        clearInterval(interval);
-        setTimeout(() => {
-          plinkoBallEl.style.opacity = "0";
-          finishPlinko(multiplier, bet, resultIndex);
-        }, 140);
-      }
-    }, 80);
-  }
-
-  function finishPlinko(multiplier, bet, index) {
-    const slots = plinkoSlotsEl.querySelectorAll(".plinko-slot");
-    slots.forEach(s => s.classList.remove("win"));
-    if (slots[index]) slots[index].classList.add("win");
-
-    let payout = Math.floor(bet * multiplier);
-    if (multiplier === 0) {
-      plinkoLastPayoutEl.textContent = "Последний множитель: ×0 · -" + bet + " AWC";
-      addPlinkoHistoryItem(multiplier, false);
-    } else {
-      const diff = payout - bet;
-      plinkoLastPayoutEl.textContent = "Последний множитель: " + multiplier.toFixed(1) + "× · +" + diff + " AWC";
-      balance += payout;
-      syncUI();
-      saveState();
-      addPlinkoHistoryItem(multiplier, true);
-    }
-    plinkoAnimating = false;
-    plinkoDropBtn.disabled = false;
-  }
-
-  function addPlinkoHistoryItem(multiplier, win) {
-    const span = document.createElement("span");
-    span.className = "history-item " + (win ? "win" : "loss");
-    span.textContent = multiplier === 0 ? "×0" : multiplier.toFixed(1) + "×";
-    plinkoHistoryEl.prepend(span);
-    const items = Array.from(plinkoHistoryEl.children);
-    if (items.length > 18) {
-      items[items.length - 1].remove();
-    }
-  }
-
-  plinkoRiskButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (plinkoAnimating) return;
-      plinkoRiskButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentRisk = btn.getAttribute("data-risk") || "low";
-      const cfg = plinkoConfigs[currentRisk];
-      plinkoRiskLabelEl.textContent = cfg.label;
-      plinkoRiskHintEl.textContent = cfg.hint;
-      renderPlinkoSlots();
-    });
-  });
-
-  function startPlinkoRound() {
-    if (plinkoAnimating) return;
-    let bet = parseFloat(plinkoBetInputEl.value.replace(",", "."));
-    if (isNaN(bet) || bet <= 0) {
-      showToast("Введи корректную ставку", "error");
-      return;
-    }
-    if (bet > balance) {
-      showToast("Недостаточно AWC на демо-балансе", "error");
-      return;
-    }
-
-    balance -= bet;
-    syncUI();
-    saveState();
-
-    const cfg = plinkoConfigs[currentRisk];
-    const idx = chooseWeightedIndex(cfg.weights);
-    const mult = cfg.slots[idx];
-    animatePlinko(idx, mult, bet);
-  }
-
-  plinkoDropBtn.addEventListener("click", startPlinkoRound);
-  plinkoBackBtn.addEventListener("click", () => {
-    if (plinkoAnimating) return;
-    changeScreen("homeScreen");
-  });
-
-  const supportBtn = document.getElementById("supportBtn");
-  const resetBalanceBtn = document.getElementById("resetBalanceBtn");
-  const refillBalanceBtn = document.getElementById("refillBalanceBtn");
-
-  supportBtn.addEventListener("click", () => {
-    try {
-      if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.openTelegramLink("https://t.me/arhipovvv");
+      const isAutoOn   = rushAutoEnabled && rushAutoEnabled.checked;
+      const autoValRaw = parseFloat(rushAutoInput.value);
+      if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
+        autoCashout = autoValRaw;
       } else {
-        window.open("https://t.me/arhipovvv", "_blank");
+        autoCashout = null;
       }
-    } catch (e) {
-      window.open("https://t.me/arhipovvv", "_blank");
+
+      rushState = "running";
+      rushBet   = betValue;
+      demoBalance -= rushBet;
+      saveBalance();
+      updateBalanceView();
+
+      stats.rushPlays += 1;
+      saveStats();
+      updateStatsView();
+
+      rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
+      crashMulti = generateCrashMultiplier();
+      rushCashoutBtn.disabled = false;
+      rushStartBtn.disabled   = true;
+
+      rushTimer = setInterval(() => {
+        if (rushState !== "running") return;
+
+        currentMulti += calcStepDelta();
+
+        rushMultEl.textContent = "x" + currentMulti.toFixed(2);
+        const progress = Math.min(currentMulti / 10, 1) * 100;
+        rushRocketEl.style.width = progress + "%";
+
+        if (autoCashout && currentMulti >= autoCashout) {
+          cashoutRush();
+          return;
+        }
+
+        if (currentMulti >= crashMulti) {
+          if (rushTimer) {
+            clearInterval(rushTimer);
+            rushTimer = null;
+          }
+
+          crashHistory.push(crashMulti);
+          updateRushHistory();
+
+          if (crashMulti > stats.bestMulti) {
+            stats.bestMulti = crashMulti;
+            saveStats();
+            updateStatsView();
+          }
+
+          rushState = "idle";
+          rushCashoutBtn.disabled = true;
+          rushStartBtn.disabled   = false;
+          rushStatusEl.textContent =
+            `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+          vibrate(90);
+        }
+      }, 70);
     }
-  });
 
-  resetBalanceBtn.addEventListener("click", () => {
-    balance = DEFAULTS.balance;
-    xp = 0;
-    rank = DEFAULTS.rank;
-    syncUI();
-    saveState();
-    showToast("Демо-баланс и XP сброшены", "ok");
-  });
+    function cashoutRush() {
+      if (rushState !== "running") return;
 
-  refillBalanceBtn.addEventListener("click", () => {
-    balance += 1000;
-    syncUI();
-    saveState();
-    showToast("+1000 AWC на демо-баланс", "ok");
-  });
-
-  if (window.Telegram && window.Telegram.WebApp) {
-    try {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-      const theme = window.Telegram.WebApp.themeParams || {};
-      if (theme.bg_color) {
+      rushState = "idle";
+      if (rushTimer) {
+        clearInterval(rushTimer);
+        rushTimer = null;
       }
-      if (window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-        const user = window.Telegram.WebApp.initDataUnsafe.user;
-        const nameParts = [user.first_name, user.last_name].filter(Boolean);
-        playerName = nameParts.join(" ") || DEFAULTS.name;
-      }
-    } catch (e) {}
-  }
+      rushCashoutBtn.disabled = true;
+      rushStartBtn.disabled   = false;
 
-  loadState();
-  renderPlinkoSlots();
-  rotateAdvice();
-</script>
+      const winAmount = Math.floor(rushBet * currentMulti);
+      demoBalance += winAmount;
+      saveBalance();
+      updateBalanceView();
+
+      crashHistory.push(crashMulti);
+      updateRushHistory();
+
+      if (currentMulti > stats.bestMulti) {
+        stats.bestMulti = currentMulti;
+      }
+      saveStats();
+      updateStatsView();
+
+      rushStatusEl.textContent =
+        `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+      vibrate(70);
+    }
+
+    rushStartBtn.addEventListener('click', startRush);
+    rushCashoutBtn.addEventListener('click', cashoutRush);
+
+    const PLINKO_COLS = 9;
+    const PLINKO_ROWS = 16;
+
+    const PLINKO_CONFIGS = {
+      low:  { multipliers: [1.30, 1.15, 1.08, 1.03, 0.98, 1.03, 1.08, 1.15, 1.30] },
+      mid:  { multipliers: [2.50, 1.70, 1.20, 0.90, 0.30, 0.90, 1.20, 1.70, 2.50] },
+      high: { multipliers: [5.00, 3.00, 1.80, 0.70, 0.20, 0.70, 1.80, 3.00, 5.00] }
+    };
+
+    let plinkoSelectedRisk = "mid";
+    let plinkoHistory = [];
+
+    function updatePlinkoHistory() {
+      if (!plinkoHistory.length) {
+        plinkoHistoryEl.textContent = "История: —";
+        return;
+      }
+      const last = plinkoHistory.slice(-10);
+      plinkoHistoryEl.textContent =
+        "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
+    }
+
+    function renderPlinkoPegs() {
+      plinkoPegsLayer.innerHTML = "";
+      for (let r = 0; r < PLINKO_ROWS; r++) {
+        const yPerc = 5 + (r / (PLINKO_ROWS - 1)) * 80;
+        const isOdd  = r % 2 === 1;
+        const count  = isOdd ? PLINKO_COLS - 1 : PLINKO_COLS;
+        const offset = isOdd ? 0.5 : 0;
+
+        for (let i = 0; i < count; i++) {
+          const peg = document.createElement("div");
+          peg.className = "plinko-peg";
+          const colPos   = i + offset;
+          const maxIndex = PLINKO_COLS - 1;
+          const xPerc    = (colPos / maxIndex) * 100;
+          peg.style.top  = yPerc + "%";
+          peg.style.left = xPerc + "%";
+          plinkoPegsLayer.appendChild(peg);
+        }
+      }
+    }
+
+    function renderPlinkoConfig() {
+      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+      plinkoMultsRow.innerHTML = "";
+
+      config.multipliers.forEach(m => {
+        const slot = document.createElement("div");
+        slot.className = "plinko-slot";
+        slot.textContent = "x" + m.toFixed(2);
+        plinkoMultsRow.appendChild(slot);
+      });
+
+      plinkoBoardEl.classList.remove("low", "mid", "high");
+      plinkoBoardEl.classList.add(plinkoSelectedRisk);
+    }
+
+    function generatePlinkoPath(cols, rows) {
+      let col = Math.floor(cols / 2);
+      const path = [];
+      for (let r = 0; r <= rows; r++) {
+        path.push({ col, row: r });
+        if (r === rows) break;
+
+        const rnd = Math.random();
+        let dir = 0;
+        if (col <= 1) {
+          if (rnd < 0.6)      dir = 1;
+          else if (rnd < 0.8) dir = 0;
+          else                dir = -1;
+        } else if (col >= cols - 2) {
+          if (rnd < 0.6)      dir = -1;
+          else if (rnd < 0.8) dir = 0;
+          else                dir = 1;
+        } else {
+          if (rnd < 0.3)      dir = -1;
+          else if (rnd > 0.7) dir = 1;
+          else                dir = 0;
+        }
+        col += dir;
+        if (col < 0) col = 0;
+        if (col > cols - 1) col = cols - 1;
+      }
+      return path;
+    }
+
+    let plinkoStartLocked = false;
+
+    function playPlinko() {
+      if (plinkoStartLocked) return;
+      plinkoStartLocked = true;
+      setTimeout(() => { plinkoStartLocked = false; }, 400);
+
+      const bet = parseInt(plinkoBetInput.value, 10);
+      if (isNaN(bet) || bet < 10) {
+        plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+        return;
+      }
+      if (bet > demoBalance) {
+        plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+        return;
+      }
+
+      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+      const slots  = plinkoMultsRow.querySelectorAll('.plinko-slot');
+      if (!config || !slots.length || slots.length !== config.multipliers.length) return;
+
+      demoBalance -= bet;
+      saveBalance();
+      updateBalanceView();
+
+      stats.plinkoPlays += 1;
+      saveStats();
+      updateStatsView();
+
+      const layerRect   = plinkoBallsLayer.getBoundingClientRect();
+      const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
+      const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
+      const slotY       = slotRects[0].top - layerRect.top - 8;
+
+      const colsCount  = config.multipliers.length;
+      const path       = generatePlinkoPath(colsCount, PLINKO_ROWS);
+      const finalCol   = path[path.length - 1].col;
+      const multiplier = config.multipliers[finalCol];
+
+      slots.forEach(s => s.classList.remove('active'));
+
+      const ball = document.createElement('div');
+      ball.className = 'plinko-ball';
+      plinkoBallsLayer.appendChild(ball);
+
+      const startX = layerRect.width / 2;
+      ball.style.left = (startX - 5) + "px";
+      ball.style.top  = "0px";
+
+      plinkoStatusEl.textContent = "Шарик падает... 🎯";
+
+      const totalRows  = PLINKO_ROWS;
+      const stepDelay  = 190;
+
+      path.forEach((step, index) => {
+        const rowRatio = step.row / totalRows;
+        const y = slotY * rowRatio;
+        const colIndex = step.col;
+        const x = slotCenters[colIndex];
+
+        setTimeout(() => {
+          ball.style.top  = y + "px";
+          ball.style.left = (x - 5) + "px";
+        }, stepDelay * index);
+      });
+
+      setTimeout(() => {
+        if (slots[finalCol]) {
+          slots[finalCol].classList.add('active');
+        }
+
+        const winAmount = Math.floor(bet * multiplier);
+        demoBalance += winAmount;
+        saveBalance();
+        updateBalanceView();
+
+        plinkoHistory.push(multiplier);
+        updatePlinkoHistory();
+
+        if (multiplier > stats.bestMulti) {
+          stats.bestMulti = multiplier;
+        }
+        saveStats();
+        updateStatsView();
+
+        if (multiplier < 1) {
+          plinkoStatusEl.textContent =
+            `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
+        } else {
+          plinkoStatusEl.textContent =
+            `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+        }
+        vibrate(60);
+        setTimeout(() => ball.remove(), 1000);
+      }, stepDelay * path.length);
+    }
+
+    plinkoRiskBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
+        btn.classList.add('plinko-risk-active');
+        plinkoSelectedRisk = btn.dataset.risk || "mid";
+        renderPlinkoConfig();
+      });
+    });
+
+    function openPlinko() {
+      plinkoOverlay.style.display = "flex";
+      plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
+    }
+
+    function closePlinko() {
+      plinkoOverlay.style.display = "none";
+      plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
+    }
+
+    plinkoOpenBtn.addEventListener('click', openPlinko);
+    plinkoBackBtn.addEventListener('click', closePlinko);
+    plinkoStartBtn.addEventListener('click', playPlinko);
+
+    loadBalance();
+    loadProfileInfo();
+    loadStats();
+    initProfile();
+    updateBalanceView();
+    updateStatsView();
+    updateRushHistory();
+    updatePlinkoHistory();
+    setActiveTab('home');
+    renderPlinkoPegs();
+    renderPlinkoConfig();
+    initPhrases();
+  </script>
 </body>
 </html>
