@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>OWY Play</title>
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <style>
     * {
@@ -22,7 +20,12 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+      transition: background 0.25s ease;
+    }
+
+    body.theme-neon {
+      background: radial-gradient(circle at top, #061318, #040308 60%, #020105);
     }
 
     .app {
@@ -33,21 +36,52 @@
       min-height: 100vh;
       border-left: 1px solid #14151a;
       border-right: 1px solid #14151a;
+      position: relative;
+    }
+
+    body.theme-neon .app {
+      border-color: rgba(29,219,111,0.35);
+      box-shadow: 0 0 20px rgba(29,219,111,0.2);
+    }
+
+    /* Splash */
+    .splash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, #111821, #05060a 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .splash-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 22px;
+    }
+    .splash-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #1ddb6f;
+      box-shadow: 0 0 16px rgba(29,219,111,0.9);
+    }
+    .splash-sub {
+      font-size: 12px;
+      color: #9ea2b0;
     }
 
     /* Верхний бар */
     .header {
-      padding: 14px 18px 8px;
+      padding: 16px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid #14151a;
-    }
-
-    .logo-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
     }
 
     .logo {
@@ -66,11 +100,6 @@
       box-shadow: 0 0 12px rgba(29, 219, 111, 0.8);
     }
 
-    .demo-label {
-      font-size: 11px;
-      color: #888e99;
-    }
-
     .balance {
       text-align: right;
     }
@@ -85,46 +114,87 @@
       font-weight: 600;
     }
 
-    /* контент и экраны */
+    .balance-demo-tag {
+      font-size: 10px;
+      color: #5f6370;
+    }
+
+    /* Основной контент */
     .content {
       flex: 1;
-      padding: 10px 18px 80px;
-    }
-
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
+      padding: 14px 18px 80px;
     }
 
     .section-title {
       font-size: 14px;
       font-weight: 600;
-      margin: 4px 0 8px;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 11px;
+      color: #9ea2b0;
+      margin-bottom: 6px;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1ddb6f;
+    }
+
+    .mood-text {
+      font-size: 11px;
+      color: #7f8491;
+      margin-bottom: 10px;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: #9ea2b0;
+      margin: 6px 0 12px;
     }
 
     .cards {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
     .card {
-      border-radius: 16px;
-      padding: 12px 14px;
+      border-radius: 18px;
+      padding: 18px 16px;
       background: radial-gradient(circle at top left, #182728, #090b0f);
       border: 1px solid rgba(255, 255, 255, 0.02);
       box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+      min-height: 120px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease;
+    }
+
+    body.theme-neon .card {
+      background: radial-gradient(circle at top left, #10231e, #050309);
+      border-color: rgba(29,219,111,0.18);
+    }
+
+    .card:active {
+      transform: scale(0.98);
+      box-shadow: 0 8px 20px rgba(29,219,111,0.35);
+      border-color: rgba(29,219,111,0.4);
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .chip {
@@ -134,25 +204,25 @@
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.08);
       color: #cfd2de;
-      white-space: nowrap;
     }
 
     .card-title {
       font-size: 16px;
       font-weight: 600;
+      margin-bottom: 2px;
     }
 
     .card-sub {
       font-size: 12px;
       color: #9ea2b0;
-      margin-top: 2px;
+      margin-bottom: 8px;
     }
 
     .card-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 4px;
     }
 
     .btn {
@@ -163,8 +233,8 @@
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
-      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.1s ease,
-        opacity 0.08s ease;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.1s ease;
+      touch-action: manipulation;
     }
 
     .btn-primary {
@@ -187,7 +257,7 @@
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
-      margin-left: 10px;
+      margin-top: 4px;
     }
 
     .tag {
@@ -198,33 +268,168 @@
       color: #9ea2b0;
     }
 
-    /* OWY совет внизу главной */
-    .tip-wrap {
-      margin-top: 18px;
-      padding-top: 8px;
-      border-top: 1px solid #14151a;
+    /* Профиль */
+    .profile-card {
+      border-radius: 16px;
+      padding: 16px 14px 16px;
+      background: radial-gradient(circle at top left, #151923, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+      margin-top: 10px;
     }
 
-    .tip-label {
-      font-size: 11px;
+    body.theme-neon .profile-card {
+      background: radial-gradient(circle at top left, #101725, #05030a);
+      border-color: rgba(29,219,111,0.25);
+    }
+
+    .profile-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #cfd2de;
+    }
+
+    .profile-line span:first-child {
       color: #8c8f9a;
+    }
+
+    .profile-balance {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .rank-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0 8px;
+      font-size: 12px;
+    }
+
+    .rank-badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(29,219,111,0.1);
+      border: 1px solid rgba(29,219,111,0.5);
+      color: #c2ffe0;
+      font-size: 11px;
+    }
+
+    .xp-bar {
+      margin-top: 4px;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1ddb6f, #16a451);
+      transition: width 0.2s ease;
+    }
+
+    .profile-section-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 14px 0 8px;
+    }
+
+    .profile-section-title .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1ddb6f;
+    }
+
+    .profile-field {
+      margin-bottom: 10px;
+    }
+
+    .profile-field label {
+      font-size: 12px;
+      color: #9ea2b0;
+      display: block;
       margin-bottom: 4px;
     }
 
-    .tip-bubble {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.03);
-      font-size: 12px;
-      color: #d8dde8;
-      min-height: 24px;
+    .profile-field input,
+    .profile-field select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #20232b;
+      background: #080a0f;
+      color: #f5f5f5;
+      font-size: 14px;
+      outline: none;
     }
 
-    .tip-bubble span:first-child {
-      font-size: 16px;
+    .profile-field input:focus,
+    .profile-field select:focus {
+      border-color: #1ddb6f;
+    }
+
+    .profile-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .profile-note {
+      font-size: 11px;
+      color: #7f8491;
+      margin-top: 6px;
+    }
+
+    .stats-row {
+      font-size: 11px;
+      color: #9ea2b0;
+      margin-top: 4px;
+    }
+
+    .luck-bar {
+      margin-top: 6px;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .luck-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ffd54f, #ff6f00);
+      transition: width 0.2s ease;
+    }
+
+    .missions-list {
+      font-size: 11px;
+      color: #9ea2b0;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .missions-list li {
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mission-done {
+      color: #1ddb6f;
     }
 
     /* Нижнее меню */
@@ -236,7 +441,7 @@
       width: 100%;
       max-width: 420px;
       padding: 6px 10px 10px;
-      background: linear-gradient(to top, #05060a, rgba(5, 6, 10, 0.9), transparent);
+      background: linear-gradient(to top, #05060a, rgba(5, 6, 10, 0.85), transparent);
     }
 
     .bottom-nav-inner {
@@ -276,7 +481,7 @@
       font-size: 10px;
     }
 
-    /* --- Rush overlay --- */
+    /* Общий overlay для игр */
     .overlay {
       position: fixed;
       inset: 0;
@@ -305,13 +510,10 @@
       font-weight: 600;
     }
 
+    /* Rush UI */
     .rush-multiplier {
       font-size: 32px;
       font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .rush-track {
       margin-bottom: 12px;
     }
 
@@ -339,8 +541,8 @@
     .rush-status {
       font-size: 12px;
       color: #9ea2b0;
-      margin-bottom: 8px;
-      min-height: 30px;
+      margin: 12px 0;
+      min-height: 32px;
     }
 
     .rush-history {
@@ -350,10 +552,8 @@
       min-height: 14px;
     }
 
-    .rush-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .rush-input {
+      margin-bottom: 10px;
     }
 
     .rush-input label {
@@ -378,21 +578,11 @@
       border-color: #1ddb6f;
     }
 
-    .rush-auto-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .rush-auto-row input[type='checkbox'] {
-      width: 16px;
-      height: 16px;
-      accent-color: #1ddb6f;
-    }
-
     .rush-buttons {
       display: flex;
       gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
     }
 
     #rush-cashout[disabled] {
@@ -400,20 +590,89 @@
       cursor: default;
     }
 
-    /* Plinko overlay */
-    .plinko-board-wrap {
-      margin-top: 6px;
-      margin-bottom: 10px;
+    .auto-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-bottom: 6px;
+      user-select: none;
     }
 
+    .auto-checkbox input {
+      display: none;
+    }
+
+    .checkmark {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      flex-shrink: 0;
+      border-radius: 4px;
+      border: 1px solid #3a3d44;
+      background: #080a0f;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .auto-checkbox input:checked + .checkmark {
+      border-color: #1ddb6f;
+      background: #1ddb6f;
+      box-shadow: 0 0 10px rgba(29, 219, 111, 0.6);
+    }
+
+    .auto-checkbox input:checked + .checkmark::after {
+      content: "✓";
+      position: absolute;
+      left: 3px;
+      top: -1px;
+      font-size: 13px;
+      color: #05060a;
+      font-weight: bold;
+    }
+
+    .auto-label-text {
+      font-size: 12px;
+      color: #cfd2de;
+    }
+
+    .rush-x2-label {
+      font-size: 11px;
+      color: #ffb74d;
+    }
+
+    /* Plinko UI */
     .plinko-board {
       position: relative;
-      width: 100%;
-      height: 260px;
       border-radius: 16px;
-      background: radial-gradient(circle at top, #1a2730, #05060a);
-      border: 1px solid #14151a;
+      padding: 12px 8px 20px;
+      background: radial-gradient(circle at top, #172c24, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+      margin-bottom: 10px;
+      height: 340px;
       overflow: hidden;
+    }
+
+    .plinko-board.low {
+      background: radial-gradient(circle at top, #1a2730, #090b0f);
+    }
+
+    .plinko-board.mid {
+      background: radial-gradient(circle at top, #172c24, #090b0f);
+    }
+
+    .plinko-board.high {
+      background: radial-gradient(circle at top, #2b181d, #090b0f);
+    }
+
+    .plinko-pegs-layer {
+      position: absolute;
+      inset: 10px 10px 50px 10px;
+      pointer-events: none;
+      z-index: 1;
     }
 
     .plinko-peg {
@@ -421,39 +680,15 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #263544;
+      background: #2f3b44;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
     }
 
-    .plinko-slot-labels {
+    .plinko-balls-layer {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 4px 6px;
-      font-size: 10px;
-    }
-
-    .plinko-slot-labels span {
-      flex: 1;
-      text-align: center;
-      border-radius: 6px;
-      padding: 2px 0;
-      margin: 0 1px;
-      background: rgba(0, 0, 0, 0.55);
-    }
-
-    .slot-low {
-      color: #f2c14f;
-    }
-
-    .slot-mid {
-      color: #58e07b;
-    }
-
-    .slot-high {
-      color: #f36f6f;
+      inset: 0 0 40px 0;
+      pointer-events: none;
+      z-index: 2;
     }
 
     .plinko-ball {
@@ -462,205 +697,94 @@
       height: 10px;
       border-radius: 50%;
       background: #1ddb6f;
-      box-shadow: 0 0 10px rgba(29, 219, 111, 0.9);
-      transform: translate(-50%, -50%);
+      box-shadow: 0 0 8px rgba(29, 219, 111, 0.9);
+      top: 0;
+      left: 50%;
+      margin-left: -5px;
+      transition: top 0.12s linear, left 0.12s linear;
     }
 
-    .plinko-controls {
+    .plinko-slots {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
+      justify-content: space-between;
+      gap: 4px;
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 6px;
+      z-index: 3;
     }
 
-    .plinko-risk-row {
-      display: flex;
-      gap: 6px;
-    }
-
-    .pill-btn {
+    .plinko-slot {
       flex: 1;
+      min-width: 24px;
+      padding: 3px 2px;
       border-radius: 999px;
-      border: 1px solid #273042;
-      background: #080a10;
-      color: #cfd2de;
-      font-size: 11px;
-      padding: 6px 0;
+      background: #050709;
+      border: 1px solid #20232b;
       text-align: center;
-      cursor: pointer;
+      font-size: 10px;
+      color: #9ea2b0;
     }
 
-    .pill-btn.active {
+    .plinko-slot.active {
+      background: linear-gradient(135deg, #1ddb6f, #16a451);
       border-color: #1ddb6f;
-      background: rgba(29, 219, 111, 0.12);
+      color: #05060a;
+      box-shadow: 0 0 14px rgba(29, 219, 111, 0.8);
+      font-weight: 600;
+    }
+
+    .plinko-risk-active {
+      background: rgba(29, 219, 111, 0.15);
+      border-color: #1ddb6f;
       color: #e7fdf0;
     }
 
-    .plinko-status {
-      font-size: 12px;
-      color: #9ea2b0;
-      min-height: 28px;
-    }
-
-    /* Профиль */
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 4px;
-      margin-bottom: 14px;
-    }
-
-    .profile-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 20%, #1ddb6f, #0a1516);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 18px;
-    }
-
-    .profile-name {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .profile-username {
-      font-size: 12px;
-      color: #8c8f9a;
-    }
-
-    .profile-balance {
-      margin-left: auto;
-      text-align: right;
-      font-size: 13px;
-    }
-
-    .profile-balance .label {
-      font-size: 11px;
-      color: #8c8f9a;
-    }
-
-    .profile-balance .value {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .profile-card {
-      margin-top: 8px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(12, 14, 20, 0.95);
-      border: 1px solid #14151a;
-    }
-
-    .profile-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-      font-size: 13px;
-    }
-
-    .profile-row span:first-child {
-      color: #8c8f9a;
-      font-size: 12px;
-    }
-
-    .rank-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .rank-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #c0c4d4;
-    }
-
-    .rank-bronze {
-      background: #c58b55;
-    }
-
-    .rank-silver {
-      background: #bfc6d6;
-    }
-
-    .rank-gold {
-      background: #f2c14f;
-    }
-
-    .rank-plat {
-      background: #74e0ff;
-    }
-
-    .rank-legend {
-      background: #ff7bd5;
-    }
-
-    .profile-note {
-      font-size: 11px;
-      color: #9ea2b0;
-      margin-top: 4px;
-      line-height: 1.35;
-    }
-
-    .rank-hint {
+    .plinko-history {
       font-size: 11px;
       color: #7f8491;
-      margin-top: 2px;
-    }
-
-    .hint-link {
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    .support-card {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(10, 12, 18, 0.95);
-      border: 1px solid #14151a;
-      font-size: 12px;
-      color: #cfd2de;
-    }
-
-    .support-card a {
-      color: #1ddb6f;
-      text-decoration: none;
-    }
-
-    .support-card a:hover {
-      text-decoration: underline;
+      margin-top: 4px;
+      min-height: 14px;
     }
   </style>
 </head>
 <body>
   <div class="app">
+    <!-- Splash -->
+    <div class="splash" id="splash">
+      <div class="splash-logo">
+        <div class="splash-dot"></div>
+        <span>OWY Play</span>
+      </div>
+      <div class="splash-sub">Загрузка демо-режима...</div>
+    </div>
+
     <header class="header">
-      <div class="logo-wrap">
-        <div class="logo">
-          <div class="logo-dot"></div>
-          <span>OWY Play</span>
-        </div>
-        <div class="demo-label">Demo режим · без реальных денег</div>
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span>OWY Play</span>
       </div>
       <div class="balance">
         <div class="balance-label">Баланс</div>
-        <div class="balance-value" id="header-balance">1 000 OWY</div>
+        <div class="balance-value">1 000 OWY</div>
+        <div class="balance-demo-tag">Demo режим • без реальных денег</div>
       </div>
     </header>
 
     <main class="content">
-      <!-- Главная -->
-      <section id="screen-home" class="screen active">
+      <!-- ГЛАВНЫЙ ЭКРАН -->
+      <section id="home-screen">
+        <div class="pill">
+          <div class="pill-dot"></div>
+          <span>Играй. Рискуй. Побеждай.</span>
+        </div>
+        <div class="mood-text" id="mood-text">Сегодня удача на твоей стороне.</div>
+
         <div class="section-title">Рекомендуем сейчас</div>
+        <div class="hint-text" id="hint-text">
+          🤖 OWY совет: попробуй Rush с небольшим автовыводом.
+        </div>
 
         <div class="cards">
           <!-- Rush -->
@@ -699,65 +823,100 @@
             </div>
           </div>
         </div>
-
-        <!-- OWY совет снизу -->
-        <div class="tip-wrap">
-          <div class="tip-label">ОВY совет</div>
-          <div class="tip-bubble">
-            <span>🤖</span>
-            <span id="owy-tip-text">Plinko High риск — только если готов к боли.</span>
-          </div>
-        </div>
       </section>
 
-      <!-- Профиль -->
-      <section id="screen-profile" class="screen">
-        <div class="profile-header">
-          <div class="profile-avatar" id="profile-avatar">OP</div>
-          <div>
-            <div class="profile-name" id="profile-name">OWY Player</div>
-            <div class="profile-username" id="profile-username">@demo</div>
-          </div>
-          <div class="profile-balance">
-            <div class="label">Баланс</div>
-            <div class="value" id="profile-balance">1 000 OWY</div>
-          </div>
-        </div>
-
+      <!-- ПРОФИЛЬ -->
+      <section id="profile-screen" style="display:none;">
+        <div class="section-title">Личный профиль</div>
         <div class="profile-card">
-          <div class="profile-row">
-            <span>Ранг</span>
-            <span class="rank-label">
-              <span class="rank-dot" id="rank-dot"></span>
-              <span id="rank-name">Bronze</span>
-            </span>
-          </div>
-          <div class="profile-row">
-            <span>XP</span>
-            <span id="xp-label">0 / 100</span>
-          </div>
-          <div class="profile-note">
-            Получай XP за игры в Rush и Plinko. Чем больше играешь, тем выше ранг и статус в OWY.
-          </div>
-          <div class="rank-hint">
-            Ранги: Bronze → Silver → Gold → Platinum → OWY Legend.
-            <span class="hint-link" id="rank-hint-link">Как это работает?</span>
-          </div>
-        </div>
-
-        <div class="profile-card">
-          <div class="profile-row">
-            <span>ID в Telegram</span>
+          <div class="profile-line">
+            <span>OWY ID</span>
             <span id="profile-id">—</span>
           </div>
-          <div class="profile-note">
-            В будущем профиль будет привязан к твоему OWY кошельку и реальному токену OWY Coin.
+          <div class="profile-line">
+            <span>Баланс</span>
+            <span class="profile-balance" id="profile-balance">1 000 OWY</span>
           </div>
-        </div>
 
-        <div class="support-card">
-          Нашёл баг, идею или странное поведение игр? Пиши прямо в поддержку:<br />
-          <a href="https://t.me/arhipovvv" target="_blank">@arhipovvv</a>
+          <div class="rank-row">
+            <span>Ранг: <span id="rank-label">BRONZE I</span></span>
+            <span id="xp-label">0 / 100 XP</span>
+          </div>
+          <div class="xp-bar">
+            <div class="xp-bar-fill" id="xp-bar-fill"></div>
+          </div>
+
+          <div class="stats-row" id="stats-row">
+            Rush: 0 игр • Plinko: 0 игр • Лучший множитель: x1.00
+          </div>
+
+          <div class="profile-section-title">
+            <span class="dot"></span>
+            <span>Линия удачи</span>
+          </div>
+          <div class="luck-bar">
+            <div class="luck-bar-fill" id="luck-bar-fill"></div>
+          </div>
+          <div class="stats-row" id="luck-text">Сыграй ещё пару игр, чтобы заполнить полосу.</div>
+
+          <div class="profile-section-title">
+            <span class="dot"></span>
+            <span>Миссии дня (демо)</span>
+          </div>
+          <ul class="missions-list">
+            <li id="mission-1"><span>⬜</span><span>Сыграй Rush 5 раз</span></li>
+            <li id="mission-2"><span>⬜</span><span>Сыграй Plinko 3 раза</span></li>
+            <li id="mission-3"><span>⬜</span><span>Сыграй обе игры сегодня</span></li>
+          </ul>
+
+          <div class="profile-section-title">
+            <span class="dot"></span>
+            <span>Персональные данные</span>
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-name">Отображаемое имя</label>
+            <input id="profile-name" type="text" placeholder="Как тебя называть в OWY">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-username">OWY username</label>
+            <input id="profile-username" type="text" placeholder="@nickname">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-birthdate">Дата рождения</label>
+            <input id="profile-birthdate" type="date">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-gender">Пол</label>
+            <select id="profile-gender">
+              <option value="">Не указывать</option>
+              <option value="male">Мужской</option>
+              <option value="female">Женский</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+
+          <div class="profile-field">
+            <label for="theme-select">Тема интерфейса</label>
+            <select id="theme-select">
+              <option value="dark">Dark</option>
+              <option value="neon">Neon</option>
+            </select>
+          </div>
+
+          <div class="profile-buttons">
+            <button class="btn btn-primary" id="profile-save">Сохранить профиль</button>
+            <button class="btn btn-ghost" id="profile-topup">+500 OWY (демо)</button>
+            <button class="btn btn-ghost" id="profile-reset">Сбросить демо баланс</button>
+            <button class="btn btn-ghost" id="profile-feedback">✉ Написать в OWY Hub</button>
+          </div>
+
+          <div class="profile-note" id="profile-note">
+            Данные и баланс хранятся только у тебя на устройстве (localStorage).
+          </div>
         </div>
       </section>
     </main>
@@ -765,11 +924,11 @@
     <!-- Нижнее меню -->
     <nav class="bottom-nav">
       <div class="bottom-nav-inner">
-        <div class="nav-item active" data-screen="home">
+        <div class="nav-item active" id="nav-home">
           <span>🏠</span>
           <div class="nav-label">Главная</div>
         </div>
-        <div class="nav-item" data-screen="profile">
+        <div class="nav-item" id="nav-profile">
           <span>👤</span>
           <div class="nav-label">Профиль</div>
         </div>
@@ -787,40 +946,43 @@
 
       <div class="rush-multiplier" id="rush-multiplier">x1.00</div>
 
-      <div class="rush-track">
-        <div class="rush-track-line">
-          <div class="rush-rocket" id="rush-rocket"></div>
-        </div>
+      <div class="rush-track-line">
+        <div class="rush-rocket" id="rush-rocket"></div>
       </div>
 
-      <div class="rush-status" id="rush-status">Выбери ставку и жми старт</div>
-      <div class="rush-history" id="rush-history">История: —</div>
+      <div class="rush-status" id="rush-status">
+        Выбери ставку и жми старт
+      </div>
 
-      <div class="rush-controls">
-        <div class="rush-input">
-          <label for="rush-auto">Автовывод, x</label>
-          <div class="rush-auto-row">
-            <input type="checkbox" id="rush-auto-enabled" checked />
-            <input
-              type="number"
-              id="rush-auto"
-              value="2.0"
-              step="0.1"
-              min="1.01"
-              style="flex: 1"
-            />
-          </div>
-        </div>
+      <div class="rush-history" id="rush-history">
+        История: —
+      </div>
 
-        <div class="rush-input">
-          <label for="rush-bet">Ставка, OWY</label>
-          <input type="number" id="rush-bet" value="10" min="10" />
-        </div>
+      <div class="rush-input">
+        <label class="auto-checkbox">
+          <input type="checkbox" id="rush-auto-enabled" checked>
+          <span class="checkmark"></span>
+          <span class="auto-label-text">Автовывод, x</span>
+        </label>
+        <input type="number" id="rush-auto" value="2.0" step="0.1" min="1.01">
+      </div>
 
-        <div class="rush-buttons">
-          <button class="btn btn-primary" id="rush-start">Старт</button>
-          <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
-        </div>
+      <div class="rush-input">
+        <label class="auto-checkbox">
+          <input type="checkbox" id="rush-x2-risk">
+          <span class="checkmark"></span>
+          <span class="rush-x2-label">Режим x2 риск (больше крашей)</span>
+        </label>
+      </div>
+
+      <div class="rush-input">
+        <label for="rush-bet">Ставка, OWY</label>
+        <input type="number" id="rush-bet" value="10" min="10">
+      </div>
+
+      <div class="rush-buttons">
+        <button class="btn btn-primary" id="rush-start">Старт</button>
+        <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
       </div>
     </div>
   </div>
@@ -833,236 +995,413 @@
         <div class="overlay-title">Plinko</div>
       </div>
 
-      <div class="plinko-board-wrap">
-        <div class="plinko-board" id="plinko-board">
-          <div class="plinko-slot-labels" id="plinko-slot-labels"></div>
+      <div class="plinko-board mid" id="plinko-board">
+        <div class="plinko-pegs-layer" id="plinko-pegs-layer"></div>
+        <div class="plinko-balls-layer" id="plinko-balls-layer"></div>
+        <div class="plinko-slots" id="plinko-mults-row"></div>
+      </div>
+
+      <div class="rush-status" id="plinko-status">
+        Выбирай риск и запускай шар 😉
+      </div>
+
+      <div class="plinko-history" id="plinko-history">
+        История: —
+      </div>
+
+      <div class="rush-input">
+        <label>Риск</label>
+        <div class="rush-buttons" id="plinko-risk-buttons">
+          <button class="btn btn-ghost" data-risk="low">Low</button>
+          <button class="btn btn-ghost plinko-risk-active" data-risk="mid">Mid</button>
+          <button class="btn btn-ghost" data-risk="high">High</button>
         </div>
       </div>
 
-      <div class="plinko-status" id="plinko-status">
-        Выбери риск и жми запуск шаров
+      <div class="rush-input">
+        <label for="plinko-bet">Ставка, OWY</label>
+        <input type="number" id="plinko-bet" value="10" min="10">
       </div>
 
-      <div class="plinko-controls">
-        <div class="plinko-risk-row">
-          <div class="pill-btn active" data-risk="low">Low</div>
-          <div class="pill-btn" data-risk="mid">Mid</div>
-          <div class="pill-btn" data-risk="high">High</div>
-        </div>
-
-        <div class="rush-input">
-          <label for="plinko-bet">Ставка за шар, OWY</label>
-          <input type="number" id="plinko-bet" value="10" min="10" />
-        </div>
-
-        <div class="rush-buttons">
-          <button class="btn btn-primary" id="plinko-launch-1">+1 шар</button>
-          <button class="btn btn-primary" id="plinko-launch-5">+5 шаров</button>
-        </div>
+      <div class="rush-buttons">
+        <button class="btn btn-primary" id="plinko-start">Запустить шар</button>
       </div>
     </div>
   </div>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    // защита от дабл-тап зума
-    window.addEventListener(
-      'dblclick',
-      function (e) {
-        e.preventDefault();
-      },
-      { passive: false }
-    );
+    // === Telegram WebApp ===
+    let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    let tgUser = null;
+    if (tg) {
+      tg.expand();
+      tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+    }
 
-    // --- Telegram WebApp и локальное состояние ---
-    let tg = null;
-    let user = null;
+    const balanceEl = document.querySelector('.balance-value');
 
-    const STORAGE_KEY = 'owy_play_demo_state_v2';
+    const splashEl = document.getElementById('splash');
+    setTimeout(() => {
+      if (splashEl) splashEl.style.display = 'none';
+    }, 1300);
 
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
-          return { balance: 1000, xp: 0, gamesPlayed: 0 };
-        }
-        const obj = JSON.parse(raw);
-        if (typeof obj.balance !== 'number') obj.balance = 1000;
-        if (typeof obj.xp !== 'number') obj.xp = 0;
-        if (typeof obj.gamesPlayed !== 'number') obj.gamesPlayed = 0;
-        return obj;
-      } catch (e) {
-        return { balance: 1000, xp: 0, gamesPlayed: 0 };
+    // Экраны и навигация
+    const homeScreen    = document.getElementById('home-screen');
+    const profileScreen = document.getElementById('profile-screen');
+    const navHome       = document.getElementById('nav-home');
+    const navProfile    = document.getElementById('nav-profile');
+
+    const moodTextEl = document.getElementById('mood-text');
+    const hintTextEl = document.getElementById('hint-text');
+
+    // Профиль элементы
+    const profileIdEl      = document.getElementById('profile-id');
+    const profileBalanceEl = document.getElementById('profile-balance');
+    const profileResetBtn  = document.getElementById('profile-reset');
+    const profileTopupBtn  = document.getElementById('profile-topup');
+    const profileFeedbackBtn = document.getElementById('profile-feedback');
+    const profileNoteEl    = document.getElementById('profile-note');
+
+    const profileNameInput     = document.getElementById('profile-name');
+    const profileUsernameInput = document.getElementById('profile-username');
+    const profileBirthInput    = document.getElementById('profile-birthdate');
+    const profileGenderSelect  = document.getElementById('profile-gender');
+    const profileSaveBtn       = document.getElementById('profile-save');
+    const themeSelect          = document.getElementById('theme-select');
+
+    const rankLabelEl   = document.getElementById('rank-label');
+    const xpLabelEl     = document.getElementById('xp-label');
+    const xpBarFillEl   = document.getElementById('xp-bar-fill');
+    const statsRowEl    = document.getElementById('stats-row');
+    const luckBarFillEl = document.getElementById('luck-bar-fill');
+    const luckTextEl    = document.getElementById('luck-text');
+    const mission1El    = document.getElementById('mission-1');
+    const mission2El    = document.getElementById('mission-2');
+    const mission3El    = document.getElementById('mission-3');
+
+    // Rush элементы
+    const rushOverlay     = document.getElementById('rush-overlay');
+    const rushOpenBtn     = document.getElementById('rush-open');
+    const rushBackBtn     = document.getElementById('rush-back');
+    const rushMultEl      = document.getElementById('rush-multiplier');
+    const rushRocketEl    = document.getElementById('rush-rocket');
+    const rushStatusEl    = document.getElementById('rush-status');
+    const rushHistoryEl   = document.getElementById('rush-history');
+    const rushBetInput    = document.getElementById('rush-bet');
+    const rushAutoInput   = document.getElementById('rush-auto');
+    const rushAutoEnabled = document.getElementById('rush-auto-enabled');
+    const rushX2RiskEl    = document.getElementById('rush-x2-risk');
+    const rushStartBtn    = document.getElementById('rush-start');
+    const rushCashoutBtn  = document.getElementById('rush-cashout');
+
+    // Plinko элементы
+    const plinkoOverlay    = document.getElementById('plinko-overlay');
+    const plinkoOpenBtn    = document.getElementById('plinko-open');
+    const plinkoBackBtn    = document.getElementById('plinko-back');
+    const plinkoStatusEl   = document.getElementById('plinko-status');
+    const plinkoHistoryEl  = document.getElementById('plinko-history');
+    const plinkoBetInput   = document.getElementById('plinko-bet');
+    const plinkoStartBtn   = document.getElementById('plinko-start');
+    const plinkoRiskBtns   = document.querySelectorAll('#plinko-risk-buttons button');
+    const plinkoBoardEl    = document.getElementById('plinko-board');
+    const plinkoMultsRow   = document.getElementById('plinko-mults-row');
+    const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
+    const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
+
+    // === Helpers ===
+    function vibrate(ms) {
+      if (navigator && navigator.vibrate) {
+        navigator.vibrate(ms);
       }
     }
 
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    // === Хранилище ===
+    const STORAGE_KEY_BALANCE  = 'owy_balance_v1';
+    const STORAGE_KEY_PROFILE  = 'owy_profile_info_v1';
+    const STORAGE_KEY_STATS    = 'owy_stats_v1';
+    const STORAGE_KEY_THEME    = 'owy_theme_v1';
+
+    let demoBalance = 1000;
+
+    function loadBalance() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_BALANCE);
+        const val = parseInt(raw, 10);
+        if (!isNaN(val) && val >= 0) demoBalance = val;
+      } catch (e) { demoBalance = 1000; }
     }
 
-    let state = loadState();
-    let demoBalance = state.balance;
-
-    const headerBalanceEl = document.getElementById('header-balance');
-    const profileBalanceEl = document.getElementById('profile-balance');
-    const profileNameEl = document.getElementById('profile-name');
-    const profileUsernameEl = document.getElementById('profile-username');
-    const profileIdEl = document.getElementById('profile-id');
-    const profileAvatarEl = document.getElementById('profile-avatar');
-    const rankDotEl = document.getElementById('rank-dot');
-    const rankNameEl = document.getElementById('rank-name');
-    const xpLabelEl = document.getElementById('xp-label');
-
-    if (window.Telegram && window.Telegram.WebApp) {
-      tg = window.Telegram.WebApp;
-      tg.expand();
-      user = tg.initDataUnsafe?.user || null;
+    function saveBalance() {
+      try { localStorage.setItem(STORAGE_KEY_BALANCE, String(demoBalance)); } catch (e) {}
     }
 
     function updateBalanceView() {
-      demoBalance = state.balance;
-      const formatted = demoBalance.toLocaleString('ru-RU');
-      headerBalanceEl.textContent = formatted + ' OWY';
-      profileBalanceEl.textContent = formatted + ' OWY';
+      balanceEl.textContent        = demoBalance.toLocaleString("ru-RU") + " OWY";
+      profileBalanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
     }
 
-    function getRankByXp(xp) {
-      if (xp < 100) return { name: 'Bronze', dotClass: 'rank-bronze', next: 100 };
-      if (xp < 300) return { name: 'Silver', dotClass: 'rank-silver', next: 300 };
-      if (xp < 600) return { name: 'Gold', dotClass: 'rank-gold', next: 600 };
-      if (xp < 1000) return { name: 'Platinum', dotClass: 'rank-plat', next: 1000 };
-      return { name: 'OWY Legend', dotClass: 'rank-legend', next: null };
-    }
-
-    function updateProfileView() {
-      // имя / юзер
-      if (user) {
-        const name = [user.first_name, user.last_name].filter(Boolean).join(' ');
-        profileNameEl.textContent = name || 'OWY Player';
-        profileUsernameEl.textContent = user.username
-          ? '@' + user.username
-          : 'ID: ' + user.id;
-        profileIdEl.textContent = user.id || '—';
-        const initials = (name || 'OP')
-          .split(' ')
-          .map((p) => p[0])
-          .join('')
-          .slice(0, 2)
-          .toUpperCase();
-        profileAvatarEl.textContent = initials;
-      } else {
-        profileNameEl.textContent = 'OWY Player (demo)';
-        profileUsernameEl.textContent = '@demo';
-        profileIdEl.textContent = '—';
-        profileAvatarEl.textContent = 'OP';
-      }
-
-      const rankInfo = getRankByXp(state.xp);
-      rankNameEl.textContent = rankInfo.name;
-      rankDotEl.className = 'rank-dot ' + rankInfo.dotClass;
-      if (rankInfo.next) {
-        xpLabelEl.textContent = state.xp + ' / ' + rankInfo.next;
-      } else {
-        xpLabelEl.textContent = state.xp + ' XP';
-      }
-
-      updateBalanceView();
-    }
-
-    updateProfileView();
-
-    document.getElementById('rank-hint-link').addEventListener('click', () => {
-      alert(
-        'Ранги считаются по общему количеству XP:\n' +
-          '• Bronze — до 100 XP\n' +
-          '• Silver — до 300 XP\n' +
-          '• Gold — до 600 XP\n' +
-          '• Platinum — до 1000 XP\n' +
-          '• OWY Legend — 1000+ XP\n\n' +
-          'XP начисляется за игру в Rush и Plinko.'
-      );
-    });
-
-    // --- Навигация по вкладкам ---
-    const screens = {
-      home: document.getElementById('screen-home'),
-      profile: document.getElementById('screen-profile')
+    // Профиль данные
+    let profileData = {
+      name: "",
+      username: "",
+      birthdate: "",
+      gender: ""
     };
 
-    document.querySelectorAll('.nav-item').forEach((item) => {
-      item.addEventListener('click', () => {
-        document.querySelectorAll('.nav-item').forEach((n) => n.classList.remove('active'));
-        item.classList.add('active');
-
-        const target = item.getAttribute('data-screen');
-        Object.keys(screens).forEach((key) => {
-          screens[key].classList.toggle('active', key === target);
-        });
-      });
-    });
-
-    // --- OWY советы (ротация) ---
-    const tips = [
-      'Plinko High риск — только если готов к боли.',
-      'В Rush авто-вывод на x2–x3 обычно живёт дольше, чем жадность ✋',
-      'Не ставь весь банк в один шар — дели ставку на несколько запусков.',
-      'Самый умный мув — уйти в плюс и сделать паузу 😎',
-      'Plinko Mid — золотая середина между риском и шансом выжить.'
-    ];
-    const tipEl = document.getElementById('owy-tip-text');
-    let tipIndex = 0;
-
-    function rotateTip() {
-      tipIndex = (tipIndex + 1) % tips.length;
-      tipEl.textContent = tips[tipIndex];
+    function loadProfileInfo() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_PROFILE);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          profileData = { ...profileData, ...parsed };
+        }
+      } catch (e) {}
     }
 
-    setInterval(rotateTip, 12000);
+    function saveProfileInfo() {
+      try { localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profileData)); } catch (e) {}
+    }
 
-    // ---- Rush logic ----
-    const rushOverlay = document.getElementById('rush-overlay');
-    const rushOpenBtn = document.getElementById('rush-open');
-    const rushBackBtn = document.getElementById('rush-back');
-    const rushMultEl = document.getElementById('rush-multiplier');
-    const rushRocketEl = document.getElementById('rush-rocket');
-    const rushStatusEl = document.getElementById('rush-status');
-    const rushHistoryEl = document.getElementById('rush-history');
-    const rushBetInput = document.getElementById('rush-bet');
-    const rushAutoInput = document.getElementById('rush-auto');
-    const rushAutoEnabled = document.getElementById('rush-auto-enabled');
-    const rushStartBtn = document.getElementById('rush-start');
-    const rushCashoutBtn = document.getElementById('rush-cashout');
+    // Статы
+    let stats = {
+      rushPlays: 0,
+      plinkoPlays: 0,
+      bestMulti: 1.0,
+      xp: 0
+    };
 
-    let rushTimer = null;
-    let rushState = 'idle';
+    function loadStats() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_STATS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          stats = { ...stats, ...parsed };
+        }
+      } catch (e) {}
+    }
+
+    function saveStats() {
+      try { localStorage.setItem(STORAGE_KEY_STATS, JSON.stringify(stats)); } catch (e) {}
+    }
+
+    function calcRank(xp) {
+      if (xp < 100)   return "BRONZE I";
+      if (xp < 200)   return "BRONZE II";
+      if (xp < 400)   return "SILVER I";
+      if (xp < 700)   return "SILVER II";
+      if (xp < 1100)  return "GOLD I";
+      return "OWY ELITE";
+    }
+
+    function calcXpProgress(xp) {
+      // примитив: каждый уровень по 100 xp
+      const level = Math.floor(xp / 100);
+      const start = level * 100;
+      const end   = start + 100;
+      const within = Math.min(Math.max(xp - start, 0), 100);
+      return { label: `${xp} / ${end} XP`, percent: (within / 100) * 100 };
+    }
+
+    function updateStatsView() {
+      const totalGames = stats.rushPlays + stats.plinkoPlays;
+      statsRowEl.textContent =
+        `Rush: ${stats.rushPlays} игр • Plinko: ${stats.plinkoPlays} игр • Лучший множитель: x${stats.bestMulti.toFixed(2)}`;
+
+      // ранг и xp
+      const rank = calcRank(stats.xp);
+      rankLabelEl.textContent = rank;
+      const prog = calcXpProgress(stats.xp);
+      xpLabelEl.textContent   = prog.label;
+      xpBarFillEl.style.width = `${prog.percent}%`;
+
+      // линия удачи
+      const luckPercent = Math.min(totalGames / 20 * 100, 100);
+      luckBarFillEl.style.width = `${luckPercent}%`;
+      if (totalGames === 0) {
+        luckTextEl.textContent = "Сыграй несколько игр, чтобы заполнить полосу удачи.";
+      } else if (luckPercent < 100) {
+        luckTextEl.textContent = `Игры сегодня: ${totalGames} • ещё ${
+          Math.max(0, 20 - totalGames)
+        } до полного заполнения.`;
+      } else {
+        luckTextEl.textContent = "Полоса удачи заполнена! Сегодня OWY на твоей стороне.";
+      }
+
+      // миссии
+      const m1Done = stats.rushPlays >= 5;
+      const m2Done = stats.plinkoPlays >= 3;
+      const m3Done = stats.rushPlays > 0 && stats.plinkoPlays > 0;
+
+      mission1El.firstElementChild.textContent = m1Done ? "✅" : "⬜";
+      mission2El.firstElementChild.textContent = m2Done ? "✅" : "⬜";
+      mission3El.firstElementChild.textContent = m3Done ? "✅" : "⬜";
+
+      if (m1Done) mission1El.classList.add("mission-done");
+      if (m2Done) mission2El.classList.add("mission-done");
+      if (m3Done) mission3El.classList.add("mission-done");
+    }
+
+    // Тема
+    function loadTheme() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_THEME);
+        if (raw === "neon") {
+          document.body.classList.add('theme-neon');
+          themeSelect.value = "neon";
+        } else {
+          document.body.classList.remove('theme-neon');
+          themeSelect.value = "dark";
+        }
+      } catch (e) {}
+    }
+
+    function saveTheme(value) {
+      try { localStorage.setItem(STORAGE_KEY_THEME, value); } catch (e) {}
+    }
+
+    themeSelect.addEventListener('change', () => {
+      const val = themeSelect.value;
+      if (val === "neon") {
+        document.body.classList.add('theme-neon');
+      } else {
+        document.body.classList.remove('theme-neon');
+      }
+      saveTheme(val);
+    });
+
+    // Инициализация профиля
+    function initProfile() {
+      // Telegram id
+      if (tgUser) {
+        profileIdEl.textContent = tgUser.id;
+      } else {
+        profileIdEl.textContent = "—";
+      }
+
+      if (!profileData.name) {
+        if (tgUser) {
+          const name = (tgUser.first_name || '') +
+            (tgUser.last_name ? (' ' + tgUser.last_name) : '');
+          profileData.name = name || 'Игрок OWY';
+          if (!profileData.username && tgUser.username) {
+            profileData.username = '@' + tgUser.username;
+          }
+        } else {
+          profileData.name = 'Demo пользователь';
+        }
+      }
+
+      profileNameInput.value     = profileData.name || '';
+      profileUsernameInput.value = profileData.username || '';
+      profileBirthInput.value    = profileData.birthdate || '';
+      profileGenderSelect.value  = profileData.gender || '';
+    }
+
+    profileSaveBtn.addEventListener('click', () => {
+      profileData.name      = profileNameInput.value.trim();
+      profileData.username  = profileUsernameInput.value.trim();
+      profileData.birthdate = profileBirthInput.value;
+      profileData.gender    = profileGenderSelect.value;
+      saveProfileInfo();
+      profileNoteEl.textContent =
+        "Сохранено ✔ Данные хранятся только у тебя на устройстве.";
+    });
+
+    profileResetBtn.addEventListener('click', () => {
+      demoBalance = 1000;
+      saveBalance();
+      updateBalanceView();
+    });
+
+    profileTopupBtn.addEventListener('click', () => {
+      demoBalance += 500;
+      saveBalance();
+      updateBalanceView();
+      profileNoteEl.textContent = "Докинуло +500 OWY для теста 💸";
+    });
+
+    profileFeedbackBtn.addEventListener('click', () => {
+      // замени @username на свой ник
+      const link = "https://t.me/your_nickname_here";
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(link);
+      } else {
+        window.open(link, "_blank");
+      }
+    });
+
+    // Навигация
+    function setActiveTab(tab) {
+      if (tab === 'home') {
+        navHome.classList.add('active');
+        navProfile.classList.remove('active');
+        homeScreen.style.display    = '';
+        profileScreen.style.display = 'none';
+      } else {
+        navProfile.classList.add('active');
+        navHome.classList.remove('active');
+        homeScreen.style.display    = 'none';
+        profileScreen.style.display = '';
+      }
+    }
+
+    navHome.addEventListener('click', () => setActiveTab('home'));
+    navProfile.addEventListener('click', () => setActiveTab('profile'));
+
+    // Фраза дня и подсказка
+    const moodPhrases = [
+      "Сегодня удача на твоей стороне.",
+      "Спокойно, OWY с тобой.",
+      "Игра — это эксперимент, а не обязанность.",
+      "Маленькие ставки — тоже ставки.",
+      "Главное — кайф от процесса."
+    ];
+
+    const hintPhrases = [
+      "🤖 OWY совет: попробуй Rush с небольшим автовыводом.",
+      "🤖 OWY совет: Plinko High риск — только если готов к боли.",
+      "🤖 OWY совет: начни с Mid Plinko и посмотри, как сыпет.",
+      "🤖 OWY совет: не забывай забрать раньше краша 😉",
+      "🤖 OWY совет: чередуй Rush и Plinko, чтобы прочувствовать математику."
+    ];
+
+    function initPhrases() {
+      moodTextEl.textContent =
+        moodPhrases[Math.floor(Math.random() * moodPhrases.length)];
+      hintTextEl.textContent =
+        hintPhrases[Math.floor(Math.random() * hintPhrases.length)];
+    }
+
+    // === Rush ===
+    let rushTimer    = null;
+    let rushState    = "idle";
     let currentMulti = 1.0;
-    let crashMulti = 1.0;
-    let rushBet = 0;
-    let autoCashout = 2.0;
+    let crashMulti   = 1.0;
+    let rushBet      = 0;
+    let autoCashout  = null;
     let crashHistory = [];
 
     function updateRushHistory() {
       if (!crashHistory.length) {
-        rushHistoryEl.textContent = 'История: —';
+        rushHistoryEl.textContent = "История: —";
         return;
       }
       const last = crashHistory.slice(-10);
-      const text = last.map((v) => 'x' + v.toFixed(2)).join('   ');
-      rushHistoryEl.textContent = 'История: ' + text;
+      rushHistoryEl.textContent =
+        "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
     }
 
-    updateRushHistory();
-
     function resetRushForNewGame() {
-      rushState = 'idle';
+      rushState   = "idle";
       currentMulti = 1.0;
-      crashMulti = 1.0;
-      rushBet = 0;
-      rushMultEl.textContent = 'x1.00';
-      rushRocketEl.style.width = '0%';
-      rushStatusEl.textContent = 'Выбери ставку и жми старт';
-      rushStartBtn.disabled = false;
-      rushCashoutBtn.disabled = true;
+      crashMulti   = 1.0;
+      rushBet      = 0;
+      rushMultEl.textContent   = "x1.00";
+      rushRocketEl.style.width = "0%";
+      rushStatusEl.textContent = "Выбери ставку и жми старт";
+      rushStartBtn.disabled    = false;
+      rushCashoutBtn.disabled  = true;
       if (rushTimer) {
         clearInterval(rushTimer);
         rushTimer = null;
@@ -1070,12 +1409,12 @@
     }
 
     function openRush() {
-      rushOverlay.style.display = 'flex';
+      rushOverlay.style.display = "flex";
       resetRushForNewGame();
     }
 
     function closeRush() {
-      rushOverlay.style.display = 'none';
+      rushOverlay.style.display = "none";
       resetRushForNewGame();
     }
 
@@ -1083,15 +1422,20 @@
     rushBackBtn.addEventListener('click', closeRush);
 
     function generateCrashMultiplier() {
-      const r = Math.random();
-      if (r < 0.05) return 1.0;
-      if (r < 0.25) return +(Math.random() * (1.2 - 1.01) + 1.01).toFixed(2);
-      if (r < 0.6) return +(Math.random() * (2.0 - 1.2) + 1.2).toFixed(2);
-      if (r < 0.8) return +(Math.random() * (3.0 - 2.0) + 2.0).toFixed(2);
-      if (r < 0.92) return +(Math.random() * (5.0 - 3.0) + 3.0).toFixed(2);
-      if (r < 0.98) return +(Math.random() * (10.0 - 5.0) + 5.0).toFixed(2);
-      if (r < 0.995) return +(Math.random() * (20.0 - 10.0) + 10.0).toFixed(2);
-      return +(Math.random() * (50.0 - 20.0) + 20.0).toFixed(2);
+      const r0 = Math.random();
+      const x2risk = rushX2RiskEl.checked;
+
+      // если x2 риск, смещаем r к 0 (больше быстрых крашей)
+      const r = x2risk ? Math.pow(r0, 0.6) : r0;
+
+      if (r < 0.05)   return 1.0;
+      if (r < 0.25)   return +(Math.random() * (1.20 - 1.01) + 1.01).toFixed(2);
+      if (r < 0.60)   return +(Math.random() * (2.0  - 1.20) + 1.20).toFixed(2);
+      if (r < 0.80)   return +(Math.random() * (3.0  - 2.0)  + 2.0 ).toFixed(2);
+      if (r < 0.92)   return +(Math.random() * (5.0  - 3.0)  + 3.0 ).toFixed(2);
+      if (r < 0.98)   return +(Math.random() * (10.0 - 5.0)  + 5.0 ).toFixed(2);
+      if (r < 0.995)  return +(Math.random() * (20.0 - 10.0) + 10.0).toFixed(2);
+      return            +(Math.random() * (50.0 - 20.0) + 20.0).toFixed(2);
     }
 
     function calcStepDelta() {
@@ -1104,56 +1448,58 @@
       return 0.12;
     }
 
+    let rushStartLocked = false;
+
     function startRush() {
-      if (rushState === 'running') return;
+      if (rushState === "running" || rushStartLocked) return;
+      rushStartLocked = true;
+      setTimeout(() => { rushStartLocked = false; }, 500);
 
       const betValue = parseInt(rushBetInput.value, 10);
       if (isNaN(betValue) || betValue < 10) {
-        rushStatusEl.textContent = 'Минимальная ставка — 10 OWY 🤨';
+        rushStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
         return;
       }
 
       if (betValue > demoBalance) {
-        rushStatusEl.textContent = 'Недостаточно баланса для такой ставки 😔';
+        rushStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
         return;
       }
 
       resetRushForNewGame();
 
-      if (rushAutoEnabled.checked) {
-        const autoValRaw = parseFloat(rushAutoInput.value);
-        if (!isNaN(autoValRaw) && autoValRaw > 1.0) {
-          autoCashout = autoValRaw;
-        } else {
-          autoCashout = null;
-        }
+      const isAutoOn   = rushAutoEnabled && rushAutoEnabled.checked;
+      const autoValRaw = parseFloat(rushAutoInput.value);
+      if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
+        autoCashout = autoValRaw;
       } else {
         autoCashout = null;
       }
 
-      rushState = 'running';
-      rushBet = betValue;
-      state.balance -= rushBet;
-      saveState();
+      rushState = "running";
+      rushBet   = betValue;
+      demoBalance -= rushBet;
+      saveBalance();
       updateBalanceView();
-      state.xp += 5;
-      state.gamesPlayed += 1;
-      saveState();
-      updateProfileView();
 
-      rushStatusEl.textContent = 'Игра запущена... следи за множителем! 🚀';
+      stats.rushPlays += 1;
+      stats.xp        += 5;
+      saveStats();
+      updateStatsView();
+
+      rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
       crashMulti = generateCrashMultiplier();
-
       rushCashoutBtn.disabled = false;
-      rushStartBtn.disabled = true;
+      rushStartBtn.disabled   = true;
 
       rushTimer = setInterval(() => {
-        if (rushState !== 'running') return;
+        if (rushState !== "running") return;
 
         currentMulti += calcStepDelta();
-        rushMultEl.textContent = 'x' + currentMulti.toFixed(2);
+
+        rushMultEl.textContent = "x" + currentMulti.toFixed(2);
         const progress = Math.min(currentMulti / 10, 1) * 100;
-        rushRocketEl.style.width = progress + '%';
+        rushRocketEl.style.width = progress + "%";
 
         if (autoCashout && currentMulti >= autoCashout) {
           cashoutRush();
@@ -1165,297 +1511,285 @@
             clearInterval(rushTimer);
             rushTimer = null;
           }
+
           crashHistory.push(crashMulti);
           updateRushHistory();
 
-          rushState = 'idle';
+          if (crashMulti > stats.bestMulti) {
+            stats.bestMulti = crashMulti;
+            stats.xp       += 3;
+            saveStats();
+            updateStatsView();
+          }
+
+          rushState = "idle";
           rushCashoutBtn.disabled = true;
-          rushStartBtn.disabled = false;
+          rushStartBtn.disabled   = false;
           rushStatusEl.textContent =
-            '💥 Краш на x' +
-            crashMulti.toFixed(2) +
-            '. Ставка ' +
-            rushBet +
-            ' OWY сгорела.';
+            `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+          vibrate(90);
         }
       }, 70);
     }
 
     function cashoutRush() {
-      if (rushState !== 'running') return;
+      if (rushState !== "running") return;
 
-      rushState = 'idle';
+      rushState = "idle";
       if (rushTimer) {
         clearInterval(rushTimer);
         rushTimer = null;
       }
       rushCashoutBtn.disabled = true;
-      rushStartBtn.disabled = false;
+      rushStartBtn.disabled   = false;
 
       const winAmount = Math.floor(rushBet * currentMulti);
-      state.balance += winAmount;
-      saveState();
+      demoBalance += winAmount;
+      saveBalance();
       updateBalanceView();
 
       crashHistory.push(crashMulti);
       updateRushHistory();
 
+      if (currentMulti > stats.bestMulti) {
+        stats.bestMulti = currentMulti;
+      }
+      stats.xp += 8;
+      saveStats();
+      updateStatsView();
+
       rushStatusEl.textContent =
-        '✅ Забрал на x' +
-        currentMulti.toFixed(2) +
-        '!\nВыигрыш: ' +
-        winAmount +
-        ' OWY.';
+        `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+      vibrate(70);
     }
 
     rushStartBtn.addEventListener('click', startRush);
     rushCashoutBtn.addEventListener('click', cashoutRush);
 
-    // --- Plinko logic (упрощённый, но с несколькими шарами) ---
-    const plinkoOverlay = document.getElementById('plinko-overlay');
-    const plinkoOpenBtn = document.getElementById('plinko-open');
-    const plinkoBackBtn = document.getElementById('plinko-back');
-    const plinkoBoard = document.getElementById('plinko-board');
-    const plinkoStatusEl = document.getElementById('plinko-status');
-    const plinkoBetInput = document.getElementById('plinko-bet');
-    const plinkoLaunch1 = document.getElementById('plinko-launch-1');
-    const plinkoLaunch5 = document.getElementById('plinko-launch-5');
-    const plinkoRiskButtons = document.querySelectorAll('.pill-btn');
-    const plinkoSlotLabels = document.getElementById('plinko-slot-labels');
+    // === Plinko ===
+    const PLINKO_COLS = 9;
+    const PLINKO_ROWS = 16;
 
-    let currentRisk = 'low';
-    let plinkoSlots = [];
-    let pegs = [];
-    let activeBalls = [];
+    const PLINKO_CONFIGS = {
+      low:  { multipliers: [1.30, 1.15, 1.08, 1.03, 0.98, 1.03, 1.08, 1.15, 1.30] },
+      mid:  { multipliers: [2.50, 1.70, 1.20, 0.90, 0.30, 0.90, 1.20, 1.70, 2.50] },
+      high: { multipliers: [5.00, 3.00, 1.80, 0.70, 0.20, 0.70, 1.80, 3.00, 5.00] }
+    };
+
+    let plinkoSelectedRisk = "mid";
+    let plinkoHistory = [];
+
+    function updatePlinkoHistory() {
+      if (!plinkoHistory.length) {
+        plinkoHistoryEl.textContent = "История: —";
+        return;
+      }
+      const last = plinkoHistory.slice(-10);
+      plinkoHistoryEl.textContent =
+        "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
+    }
+
+    function renderPlinkoPegs() {
+      plinkoPegsLayer.innerHTML = "";
+      for (let r = 0; r < PLINKO_ROWS; r++) {
+        const yPerc = 5 + (r / (PLINKO_ROWS - 1)) * 80;
+        const isOdd  = r % 2 === 1;
+        const count  = isOdd ? PLINKO_COLS - 1 : PLINKO_COLS;
+        const offset = isOdd ? 0.5 : 0;
+
+        for (let i = 0; i < count; i++) {
+          const peg = document.createElement("div");
+          peg.className = "plinko-peg";
+          const colPos   = i + offset;
+          const maxIndex = PLINKO_COLS - 1;
+          const xPerc    = (colPos / maxIndex) * 100;
+          peg.style.top  = yPerc + "%";
+          peg.style.left = xPerc + "%";
+          plinkoPegsLayer.appendChild(peg);
+        }
+      }
+    }
+
+    function renderPlinkoConfig() {
+      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+      plinkoMultsRow.innerHTML = "";
+
+      config.multipliers.forEach(m => {
+        const slot = document.createElement("div");
+        slot.className = "plinko-slot";
+        slot.textContent = "x" + m.toFixed(2);
+        plinkoMultsRow.appendChild(slot);
+      });
+
+      plinkoBoardEl.classList.remove("low", "mid", "high");
+      plinkoBoardEl.classList.add(plinkoSelectedRisk);
+    }
+
+    function generatePlinkoPath(cols, rows) {
+      let col = Math.floor(cols / 2);
+      const path = [];
+      for (let r = 0; r <= rows; r++) {
+        path.push({ col, row: r });
+        if (r === rows) break;
+
+        const rnd = Math.random();
+        let dir = 0;
+        if (col <= 1) {
+          if (rnd < 0.6)      dir = 1;
+          else if (rnd < 0.8) dir = 0;
+          else                dir = -1;
+        } else if (col >= cols - 2) {
+          if (rnd < 0.6)      dir = -1;
+          else if (rnd < 0.8) dir = 0;
+          else                dir = 1;
+        } else {
+          if (rnd < 0.3)      dir = -1;
+          else if (rnd > 0.7) dir = 1;
+          else                dir = 0;
+        }
+        col += dir;
+        if (col < 0) col = 0;
+        if (col > cols - 1) col = cols - 1;
+      }
+      return path;
+    }
+
+    let plinkoStartLocked = false;
+
+    function playPlinko() {
+      if (plinkoStartLocked) return;
+      plinkoStartLocked = true;
+      setTimeout(() => { plinkoStartLocked = false; }, 400);
+
+      const bet = parseInt(plinkoBetInput.value, 10);
+      if (isNaN(bet) || bet < 10) {
+        plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+        return;
+      }
+      if (bet > demoBalance) {
+        plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+        return;
+      }
+
+      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+      const slots  = plinkoMultsRow.querySelectorAll('.plinko-slot');
+      if (!config || !slots.length || slots.length !== config.multipliers.length) return;
+
+      demoBalance -= bet;
+      saveBalance();
+      updateBalanceView();
+
+      stats.plinkoPlays += 1;
+      stats.xp          += 4;
+      saveStats();
+      updateStatsView();
+
+      const layerRect   = plinkoBallsLayer.getBoundingClientRect();
+      const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
+      const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
+      const slotY       = slotRects[0].top - layerRect.top - 8;
+
+      const colsCount  = config.multipliers.length;
+      const path       = generatePlinkoPath(colsCount, PLINKO_ROWS);
+      const finalCol   = path[path.length - 1].col;
+      const multiplier = config.multipliers[finalCol];
+
+      slots.forEach(s => s.classList.remove('active'));
+
+      const ball = document.createElement('div');
+      ball.className = 'plinko-ball';
+      plinkoBallsLayer.appendChild(ball);
+
+      const startX = layerRect.width / 2;
+      ball.style.left = (startX - 5) + "px";
+      ball.style.top  = "0px";
+
+      plinkoStatusEl.textContent = "Шарик падает... 🎯";
+
+      const totalRows  = PLINKO_ROWS;
+      const stepDelay  = 190;
+
+      path.forEach((step, index) => {
+        const rowRatio = step.row / totalRows;
+        const y = slotY * rowRatio;
+        const colIndex = step.col;
+        const x = slotCenters[colIndex];
+
+        setTimeout(() => {
+          ball.style.top  = y + "px";
+          ball.style.left = (x - 5) + "px";
+        }, stepDelay * index);
+      });
+
+      setTimeout(() => {
+        if (slots[finalCol]) {
+          slots[finalCol].classList.add('active');
+        }
+
+        const winAmount = Math.floor(bet * multiplier);
+        demoBalance += winAmount;
+        saveBalance();
+        updateBalanceView();
+
+        plinkoHistory.push(multiplier);
+        updatePlinkoHistory();
+
+        if (multiplier > stats.bestMulti) {
+          stats.bestMulti = multiplier;
+        }
+        stats.xp += multiplier >= 1 ? 6 : 2;
+        saveStats();
+        updateStatsView();
+
+        if (multiplier < 1) {
+          plinkoStatusEl.textContent =
+            `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
+        } else {
+          plinkoStatusEl.textContent =
+            `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+        }
+        vibrate(60);
+        setTimeout(() => ball.remove(), 1000);
+      }, stepDelay * path.length);
+    }
+
+    plinkoRiskBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
+        btn.classList.add('plinko-risk-active');
+        plinkoSelectedRisk = btn.dataset.risk || "mid";
+        renderPlinkoConfig();
+      });
+    });
 
     function openPlinko() {
-      plinkoOverlay.style.display = 'flex';
-      setupPlinkoBoard();
-      plinkoStatusEl.textContent = 'Выбери риск и жми запуск шаров';
+      plinkoOverlay.style.display = "flex";
+      plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
     }
 
     function closePlinko() {
-      plinkoOverlay.style.display = 'none';
-      clearPlinko();
+      plinkoOverlay.style.display = "none";
+      plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
     }
 
     plinkoOpenBtn.addEventListener('click', openPlinko);
     plinkoBackBtn.addEventListener('click', closePlinko);
+    plinkoStartBtn.addEventListener('click', playPlinko);
 
-    plinkoRiskButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        plinkoRiskButtons.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentRisk = btn.getAttribute('data-risk');
-        setupPlinkoBoard();
-      });
-    });
-
-    function clearPlinko() {
-      pegs.forEach((p) => p.remove());
-      pegs = [];
-      activeBalls.forEach((b) => b.el.remove());
-      activeBalls = [];
-      plinkoSlotLabels.innerHTML = '';
-    }
-
-    function setupPlinkoBoard() {
-      clearPlinko();
-      const rows = 8;
-      const cols = 13;
-      const boardRect = plinkoBoard.getBoundingClientRect();
-      const width = boardRect.width;
-      const height = boardRect.height - 30;
-
-      const hSpacing = width / (cols + 1);
-      const vSpacing = height / (rows + 1);
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c <= r; c++) {
-          const x =
-            width / 2 -
-            (r * hSpacing) / 2 +
-            c * hSpacing +
-            hSpacing / 2;
-          const y = 40 + r * vSpacing;
-          const peg = document.createElement('div');
-          peg.className = 'plinko-peg';
-          peg.style.left = x + 'px';
-          peg.style.top = y + 'px';
-          plinkoBoard.appendChild(peg);
-          pegs.push({ x, y });
-        }
-      }
-
-      // коэффициенты по слотам
-      const countSlots = 13;
-      plinkoSlots = [];
-      const labelsFrag = document.createDocumentFragment();
-
-      for (let i = 0; i < countSlots; i++) {
-        let coef;
-        if (currentRisk === 'low') {
-          const arr = [0.5, 0.8, 1, 1.2, 1.5, 2, 3];
-          const idx = Math.min(
-            arr.length - 1,
-            Math.abs(i - Math.floor(countSlots / 2))
-          );
-          coef = arr[idx];
-        } else if (currentRisk === 'mid') {
-          const arr = [0.2, 0.5, 0.8, 1, 2, 3, 5];
-          const idx = Math.min(
-            arr.length - 1,
-            Math.abs(i - Math.floor(countSlots / 2))
-          );
-          coef = arr[idx];
-        } else {
-          const arr = [0, 0.2, 0.5, 1, 3, 5, 10];
-          const idx = Math.min(
-            arr.length - 1,
-            Math.abs(i - Math.floor(countSlots / 2))
-          );
-          coef = arr[idx];
-        }
-        plinkoSlots.push(coef);
-
-        const span = document.createElement('span');
-        span.textContent = coef + 'x';
-        if (coef <= 0.5) span.classList.add('slot-low');
-        else if (coef <= 3) span.classList.add('slot-mid');
-        else span.classList.add('slot-high');
-        labelsFrag.appendChild(span);
-      }
-
-      plinkoSlotLabels.appendChild(labelsFrag);
-    }
-
-    function launchBall() {
-      const betValue = parseInt(plinkoBetInput.value, 10);
-      if (isNaN(betValue) || betValue < 10) {
-        plinkoStatusEl.textContent = 'Минимальная ставка — 10 OWY 🤨';
-        return;
-      }
-      if (betValue > state.balance) {
-        plinkoStatusEl.textContent = 'Недостаточно баланса для этой ставки 😔';
-        return;
-      }
-
-      // списываем ставку
-      state.balance -= betValue;
-      saveState();
-      updateBalanceView();
-      state.xp += 3;
-      state.gamesPlayed += 1;
-      saveState();
-      updateProfileView();
-
-      const boardRect = plinkoBoard.getBoundingClientRect();
-      const width = boardRect.width;
-      const startX = width / 2;
-      const startY = 20;
-
-      const el = document.createElement('div');
-      el.className = 'plinko-ball';
-      plinkoBoard.appendChild(el);
-
-      const ball = {
-        el,
-        x: startX,
-        y: startY,
-        vy: 0.6,
-        vx: 0,
-        bet: betValue,
-        alive: true
-      };
-      activeBalls.push(ball);
-      updateBallPosition(ball);
-      plinkoStatusEl.textContent = 'Шарики в пути...';
-
-      animateBalls();
-    }
-
-    function updateBallPosition(ball) {
-      ball.el.style.left = ball.x + 'px';
-      ball.el.style.top = ball.y + 'px';
-    }
-
-    let plinkoAnimating = false;
-
-    function animateBalls() {
-      if (plinkoAnimating) return;
-      plinkoAnimating = true;
-
-      function step() {
-        const boardRect = plinkoBoard.getBoundingClientRect();
-        const width = boardRect.width;
-        const height = boardRect.height - 20;
-
-        activeBalls.forEach((ball) => {
-          if (!ball.alive) return;
-
-          ball.vy += 0.015;
-          ball.y += ball.vy;
-          ball.x += ball.vx * 0.8;
-
-          // столкновения с пинами
-          pegs.forEach((peg) => {
-            const dx = ball.x - peg.x;
-            const dy = ball.y - peg.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 10) {
-              ball.vy = Math.abs(ball.vy);
-              const dir = Math.random() < 0.5 ? -1 : 1;
-              ball.vx = dir * (0.3 + Math.random() * 0.4);
-            }
-          });
-
-          if (ball.x < 5) ball.x = 5;
-          if (ball.x > width - 5) ball.x = width - 5;
-
-          if (ball.y >= height) {
-            ball.alive = false;
-            ball.y = height;
-
-            const slotIndex = Math.min(
-              plinkoSlots.length - 1,
-              Math.max(0, Math.round((ball.x / width) * (plinkoSlots.length - 1)))
-            );
-            const coef = plinkoSlots[slotIndex];
-            const win = Math.floor(ball.bet * coef);
-            if (win > 0) {
-              state.balance += win;
-              saveState();
-              updateBalanceView();
-              plinkoStatusEl.textContent =
-                'Шар x' + coef + '. Выигрыш: ' + win + ' OWY.';
-            } else {
-              plinkoStatusEl.textContent = 'Шар упал в нулевой слот. Ставка сгорела 💀';
-            }
-          }
-
-          updateBallPosition(ball);
-        });
-
-        activeBalls = activeBalls.filter((b) => b.alive);
-        if (activeBalls.length > 0) {
-          requestAnimationFrame(step);
-        } else {
-          plinkoAnimating = false;
-        }
-      }
-
-      requestAnimationFrame(step);
-    }
-
-    plinkoLaunch1.addEventListener('click', () => {
-      launchBall();
-    });
-
-    plinkoLaunch5.addEventListener('click', () => {
-      for (let i = 0; i < 5; i++) {
-        setTimeout(launchBall, i * 160);
-      }
-    });
+    // === Init ===
+    loadBalance();
+    loadProfileInfo();
+    loadStats();
+    loadTheme();
+    initProfile();
+    updateBalanceView();
+    updateStatsView();
+    updateRushHistory();
+    updatePlinkoHistory();
+    setActiveTab('home');
+    renderPlinkoPegs();
+    renderPlinkoConfig();
+    initPhrases();
   </script>
 </body>
 </html>
