@@ -376,7 +376,7 @@
               <div class="card-title">Rush</div>
               <div class="card-sub">Автокэш-аут по своему множителю</div>
             </div>
-            <div class="chip">🚀 x1.2 – x10</div>
+            <div class="chip">🚀 x1.0 – x50</div>
           </div>
           <div class="card-footer">
             <button class="btn btn-primary" id="rush-open">Играть Rush</button>
@@ -387,7 +387,7 @@
           </div>
         </div>
 
-        <!-- Plinko (пока заглушка) -->
+        <!-- Plinko (заглушка) -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -405,7 +405,7 @@
           </div>
         </div>
 
-        <!-- Матчи (потом подключим) -->
+        <!-- Matches (заглушка) -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -479,7 +479,7 @@
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    // Telegram WebApp (если открыто внутри ТГ)
+    // Telegram WebApp (на будущее)
     let tg = null;
     let user = null;
     const balanceEl = document.querySelector('.balance-value');
@@ -515,12 +515,12 @@
     const rushCashoutBtn = document.getElementById('rush-cashout');
 
     let rushTimer = null;
-    let rushState = "idle"; // idle / running / crashed / cashed
+    let rushState = "idle"; // idle / running
     let currentMulti = 1.0;
     let crashMulti = 1.0;
     let rushBet = 0;
 
-    function resetRush() {
+    function resetRushForNewGame() {
       rushState = "idle";
       currentMulti = 1.0;
       crashMulti = 1.0;
@@ -538,12 +538,12 @@
 
     function openRush() {
       rushOverlay.style.display = "flex";
-      resetRush();
+      resetRushForNewGame();
     }
 
     function closeRush() {
       rushOverlay.style.display = "none";
-      resetRush();
+      resetRushForNewGame();
     }
 
     if (rushOpenBtn) {
@@ -552,6 +552,7 @@
 
     rushBackBtn.addEventListener('click', closeRush);
 
+    // распределение краша: 1.00–50, редкие большие иксы
     function generateCrashMultiplier() {
       const r = Math.random();
 
@@ -559,7 +560,7 @@
         // 5% — моментальный краш x1.00
         return 1.0;
       } else if (r < 0.25) {
-        // 20% — мелкие множители 1.01–1.20
+        // 20% — мелкие 1.01–1.20
         return +(Math.random() * (1.20 - 1.01) + 1.01).toFixed(2);
       } else if (r < 0.60) {
         // 35% — 1.20–2.00
@@ -577,12 +578,22 @@
         // 1.5% — 10.00–20.00
         return +(Math.random() * (20.0 - 10.0) + 10.0).toFixed(2);
       } else {
-        // 0.5% — 20.00–50.00, супер-редкие жирные иксы
+        // 0.5% — 20.00–50.00
         return +(Math.random() * (50.0 - 20.0) + 20.0).toFixed(2);
       }
     }
 
-        function startRush() {
+    // скорость роста множителя: медленно в начале, быстрее дальше
+    function calcStepDelta() {
+      if (currentMulti < 1.3) return 0.01;
+      if (currentMulti < 1.7) return 0.02;
+      if (currentMulti < 2.5) return 0.04;
+      if (currentMulti < 4.0) return 0.06;
+      if (currentMulti < 6.0) return 0.09;
+      return 0.12;
+    }
+
+    function startRush() {
       if (rushState === "running") return;
 
       const betValue = parseInt(rushBetInput.value, 10);
@@ -596,7 +607,7 @@
         return;
       }
 
-      resetRush(); // сбрасываем прошлую игру
+      resetRushForNewGame();
       rushState = "running";
       rushBet = betValue;
       demoBalance -= rushBet;
@@ -604,7 +615,6 @@
 
       rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
 
-      // новая функция: распределение краша от x1.00 до x50 с редкими высокими
       crashMulti = generateCrashMultiplier();
 
       rushCashoutBtn.disabled = false;
@@ -613,39 +623,38 @@
       rushTimer = setInterval(() => {
         if (rushState !== "running") return;
 
-        // скорость роста множителя (чуть быстрее, чем раньше)
-        currentMulti += 0.08;
+        currentMulti += calcStepDelta();
 
-        // обновляем UI
         rushMultEl.textContent = "x" + currentMulti.toFixed(2);
-        const progress = Math.min(currentMulti / 10, 1) * 100; // бар заполняется до x10
+        const progress = Math.min(currentMulti / 10, 1) * 100;
         rushRocketEl.style.width = progress + "%";
 
-        // краш
         if (currentMulti >= crashMulti) {
-          clearInterval(rushTimer);
-          rushTimer = null;
-
-          if (rushState === "running") {
-            rushState = "crashed";
-            rushCashoutBtn.disabled = true;
-            rushStartBtn.disabled = false; // можно сразу стартануть заново
-            rushStatusEl.textContent =
-              `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+          if (rushTimer) {
+            clearInterval(rushTimer);
+            rushTimer = null;
           }
+
+          // краш
+          rushState = "idle";
+          rushCashoutBtn.disabled = true;
+          rushStartBtn.disabled = false;
+          rushStatusEl.textContent =
+            `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
         }
-      }, 60);
+      }, 70); // тики чуть медленнее, чем было
     }
 
-        function cashoutRush() {
+    function cashoutRush() {
       if (rushState !== "running") return;
 
-      rushState = "cashed";
+      rushState = "idle";
       if (rushTimer) {
         clearInterval(rushTimer);
         rushTimer = null;
       }
       rushCashoutBtn.disabled = true;
+      rushStartBtn.disabled = false;
 
       const winAmount = Math.floor(rushBet * currentMulti);
       demoBalance += winAmount;
@@ -653,9 +662,6 @@
 
       rushStatusEl.textContent =
         `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
-
-      // сразу можно стартовать новую игру
-      rushStartBtn.disabled = false;
     }
 
     rushStartBtn.addEventListener('click', startRush);
