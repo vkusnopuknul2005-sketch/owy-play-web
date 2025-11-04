@@ -276,10 +276,6 @@
       margin-bottom: 12px;
     }
 
-    .rush-track {
-      margin-bottom: 12px;
-    }
-
     .rush-track-line {
       width: 100%;
       height: 10px;
@@ -304,14 +300,19 @@
     .rush-status {
       font-size: 12px;
       color: #9ea2b0;
-      margin-bottom: 12px;
+      margin: 12px 0;
       min-height: 32px;
     }
 
-    .rush-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .rush-history {
+      font-size: 11px;
+      color: #7f8491;
+      margin-bottom: 10px;
+      min-height: 14px;
+    }
+
+    .rush-input {
+      margin-bottom: 10px;
     }
 
     .rush-input label {
@@ -336,63 +337,10 @@
       border-color: #1ddb6f;
     }
 
-        .rush-auto-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .auto-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      font-size: 11px;
-      color: #9ea2b0;
-    }
-
-    .auto-toggle input {
-      display: none;
-    }
-
-    .auto-toggle-slider {
-      width: 28px;
-      height: 16px;
-      border-radius: 999px;
-      background: #272a33;
-      position: relative;
-      transition: background 0.15s ease;
-    }
-
-    .auto-toggle-slider::before {
-      content: "";
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #cfd2de;
-      transition: transform 0.15s ease;
-    }
-
-    .auto-toggle input:checked + .auto-toggle-slider {
-      background: #1ddb6f;
-    }
-
-    .auto-toggle input:checked + .auto-toggle-slider::before {
-      transform: translateX(12px);
-    }
-
-    .auto-toggle-label {
-      min-width: 22px;
-      text-align: right;
-    }
-
     .rush-buttons {
       display: flex;
       gap: 8px;
+      margin-top: 4px;
     }
 
     #rush-cashout[disabled] {
@@ -400,11 +348,51 @@
       cursor: default;
     }
 
-    .rush-history {
-      font-size: 11px;
-      color: #7f8491;
-      margin-bottom: 10px;
-      min-height: 14px;
+    /* Галочка для автовывода */
+    .auto-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+
+    .auto-checkbox input {
+      display: none;
+    }
+
+    .checkmark {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid #3a3d44;
+      background: #080a0f;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .auto-checkbox input:checked + .checkmark {
+      border-color: #1ddb6f;
+      background: #1ddb6f;
+      box-shadow: 0 0 10px rgba(29, 219, 111, 0.6);
+    }
+
+    .auto-checkbox input:checked + .checkmark::after {
+      content: "✓";
+      position: absolute;
+      left: 3px;
+      top: -1px;
+      font-size: 13px;
+      color: #05060a;
+      font-weight: bold;
+    }
+
+    .auto-label-text {
+      font-size: 12px;
+      color: #cfd2de;
     }
   </style>
 </head>
@@ -430,7 +418,7 @@
       <div class="section-title">Рекомендуем сейчас</div>
 
       <div class="cards">
-        <!-- Rush -->
+        <!-- Rush карточка -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -448,38 +436,7 @@
           </div>
         </div>
 
-        <!-- Plinko (заглушка) -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Plinko</div>
-              <div class="card-sub">Выбирай риск: low / mid / high</div>
-            </div>
-            <div class="chip">🟢 Plinko</div>
-          </div>
-          <div class="card-footer">
-            <button class="btn btn-primary">Играть Plinko</button>
-            <div class="tag-row">
-              <div class="tag">low / mid / high</div>
-              <div class="tag">рандомный множитель</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Matches (заглушка) -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Ставки на киберспорт</div>
-              <div class="card-sub">CS2, NAVI, VP, FaZe и другие</div>
-            </div>
-            <div class="chip">⚽ Live soon</div>
-          </div>
-          <div class="card-footer">
-            <button class="btn btn-primary">Открыть матчи</button>
-            <button class="btn btn-ghost">Мои ставки</button>
-          </div>
-        </div>
+        <!-- Plinko / Ставки можно добавить позже -->
       </div>
     </main>
 
@@ -515,12 +472,11 @@
 
       <div class="rush-multiplier" id="rush-multiplier">x1.00</div>
 
-      <div class="rush-track">
-        <div class="rush-track-line">
-          <div class="rush-rocket" id="rush-rocket"></div>
-        </div>
+      <div class="rush-track-line">
+        <div class="rush-rocket" id="rush-rocket"></div>
       </div>
-          <div class="rush-status" id="rush-status">
+
+      <div class="rush-status" id="rush-status">
         Выбери ставку и жми старт
       </div>
 
@@ -528,95 +484,71 @@
         История: —
       </div>
 
-      <div class="rush-controls">
+      <div class="rush-input">
+        <label class="auto-checkbox">
+          <input type="checkbox" id="rush-auto-enabled" checked>
+          <span class="checkmark"></span>
+          <span class="auto-label-text">Автовывод, x</span>
+        </label>
+        <input type="number" id="rush-auto" value="2.0" step="0.1" min="1.01">
+      </div>
 
-      <div class="rush-controls">
-        <div class="rush-input">
-          <label for="rush-bet">Ставка, OWY</label>
-          <input type="number" id="rush-bet" value="10" min="10">
-        </div>
-        <div class="rush-input">
-  <div class="rush-auto-header">
-    <label for="rush-auto">Автовывод, x</label>
-    <label class="auto-toggle">
-      <input type="checkbox" id="rush-auto-enabled" checked>
-      <span class="auto-toggle-slider"></span>
-      <span class="auto-toggle-label">Вкл</span>
-    </label>
-  </div>
-  <input type="number" id="rush-auto" value="2.0" step="0.1" min="1.01">
-</div>
-        <div class="rush-buttons">
-          <button class="btn btn-primary" id="rush-start">Старт</button>
-          <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
-        </div>
+      <div class="rush-input">
+        <label for="rush-bet">Ставка, OWY</label>
+        <input type="number" id="rush-bet" value="10" min="10">
+      </div>
+
+      <div class="rush-buttons">
+        <button class="btn btn-primary" id="rush-start">Старт</button>
+        <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
       </div>
     </div>
   </div>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    // Telegram WebApp (на будущее)
-    let tg = null;
-    let user = null;
-    const balanceEl = document.querySelector('.balance-value');
+    // Telegram WebApp
+    let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) tg.expand();
+
+    const balanceEl       = document.querySelector('.balance-value');
+    const rushOverlay     = document.getElementById('rush-overlay');
+    const rushOpenBtn     = document.getElementById('rush-open');
+    const rushBackBtn     = document.getElementById('rush-back');
+    const rushMultEl      = document.getElementById('rush-multiplier');
+    const rushRocketEl    = document.getElementById('rush-rocket');
+    const rushStatusEl    = document.getElementById('rush-status');
+    const rushHistoryEl   = document.getElementById('rush-history');
+    const rushBetInput    = document.getElementById('rush-bet');
+    const rushAutoInput   = document.getElementById('rush-auto');
+    const rushAutoEnabled = document.getElementById('rush-auto-enabled');
+    const rushStartBtn    = document.getElementById('rush-start');
+    const rushCashoutBtn  = document.getElementById('rush-cashout');
 
     let demoBalance = 1000;
-
-    if (window.Telegram && window.Telegram.WebApp) {
-      tg = window.Telegram.WebApp;
-      tg.expand();
-      user = tg.initDataUnsafe?.user;
-    }
-
-    function updateBalanceView() {
-      const formatted = demoBalance.toLocaleString("ru-RU");
-      if (user) {
-        balanceEl.textContent = formatted + " OWY";
-      } else {
-        balanceEl.textContent = "Demo • " + formatted + " OWY";
-      }
-    }
-
-    updateBalanceView();
-
-    // ---- Rush logic ----
-    const rushOverlay    = document.getElementById('rush-overlay');
-    const rushOpenBtn    = document.getElementById('rush-open');
-    const rushBackBtn    = document.getElementById('rush-back');
-    const rushMultEl     = document.getElementById('rush-multiplier');
-    const rushRocketEl   = document.getElementById('rush-rocket');
-    const rushStatusEl     = document.getElementById('rush-status');
-    const rushBetInput     = document.getElementById('rush-bet');
-    const rushAutoInput    = document.getElementById('rush-auto');
-    const rushAutoEnabled  = document.getElementById('rush-auto-enabled');
-    const rushStartBtn     = document.getElementById('rush-start');
-    const rushCashoutBtn   = document.getElementById('rush-cashout');
-
-    let rushTimer = null;
-    let rushState = "idle"; // idle / running
+    let rushTimer   = null;
+    let rushState   = "idle"; // idle / running
     let currentMulti = 1.0;
-    let crashMulti = 1.0;
-    let rushBet = 0;
-    let autoCashout = null; // множитель авто-вывода, если есть
+    let crashMulti   = 1.0;
+    let rushBet      = 0;
+    let autoCashout  = null;
     let crashHistory = [];
 
-function updateRushHistory() {
-  const el = document.getElementById('rush-history');
-  if (!el) return;
+    function updateBalanceView() {
+      balanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
+    }
+    updateBalanceView();
 
-  if (!crashHistory.length) {
-    el.textContent = "История: —";
-    return;
-  }
-
-  const last = crashHistory.slice(-10); // последние 10
-  const text = last.map(v => "x" + v.toFixed(2)).join("   ");
-  el.textContent = "История: " + text;
-}
-
-// один раз обновим при загрузке
-updateRushHistory();
+    function updateRushHistory() {
+      if (!crashHistory.length) {
+        rushHistoryEl.textContent = "История: —";
+        return;
+      }
+      const last = crashHistory.slice(-10);
+      rushHistoryEl.textContent =
+        "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
+    }
+    updateRushHistory();
 
     function resetRushForNewGame() {
       rushState = "idle";
@@ -644,44 +576,21 @@ updateRushHistory();
       resetRushForNewGame();
     }
 
-    if (rushOpenBtn) {
-      rushOpenBtn.addEventListener('click', openRush);
-    }
-
+    rushOpenBtn.addEventListener('click', openRush);
     rushBackBtn.addEventListener('click', closeRush);
 
-    // распределение краша: 1.00–50, редкие большие иксы
     function generateCrashMultiplier() {
       const r = Math.random();
-
-      if (r < 0.05) {
-        // 5% — моментальный краш x1.00
-        return 1.0;
-      } else if (r < 0.25) {
-        // 20% — мелкие 1.01–1.20
-        return +(Math.random() * (1.20 - 1.01) + 1.01).toFixed(2);
-      } else if (r < 0.60) {
-        // 35% — 1.20–2.00
-        return +(Math.random() * (2.0 - 1.20) + 1.20).toFixed(2);
-      } else if (r < 0.80) {
-        // 20% — 2.00–3.00
-        return +(Math.random() * (3.0 - 2.0) + 2.0).toFixed(2);
-      } else if (r < 0.92) {
-        // 12% — 3.00–5.00
-        return +(Math.random() * (5.0 - 3.0) + 3.0).toFixed(2);
-      } else if (r < 0.98) {
-        // 6% — 5.00–10.00
-        return +(Math.random() * (10.0 - 5.0) + 5.0).toFixed(2);
-      } else if (r < 0.995) {
-        // 1.5% — 10.00–20.00
-        return +(Math.random() * (20.0 - 10.0) + 10.0).toFixed(2);
-      } else {
-        // 0.5% — 20.00–50.00
-        return +(Math.random() * (50.0 - 20.0) + 20.0).toFixed(2);
-      }
+      if (r < 0.05)   return 1.0;
+      if (r < 0.25)   return +(Math.random() * (1.20 - 1.01) + 1.01).toFixed(2);
+      if (r < 0.60)   return +(Math.random() * (2.0  - 1.20) + 1.20).toFixed(2);
+      if (r < 0.80)   return +(Math.random() * (3.0  - 2.0)  + 2.0 ).toFixed(2);
+      if (r < 0.92)   return +(Math.random() * (5.0  - 3.0)  + 3.0 ).toFixed(2);
+      if (r < 0.98)   return +(Math.random() * (10.0 - 5.0)  + 5.0 ).toFixed(2);
+      if (r < 0.995)  return +(Math.random() * (20.0 - 10.0) + 10.0).toFixed(2);
+      return            +(Math.random() * (50.0 - 20.0) + 20.0).toFixed(2);
     }
 
-    // скорость роста множителя: медленно в начале, быстрее дальше
     function calcStepDelta() {
       if (currentMulti < 1.2) return 0.005;  // очень медленный старт
       if (currentMulti < 1.5) return 0.01;
@@ -706,30 +615,27 @@ updateRushHistory();
         return;
       }
 
-   
-     resetRushForNewGame();
+      // сбрасываем прошлую игру
+      resetRushForNewGame();
 
-// читаем авто-вывод, если тумблер включён
-let isAutoOn = rushAutoEnabled && rushAutoEnabled.checked;
-const autoValRaw = parseFloat(rushAutoInput.value);
-
-if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
-  autoCashout = autoValRaw;
-} else {
-  autoCashout = null;
-}
+      // читаем авто-вывод, только если галочка включена
+      const isAutoOn  = rushAutoEnabled && rushAutoEnabled.checked;
+      const autoValRaw = parseFloat(rushAutoInput.value);
+      if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
+        autoCashout = autoValRaw;
+      } else {
+        autoCashout = null;
+      }
 
       rushState = "running";
-      rushBet = betValue;
+      rushBet   = betValue;
       demoBalance -= rushBet;
       updateBalanceView();
 
       rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
-
       crashMulti = generateCrashMultiplier();
-
       rushCashoutBtn.disabled = false;
-      rushStartBtn.disabled = true;
+      rushStartBtn.disabled   = true;
 
       rushTimer = setInterval(() => {
         if (rushState !== "running") return;
@@ -758,11 +664,11 @@ if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
 
           rushState = "idle";
           rushCashoutBtn.disabled = true;
-          rushStartBtn.disabled = false;
+          rushStartBtn.disabled   = false;
           rushStatusEl.textContent =
             `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
         }
-      }, 70); // тики чуть медленнее
+      }, 70);
     }
 
     function cashoutRush() {
@@ -774,7 +680,7 @@ if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
         rushTimer = null;
       }
       rushCashoutBtn.disabled = true;
-      rushStartBtn.disabled = false;
+      rushStartBtn.disabled   = false;
 
       const winAmount = Math.floor(rushBet * currentMulti);
       demoBalance += winAmount;
@@ -782,7 +688,6 @@ if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
 
       crashHistory.push(crashMulti);
       updateRushHistory();
-
 
       rushStatusEl.textContent =
         `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
