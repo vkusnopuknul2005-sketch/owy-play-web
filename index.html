@@ -1183,7 +1183,12 @@
     plinkoBackBtn.addEventListener('click', closePlinko);
     plinkoStartBtn.addEventListener('click', playPlinko);
 
-    // Инициализация Plinko при загрузке
+    // ==== Инициализация при загрузке ====
+    loadBalance();
+    initProfile();
+    updateBalanceView();
+    updateRushHistory();
+    setActiveTab('home');
     renderPlinkoPegs();
     renderPlinkoConfig();
   </script>
