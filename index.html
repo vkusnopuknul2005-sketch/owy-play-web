@@ -240,6 +240,111 @@
     .nav-label {
       font-size: 10px;
     }
+
+    /* --- Rush overlay --- */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 6, 10, 0.96);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .overlay-inner {
+      width: 100%;
+      max-width: 420px;
+      padding: 18px 18px 90px;
+    }
+
+    .overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .overlay-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .rush-multiplier {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .rush-track {
+      margin-bottom: 12px;
+    }
+
+    .rush-track-line {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .rush-rocket {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1ddb6f, #16a451);
+      box-shadow: 0 0 18px rgba(29, 219, 111, 0.8);
+      transition: width 0.05s linear;
+    }
+
+    .rush-status {
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-bottom: 12px;
+      min-height: 32px;
+    }
+
+    .rush-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rush-input label {
+      font-size: 12px;
+      color: #9ea2b0;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .rush-input input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #20232b;
+      background: #080a0f;
+      color: #f5f5f5;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .rush-input input:focus {
+      border-color: #1ddb6f;
+    }
+
+    .rush-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    #rush-cashout[disabled] {
+      opacity: 0.4;
+      cursor: default;
+    }
   </style>
 </head>
 <body>
@@ -274,7 +379,7 @@
             <div class="chip">🚀 x1.2 – x10</div>
           </div>
           <div class="card-footer">
-            <button class="btn btn-primary">Играть Rush</button>
+            <button class="btn btn-primary" id="rush-open">Играть Rush</button>
             <div class="tag-row">
               <div class="tag">быстрая игра</div>
               <div class="tag">риск / награда</div>
@@ -282,7 +387,7 @@
           </div>
         </div>
 
-        <!-- Plinko -->
+        <!-- Plinko (пока заглушка) -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -300,7 +405,7 @@
           </div>
         </div>
 
-        <!-- Матчи -->
+        <!-- Матчи (потом подключим) -->
         <div class="card">
           <div class="card-header">
             <div>
@@ -338,44 +443,187 @@
       </div>
     </nav>
   </div>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  const balanceEl = document.querySelector('.balance-value');
 
-  let tg = null;
-  let user = null;
+  <!-- Rush overlay -->
+  <div id="rush-overlay" class="overlay">
+    <div class="overlay-inner">
+      <div class="overlay-header">
+        <button class="btn btn-ghost" id="rush-back">← Назад</button>
+        <div class="overlay-title">Rush</div>
+      </div>
 
-  // Проверяем, есть ли Telegram WebApp (если открыто внутри ТГ)
-  if (window.Telegram && window.Telegram.WebApp) {
-    tg = window.Telegram.WebApp;
-    tg.expand();
-    user = tg.initDataUnsafe?.user;
-  }
+      <div class="rush-multiplier" id="rush-multiplier">x1.00</div>
 
-  if (user) {
-    console.log("Привет,", user.first_name);
-    balanceEl.textContent = "1 000 OWY";
-  } else {
-    // Обычный браузер / демо-режим
-    balanceEl.textContent = "Demo • 1 000 OWY";
-  }
+      <div class="rush-track">
+        <div class="rush-track-line">
+          <div class="rush-rocket" id="rush-rocket"></div>
+        </div>
+      </div>
 
-  // Обработка кликов по основным зелёным кнопкам
-  document.querySelectorAll('.btn-primary').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const action = `action:${btn.textContent}`;
+      <div class="rush-status" id="rush-status">
+        Выбери ставку и жми старт
+      </div>
 
-      if (tg) {
-        // Если открыто как mini app — отправляем данные боту
-        tg.sendData(action);
-        tg.close();
+      <div class="rush-controls">
+        <div class="rush-input">
+          <label for="rush-bet">Ставка, OWY</label>
+          <input type="number" id="rush-bet" value="100" min="1">
+        </div>
+        <div class="rush-buttons">
+          <button class="btn btn-primary" id="rush-start">Старт</button>
+          <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    // Telegram WebApp (если открыто внутри ТГ)
+    let tg = null;
+    let user = null;
+    const balanceEl = document.querySelector('.balance-value');
+
+    let demoBalance = 1000;
+
+    if (window.Telegram && window.Telegram.WebApp) {
+      tg = window.Telegram.WebApp;
+      tg.expand();
+      user = tg.initDataUnsafe?.user;
+    }
+
+    function updateBalanceView() {
+      const formatted = demoBalance.toLocaleString("ru-RU");
+      if (user) {
+        balanceEl.textContent = formatted + " OWY";
       } else {
-        // Если просто в браузере — пока только лог
-        console.log("Клик по кнопке:", action);
-        alert("Здесь, внутри Telegram, эта кнопка будет запускать игру/ставки 😉");
+        balanceEl.textContent = "Demo • " + formatted + " OWY";
       }
-    });
-  });
-</script>
+    }
+
+    updateBalanceView();
+
+    // ---- Rush logic ----
+    const rushOverlay    = document.getElementById('rush-overlay');
+    const rushOpenBtn    = document.getElementById('rush-open');
+    const rushBackBtn    = document.getElementById('rush-back');
+    const rushMultEl     = document.getElementById('rush-multiplier');
+    const rushRocketEl   = document.getElementById('rush-rocket');
+    const rushStatusEl   = document.getElementById('rush-status');
+    const rushBetInput   = document.getElementById('rush-bet');
+    const rushStartBtn   = document.getElementById('rush-start');
+    const rushCashoutBtn = document.getElementById('rush-cashout');
+
+    let rushTimer = null;
+    let rushState = "idle"; // idle / running / crashed / cashed
+    let currentMulti = 1.0;
+    let crashMulti = 1.0;
+    let rushBet = 0;
+
+    function resetRush() {
+      rushState = "idle";
+      currentMulti = 1.0;
+      crashMulti = 1.0;
+      rushBet = 0;
+      rushMultEl.textContent = "x1.00";
+      rushRocketEl.style.width = "0%";
+      rushStatusEl.textContent = "Выбери ставку и жми старт";
+      rushStartBtn.disabled = false;
+      rushCashoutBtn.disabled = true;
+      if (rushTimer) {
+        clearInterval(rushTimer);
+        rushTimer = null;
+      }
+    }
+
+    function openRush() {
+      rushOverlay.style.display = "flex";
+      resetRush();
+    }
+
+    function closeRush() {
+      rushOverlay.style.display = "none";
+      resetRush();
+    }
+
+    if (rushOpenBtn) {
+      rushOpenBtn.addEventListener('click', openRush);
+    }
+
+    rushBackBtn.addEventListener('click', closeRush);
+
+    function startRush() {
+      if (rushState === "running") return;
+
+      const betValue = parseInt(rushBetInput.value, 10);
+      if (isNaN(betValue) || betValue <= 0) {
+        rushStatusEl.textContent = "Ставка должна быть больше нуля 🤨";
+        return;
+      }
+
+      if (betValue > demoBalance) {
+        rushStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+        return;
+      }
+
+      resetRush();
+      rushState = "running";
+      rushBet = betValue;
+      demoBalance -= rushBet;
+      updateBalanceView();
+
+      rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
+
+      // рандомный краш от 1.20 до 8.00
+      crashMulti = +(Math.random() * (8.0 - 1.2) + 1.2).toFixed(2);
+
+      rushCashoutBtn.disabled = false;
+      rushStartBtn.disabled = true;
+
+      rushTimer = setInterval(() => {
+        if (rushState !== "running") return;
+
+        currentMulti += 0.05;
+        if (currentMulti > 10) currentMulti = 10;
+
+        rushMultEl.textContent = "x" + currentMulti.toFixed(2);
+        const progress = Math.min(currentMulti / 10, 1) * 100;
+        rushRocketEl.style.width = progress + "%";
+
+        if (currentMulti >= crashMulti) {
+          clearInterval(rushTimer);
+          rushTimer = null;
+
+          if (rushState === "running") {
+            rushState = "crashed";
+            rushCashoutBtn.disabled = true;
+            rushStatusEl.textContent =
+              `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+          }
+        }
+      }, 60);
+    }
+
+    function cashoutRush() {
+      if (rushState !== "running") return;
+
+      rushState = "cashed";
+      if (rushTimer) {
+        clearInterval(rushTimer);
+        rushTimer = null;
+      }
+      rushCashoutBtn.disabled = true;
+
+      const winAmount = Math.floor(rushBet * currentMulti);
+      demoBalance += winAmount;
+      updateBalanceView();
+
+      rushStatusEl.textContent =
+        `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+    }
+
+    rushStartBtn.addEventListener('click', startRush);
+    rushCashoutBtn.addEventListener('click', cashoutRush);
+  </script>
 </body>
 </html>
