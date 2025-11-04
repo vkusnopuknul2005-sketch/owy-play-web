@@ -490,6 +490,40 @@
       position: relative;
     }
 
+    .rush-scene {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      margin: 10px 0 6px;
+      border-radius: 16px;
+      background: radial-gradient(circle at bottom, #0b1512, #05070a);
+      overflow: hidden;
+      border: 1px solid rgba(29, 219, 111, 0.15);
+     }
+
+    .rush-slope {
+      position: absolute;
+      left: -20%;
+      bottom: -30px;
+      width: 160%;
+      height: 80px;
+      background: linear-gradient(135deg, #091b16, #020305);
+      border-radius: 40px;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.9);
+      transform: rotate(-18deg);
+     }
+
+    #rush-owy {
+      position: absolute;
+      width: 60px;
+      left: 4%;
+      bottom: 4px;
+      transform-origin: center bottom;
+      transform: translate(0%, 0%) rotate(0deg);
+      transition: transform 0.07s linear;
+      image-rendering: crisp-edges;
+     }
+
     .rush-rocket {
       position: absolute;
       top: 0;
@@ -870,6 +904,11 @@
 
       <div class="rush-multiplier" id="rush-multiplier">x1.00</div>
 
+      <div class="rush-scene">
+        <div class="rush-slope"></div>
+        <img src="owy.png" alt="OWY" id="rush-owy">
+      </div>
+
       <div class="rush-track-line">
         <div class="rush-rocket" id="rush-rocket"></div>
       </div>
@@ -1005,6 +1044,7 @@
     const rushX2RiskEl    = document.getElementById('rush-x2-risk');
     const rushStartBtn    = document.getElementById('rush-start');
     const rushCashoutBtn  = document.getElementById('rush-cashout');
+    const rushOwyEl       = document.getElementById('rush-owy');
 
     const plinkoOverlay    = document.getElementById('plinko-overlay');
     const plinkoOpenBtn    = document.getElementById('plinko-open');
@@ -1230,6 +1270,36 @@
     let autoCashout  = null;
     let crashHistory = [];
 
+    function resetRushVisual() {
+      if (!rushOwyEl) return;
+      rushOwyEl.style.transition = 'none';
+      rushOwyEl.style.transform = 'translate(0%, 0%) rotate(0deg)';
+      // вернём плавный переход после сброса
+      requestAnimationFrame(() => {
+        rushOwyEl.style.transition = 'transform 0.07s linear';
+      });
+     }
+
+     function updateRushVisual() {
+       if (!rushOwyEl) return;
+
+       // до какого мульта рисуем путь целиком (дальше упирается в верх горы)
+       const maxMultiForPath = 20; 
+       const t = Math.min(currentMulti / maxMultiForPath, 1); // 0..1
+
+       const x = 80 * t;  // от 0 до ~80% по X
+       const y = 60 * t;  // от 0 до ~60% по Y (вверх)
+
+       rushOwyEl.style.transform = `translate(${x}%, -${y}%) rotate(0deg)`;
+      }
+
+     function crashRushVisual() {
+       if (!rushOwyEl) return;
+       rushOwyEl.style.transition = 'transform 0.35s ease-in';
+       // падение вниз с небольшим разворотом
+       rushOwyEl.style.transform += ' translateY(120px) rotate(40deg)';
+      }
+
     function updateRushHistory() {
       if (!crashHistory.length) {
         rushHistoryEl.textContent = "История: —";
@@ -1254,6 +1324,7 @@
         clearInterval(rushTimer);
         rushTimer = null;
       }
+      resetRushVisual();
     }
 
     function openRush() {
@@ -1350,6 +1421,8 @@
         const progress = Math.min(currentMulti / 10, 1) * 100;
         rushRocketEl.style.width = progress + "%";
 
+        updateRushVisual();
+
         if (autoCashout && currentMulti >= autoCashout) {
           cashoutRush();
           return;
@@ -1375,6 +1448,7 @@
           rushStartBtn.disabled   = false;
           rushStatusEl.textContent =
             `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+          crashRushVisual();
           vibrate(90);
         }
       }, 70);
