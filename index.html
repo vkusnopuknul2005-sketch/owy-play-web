@@ -1045,6 +1045,9 @@
     const rushStartBtn    = document.getElementById('rush-start');
     const rushCashoutBtn  = document.getElementById('rush-cashout');
     const rushOwyEl       = document.getElementById('rush-owy');
+    const RUSH_PATH_MAX_MULTI = 10;
+    const RUSH_PATH_MAX_X = 220;
+    const RUSH_PATH_MAX_Y = 70;
 
     const plinkoOverlay    = document.getElementById('plinko-overlay');
     const plinkoOpenBtn    = document.getElementById('plinko-open');
@@ -1273,31 +1276,26 @@
     function resetRushVisual() {
       if (!rushOwyEl) return;
       rushOwyEl.style.transition = 'none';
-      rushOwyEl.style.transform = 'translate(0%, 0%) rotate(0deg)';
-      // вернём плавный переход после сброса
+      rushOwyEl.style.transform = 'translate(0px, 0px) rotate(0deg)';
       requestAnimationFrame(() => {
         rushOwyEl.style.transition = 'transform 0.07s linear';
       });
-     }
+    }
 
      function updateRushVisual() {
        if (!rushOwyEl) return;
-
-       // до какого мульта рисуем путь целиком (дальше упирается в верх горы)
-       const maxMultiForPath = 20; 
-       const t = Math.min(currentMulti / maxMultiForPath, 1); // 0..1
-
-       const x = 80 * t;  // от 0 до ~80% по X
-       const y = 60 * t;  // от 0 до ~60% по Y (вверх)
-
-       rushOwyEl.style.transform = `translate(${x}%, -${y}%) rotate(0deg)`;
-      }
+       const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
+       const x = RUSH_PATH_MAX_X * t;
+       const y = RUSH_PATH_MAX_Y * t;
+       rushOwyEl.style.transform = `translate(${x}px, -${y}px) rotate(0deg)`;
+     }
 
      function crashRushVisual() {
        if (!rushOwyEl) return;
        rushOwyEl.style.transition = 'transform 0.35s ease-in';
-       // падение вниз с небольшим разворотом
-       rushOwyEl.style.transform += ' translateY(120px) rotate(40deg)';
+       const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
+       const x = RUSH_PATH_MAX_X * t;
+       rushOwyEl.style.transform = `translate(${x}px, 120px) rotate(40deg)`;
       }
 
     function updateRushHistory() {
