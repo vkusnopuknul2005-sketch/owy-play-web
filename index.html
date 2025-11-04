@@ -345,6 +345,13 @@
       opacity: 0.4;
       cursor: default;
     }
+
+    .rush-history {
+      font-size: 11px;
+      color: #7f8491;
+      margin-bottom: 10 px;
+      Min-height: 14px;
+    }
   </style>
 </head>
 <body>
@@ -459,9 +466,12 @@
           <div class="rush-rocket" id="rush-rocket"></div>
         </div>
       </div>
-
       <div class="rush-status" id="rush-status">
         Выбери ставку и жми старт
+      </div>
+
+      </div> class="rush-history" id="rush-history">
+       История: -
       </div>
 
       <div class="rush-controls">
@@ -525,13 +535,30 @@
     let crashMulti = 1.0;
     let rushBet = 0;
     let autoCashout = null; // множитель авто-вывода, если есть
+    let crashHistory = [];
+
+function updateRushHistory() {
+  const el = document.getElementById('rush-history');
+  if (!el) return;
+
+  if (!crashHistory.length) {
+    el.textContent = "История: —";
+    return;
+  }
+
+  const last = crashHistory.slice(-10); // последние 10
+  const text = last.map(v => "x" + v.toFixed(2)).join("   ");
+  el.textContent = "История: " + text;
+}
+
+// один раз обновим при загрузке
+updateRushHistory();
 
     function resetRushForNewGame() {
       rushState = "idle";
       currentMulti = 1.0;
       crashMulti = 1.0;
       rushBet = 0;
-      autoCashout = null;
       rushMultEl.textContent = "x1.00";
       rushRocketEl.style.width = "0%";
       rushStatusEl.textContent = "Выбери ставку и жми старт";
@@ -615,6 +642,8 @@
         return;
       }
 
+      resetRushForNewGame();
+
       // читаем авто-вывод
       const autoValRaw = parseFloat(rushAutoInput.value);
       if (!isNaN(autoValRaw) && autoValRaw > 1.0) {
@@ -623,7 +652,6 @@
         autoCashout = null;
       }
 
-      resetRushForNewGame();
       rushState = "running";
       rushBet = betValue;
       demoBalance -= rushBet;
@@ -658,6 +686,9 @@
             rushTimer = null;
           }
 
+          crashHistory.push(crashMulti);
+          updateRushHistory();
+
           rushState = "idle";
           rushCashoutBtn.disabled = true;
           rushStartBtn.disabled = false;
@@ -681,6 +712,10 @@
       const winAmount = Math.floor(rushBet * currentMulti);
       demoBalance += winAmount;
       updateBalanceView();
+
+      crashHistory.push(crashMulti);
+      updateRushHistory();
+
 
       rushStatusEl.textContent =
         `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
