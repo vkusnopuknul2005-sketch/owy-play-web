@@ -241,7 +241,7 @@
       font-size: 10px;
     }
 
-    /* --- Rush overlay --- */
+    /* --- Общий overlay --- */
     .overlay {
       position: fixed;
       inset: 0;
@@ -270,6 +270,7 @@
       font-weight: 600;
     }
 
+    /* Rush UI */
     .rush-multiplier {
       font-size: 32px;
       font-weight: 700;
@@ -341,6 +342,7 @@
       display: flex;
       gap: 8px;
       margin-top: 4px;
+      flex-wrap: wrap;
     }
 
     #rush-cashout[disabled] {
@@ -367,8 +369,8 @@
     .checkmark {
       width: 16px;
       height: 16px;
-      display: inline-block;   /* вот это главное */
-      flex-shrink: 0;          /* чтобы не сжимался рядом с текстом */
+      display: inline-block;
+      flex-shrink: 0;
       border-radius: 4px;
       border: 1px solid #3a3d44;
       background: #080a0f;
@@ -395,6 +397,13 @@
     .auto-label-text {
       font-size: 12px;
       color: #cfd2de;
+    }
+
+    /* Plinko UI (пока переиспользуем rush-классы) */
+    .plinko-risk-active {
+      background: rgba(29, 219, 111, 0.15);
+      border-color: #1ddb6f;
+      color: #e7fdf0;
     }
   </style>
 </head>
@@ -438,7 +447,23 @@
           </div>
         </div>
 
-        <!-- Plinko / Ставки можно добавить позже -->
+        <!-- Plinko карточка -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Plinko</div>
+              <div class="card-sub">Выбирай риск: low / mid / high</div>
+            </div>
+            <div class="chip">🟢 Plinko</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-primary" id="plinko-open">Играть Plinko</button>
+            <div class="tag-row">
+              <div class="tag">low / mid / high</div>
+              <div class="tag">рандомный множитель</div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -507,6 +532,38 @@
     </div>
   </div>
 
+  <!-- Plinko overlay -->
+  <div id="plinko-overlay" class="overlay">
+    <div class="overlay-inner">
+      <div class="overlay-header">
+        <button class="btn btn-ghost" id="plinko-back">← Назад</button>
+        <div class="overlay-title">Plinko</div>
+      </div>
+
+      <div class="rush-status" id="plinko-status">
+        Выбери риск, ставку и жми старт
+      </div>
+
+      <div class="rush-input">
+        <label>Риск</label>
+        <div class="rush-buttons" id="plinko-risk-buttons">
+          <button class="btn btn-ghost" data-risk="low">Low</button>
+          <button class="btn btn-ghost plinko-risk-active" data-risk="mid">Mid</button>
+          <button class="btn btn-ghost" data-risk="high">High</button>
+        </div>
+      </div>
+
+      <div class="rush-input">
+        <label for="plinko-bet">Ставка, OWY</label>
+        <input type="number" id="plinko-bet" value="10" min="10">
+      </div>
+
+      <div class="rush-buttons">
+        <button class="btn btn-primary" id="plinko-start">Запустить</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     // Telegram WebApp
@@ -514,6 +571,8 @@
     if (tg) tg.expand();
 
     const balanceEl       = document.querySelector('.balance-value');
+
+    // Rush элементы
     const rushOverlay     = document.getElementById('rush-overlay');
     const rushOpenBtn     = document.getElementById('rush-open');
     const rushBackBtn     = document.getElementById('rush-back');
@@ -527,7 +586,19 @@
     const rushStartBtn    = document.getElementById('rush-start');
     const rushCashoutBtn  = document.getElementById('rush-cashout');
 
+    // Plinko элементы
+    const plinkoOverlay   = document.getElementById('plinko-overlay');
+    const plinkoOpenBtn   = document.getElementById('plinko-open');
+    const plinkoBackBtn   = document.getElementById('plinko-back');
+    const plinkoStatusEl  = document.getElementById('plinko-status');
+    const plinkoBetInput  = document.getElementById('plinko-bet');
+    const plinkoStartBtn  = document.getElementById('plinko-start');
+    const plinkoRiskBtns  = document.querySelectorAll('#plinko-risk-buttons button');
+
+    // Общий баланс (демо)
     let demoBalance = 1000;
+
+    // Rush состояние
     let rushTimer   = null;
     let rushState   = "idle"; // idle / running
     let currentMulti = 1.0;
@@ -594,7 +665,7 @@
     }
 
     function calcStepDelta() {
-      if (currentMulti < 1.2) return 0.005;  // очень медленный старт
+      if (currentMulti < 1.2) return 0.005;  // медленный старт
       if (currentMulti < 1.5) return 0.01;
       if (currentMulti < 2.0) return 0.02;
       if (currentMulti < 3.0) return 0.04;
@@ -617,11 +688,9 @@
         return;
       }
 
-      // сбрасываем прошлую игру
       resetRushForNewGame();
 
-      // читаем авто-вывод, только если галочка включена
-      const isAutoOn  = rushAutoEnabled && rushAutoEnabled.checked;
+      const isAutoOn   = rushAutoEnabled && rushAutoEnabled.checked;
       const autoValRaw = parseFloat(rushAutoInput.value);
       if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
         autoCashout = autoValRaw;
@@ -648,13 +717,11 @@
         const progress = Math.min(currentMulti / 10, 1) * 100;
         rushRocketEl.style.width = progress + "%";
 
-        // авто-вывод до краша
         if (autoCashout && currentMulti >= autoCashout) {
           cashoutRush();
           return;
         }
 
-        // краш
         if (currentMulti >= crashMulti) {
           if (rushTimer) {
             clearInterval(rushTimer);
@@ -697,6 +764,44 @@
 
     rushStartBtn.addEventListener('click', startRush);
     rushCashoutBtn.addEventListener('click', cashoutRush);
+
+    // ===== Plinko: только UI (открыть/закрыть + выбор риска) =====
+    let plinkoSelectedRisk = "mid";
+
+    function openPlinko() {
+      plinkoOverlay.style.display = "flex";
+      plinkoStatusEl.textContent = "Выбери риск, ставку и жми старт";
+    }
+
+    function closePlinko() {
+      plinkoOverlay.style.display = "none";
+    }
+
+    plinkoOpenBtn.addEventListener('click', openPlinko);
+    plinkoBackBtn.addEventListener('click', closePlinko);
+
+    plinkoRiskBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
+        btn.classList.add('plinko-risk-active');
+        plinkoSelectedRisk = btn.dataset.risk;
+      });
+    });
+
+    // пока просто заглушка на кнопку "Запустить"
+    plinkoStartBtn.addEventListener('click', () => {
+      const bet = parseInt(plinkoBetInput.value, 10);
+      if (isNaN(bet) || bet < 10) {
+        plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+        return;
+      }
+      if (bet > demoBalance) {
+        plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+        return;
+      }
+      plinkoStatusEl.textContent =
+        `Скоро здесь будет Plinko c риском "${plinkoSelectedRisk}" и ставкой ${bet} OWY 😉`;
+    });
   </script>
 </body>
 </html>
