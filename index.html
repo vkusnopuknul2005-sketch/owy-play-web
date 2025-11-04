@@ -1311,13 +1311,21 @@
        rushOwyEl.style.transform = `translate(${x}px, -${y}px) rotate(0deg)`;
      }
 
-     function crashRushVisual() {
-       if (!rushOwyEl) return;
-       rushOwyEl.style.transition = 'transform 0.35s ease-in';
-       const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
-       const x = RUSH_PATH_MAX_X * t;
-       rushOwyEl.style.transform = `translate(${x}px, 120px) rotate(40deg)`;
-      }
+    function crashRushVisual() {
+  if (!rushOwyEl) return;
+
+  // выключаем анимацию бега
+  rushOwyEl.classList.remove('rush-running');
+
+  // включаем плавное падение
+  rushOwyEl.style.transition = 'transform 0.35s ease-in';
+
+  const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
+  const x = RUSH_PATH_MAX_X * t;
+
+  // падаем вниз и немного наклоняемся
+  rushOwyEl.style.transform = `translate(${x}px, 120px) rotate(40deg)`;
+}
 
     function updateRushHistory() {
       if (!crashHistory.length) {
