@@ -1463,37 +1463,38 @@
           return;
         }
 
-        if (currentMulti >= crashMulti) {
-          if (rushTimer) {
-            clearInterval(rushTimer);
-            rushTimer = null;
-          }
+    if (currentMulti >= crashMulti) {
+  if (rushTimer) {
+    clearInterval(rushTimer);
+    rushTimer = null;
+  }
 
-          crashHistory.push(crashMulti);
-          updateRushHistory();
+  crashHistory.push(crashMulti);
+  updateRushHistory();
 
-          if (crashMulti > stats.bestMulti) {
-            stats.bestMulti = crashMulti;
-            saveStats();
-            updateStatsView();
-          }
+  if (crashMulti > stats.bestMulti) {
+    stats.bestMulti = crashMulti;
+    saveStats();
+    updateStatsView();
+  }
 
-          rushState = "idle";
-          rushCashoutBtn.disabled = true;
-          rushStartBtn.disabled   = false;
+  rushState = "idle";
+  rushCashoutBtn.disabled = true;
+  rushStartBtn.disabled   = false;
+
+  crashRushVisual();
 
   if (hasCashedOut) {
     const showCashMulti = cashedOutAt || crashMulti;
     rushStatusEl.textContent =
       `💥 Раунд упал на x${crashMulti.toFixed(2)}. Ты забрал на x${showCashMulti.toFixed(2)}.`;
-} else {
-  rushStatusEl.textContent =
-    `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
-  crashRushVisual();
-}
+  } else {
+    rushStatusEl.textContent =
+      `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+  }
 
-         vibrate(90);
-       }
+  vibrate(90);
+}
       }, 70);
     }
 
