@@ -399,7 +399,69 @@
       color: #cfd2de;
     }
 
-    /* Plinko UI (пока переиспользуем rush-классы) */
+    /* Plinko UI */
+    .plinko-board {
+      border-radius: 16px;
+      padding: 12px 10px 10px;
+      background: radial-gradient(circle at top, #182728, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+      margin-bottom: 10px;
+    }
+
+    .plinko-board.low {
+      background: radial-gradient(circle at top, #1a2730, #090b0f);
+    }
+
+    .plinko-board.mid {
+      background: radial-gradient(circle at top, #172c24, #090b0f);
+    }
+
+    .plinko-board.high {
+      background: radial-gradient(circle at top, #2b181d, #090b0f);
+    }
+
+    .plinko-pegs-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .plinko-peg {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2f3b44;
+    }
+
+    .plinko-slots {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .plinko-slot {
+      flex: 1;
+      min-width: 32px;
+      padding: 3px 4px;
+      border-radius: 999px;
+      background: #050709;
+      border: 1px solid #20232b;
+      text-align: center;
+      font-size: 10px;
+      color: #9ea2b0;
+    }
+
+    .plinko-slot.active {
+      background: linear-gradient(135deg, #1ddb6f, #16a451);
+      border-color: #1ddb6f;
+      color: #05060a;
+      box-shadow: 0 0 14px rgba(29, 219, 111, 0.8);
+      font-weight: 600;
+    }
+
     .plinko-risk-active {
       background: rgba(29, 219, 111, 0.15);
       border-color: #1ddb6f;
@@ -540,8 +602,30 @@
         <div class="overlay-title">Plinko</div>
       </div>
 
+      <div class="plinko-board mid" id="plinko-board">
+        <div class="plinko-pegs-row">
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+        </div>
+        <div class="plinko-pegs-row">
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+        </div>
+        <div class="plinko-pegs-row">
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+        </div>
+
+        <div class="plinko-slots" id="plinko-mults-row">
+          <!-- сюда JS подставит слоты с иксами -->
+        </div>
+      </div>
+
       <div class="rush-status" id="plinko-status">
-        Выбери риск, ставку и жми старт
+        Выбирай риск и запускай шар 😉
       </div>
 
       <div class="rush-input">
@@ -559,7 +643,7 @@
       </div>
 
       <div class="rush-buttons">
-        <button class="btn btn-primary" id="plinko-start">Запустить</button>
+        <button class="btn btn-primary" id="plinko-start">Запустить шар</button>
       </div>
     </div>
   </div>
@@ -594,6 +678,8 @@
     const plinkoBetInput  = document.getElementById('plinko-bet');
     const plinkoStartBtn  = document.getElementById('plinko-start');
     const plinkoRiskBtns  = document.querySelectorAll('#plinko-risk-buttons button');
+    const plinkoBoardEl   = document.getElementById('plinko-board');
+    const plinkoMultsRow  = document.getElementById('plinko-mults-row');
 
     // Общий баланс (демо)
     let demoBalance = 1000;
@@ -765,16 +851,45 @@
     rushStartBtn.addEventListener('click', startRush);
     rushCashoutBtn.addEventListener('click', cashoutRush);
 
-    // ===== Plinko: только UI (открыть/закрыть + выбор риска) =====
+    // ===== Plinko логика =====
+    const PLINKO_CONFIGS = {
+      low:  { multipliers: [0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5] },
+      mid:  { multipliers: [0.3, 0.5, 0.8, 1.0, 1.5, 2.0, 3.0, 5.0] },
+      high: { multipliers: [0.2, 0.3, 0.5, 1.0, 2.0, 4.0, 8.0, 15.0] }
+    };
+
     let plinkoSelectedRisk = "mid";
+    let plinkoRunning = false;
+
+    function renderPlinkoConfig() {
+      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+      if (!config) return;
+
+      // смена фона доски
+      plinkoBoardEl.classList.remove("low", "mid", "high");
+      plinkoBoardEl.classList.add(plinkoSelectedRisk);
+
+      // рисуем слоты с иксами
+      plinkoMultsRow.innerHTML = "";
+      config.multipliers.forEach(m => {
+        const slot = document.createElement("div");
+        slot.className = "plinko-slot";
+        slot.textContent = "x" + m.toFixed(2);
+        plinkoMultsRow.appendChild(slot);
+      });
+    }
 
     function openPlinko() {
       plinkoOverlay.style.display = "flex";
-      plinkoStatusEl.textContent = "Выбери риск, ставку и жми старт";
+      plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
+      plinkoBetInput.value = "10";
+      plinkoRunning = false;
+      renderPlinkoConfig();
     }
 
     function closePlinko() {
       plinkoOverlay.style.display = "none";
+      plinkoRunning = false;
     }
 
     plinkoOpenBtn.addEventListener('click', openPlinko);
@@ -784,12 +899,13 @@
       btn.addEventListener('click', () => {
         plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
         btn.classList.add('plinko-risk-active');
-        plinkoSelectedRisk = btn.dataset.risk;
+        plinkoSelectedRisk = btn.dataset.risk || "mid";
+        renderPlinkoConfig();
       });
     });
 
-    // пока просто заглушка на кнопку "Запустить"
-    plinkoStartBtn.addEventListener('click', () => {
+    function playPlinko() {
+      if (plinkoRunning) return;
       const bet = parseInt(plinkoBetInput.value, 10);
       if (isNaN(bet) || bet < 10) {
         plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
@@ -799,9 +915,61 @@
         plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
         return;
       }
-      plinkoStatusEl.textContent =
-        `Скоро здесь будет Plinko c риском "${plinkoSelectedRisk}" и ставкой ${bet} OWY 😉`;
-    });
+
+      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+      if (!config) return;
+
+      const n = config.multipliers.length;
+      if (n === 0) return;
+
+      plinkoRunning = true;
+      plinkoStartBtn.disabled = true;
+
+      // списываем ставку
+      demoBalance -= bet;
+      updateBalanceView();
+
+      plinkoStatusEl.textContent = "Шарик падает... 🎯";
+
+      // выбираем слот с небольшим перекосом к центру
+      const r1 = Math.random();
+      const r2 = Math.random();
+      const t = (r1 + r2) / 2; // треугольное распределение
+      let index = Math.floor(t * n);
+      if (index < 0) index = 0;
+      if (index >= n) index = n - 1;
+
+      const multiplier = config.multipliers[index];
+
+      const slots = plinkoMultsRow.querySelectorAll('.plinko-slot');
+      slots.forEach(s => s.classList.remove('active'));
+
+      setTimeout(() => {
+        if (slots[index]) {
+          slots[index].classList.add('active');
+        }
+
+        const winAmount = Math.floor(bet * multiplier);
+        demoBalance += winAmount;
+        updateBalanceView();
+
+        if (multiplier < 1) {
+          plinkoStatusEl.textContent =
+            `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
+        } else {
+          plinkoStatusEl.textContent =
+            `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+        }
+
+        plinkoRunning = false;
+        plinkoStartBtn.disabled = false;
+      }, 500); // лёгкая задержка как будто шар летит
+    }
+
+    plinkoStartBtn.addEventListener('click', playPlinko);
+
+    // при первой загрузке нарисуем конфиг mid
+    renderPlinkoConfig();
   </script>
 </body>
 </html>
