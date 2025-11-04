@@ -1474,15 +1474,15 @@
           rushCashoutBtn.disabled = true;
           rushStartBtn.disabled   = false;
 
-          if (hasCashedOut) {
-            const showCashMulti = cashedOutAt || crashMulti;
-            rushStatusEl.textContent =
-              `💥 Раунд упал на x${crashMulti.toFixed(2)}.\nТы забрал на x {showCashMulti.toFixed(2)}.`;
-          } else {
-            rushStatusEl.textContent =
-              `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
-            crashRushVisual();
-          }
+  if (hasCashedOut) {
+    const showCashMulti = cashedOutAt || crashMulti;
+    rushStatusEl.textContent =
+      `💥 Раунд упал на x${crashMulti.toFixed(2)}. Ты забрал на x${showCashMulti.toFixed(2)}.`;
+} else {
+  rushStatusEl.textContent =
+    `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+  crashRushVisual();
+}
 
          vibrate(90);
        }
