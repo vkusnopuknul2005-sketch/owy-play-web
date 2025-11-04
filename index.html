@@ -532,12 +532,10 @@
 
       /* лёгкое подпрыгивание / дрожание — эффект бега */
       @keyframes rush-run {
-        0%   { transform: translate(0px, 0px) rotate(-4deg); }
-        25%  { transform: translate(2px, -3px) rotate(0deg); }
-        50%  { transform: translate(0px, -5px) rotate(3deg); }
-        75%  { transform: translate(-2px, -3px) rotate(0deg); }
-        100% { transform: translate(0px, 0px) rotate(-4deg); }
-       }
+        0%   { bottom: 6px; }
+        50%  { bottom: 10px; }
+        100% { bottom: 6px; }
+      }
 
        /* БЕЖИМ только когда у элемента есть этот класс */
        #rush-owy.rush-running {
