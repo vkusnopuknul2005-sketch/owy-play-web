@@ -336,6 +336,60 @@
       border-color: #1ddb6f;
     }
 
+        .rush-auto-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .auto-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      color: #9ea2b0;
+    }
+
+    .auto-toggle input {
+      display: none;
+    }
+
+    .auto-toggle-slider {
+      width: 28px;
+      height: 16px;
+      border-radius: 999px;
+      background: #272a33;
+      position: relative;
+      transition: background 0.15s ease;
+    }
+
+    .auto-toggle-slider::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #cfd2de;
+      transition: transform 0.15s ease;
+    }
+
+    .auto-toggle input:checked + .auto-toggle-slider {
+      background: #1ddb6f;
+    }
+
+    .auto-toggle input:checked + .auto-toggle-slider::before {
+      transform: translateX(12px);
+    }
+
+    .auto-toggle-label {
+      min-width: 22px;
+      text-align: right;
+    }
+
     .rush-buttons {
       display: flex;
       gap: 8px;
@@ -482,9 +536,16 @@
           <input type="number" id="rush-bet" value="10" min="10">
         </div>
         <div class="rush-input">
-          <label for="rush-auto">Автовывод, x (опционально)</label>
-          <input type="number" id="rush-auto" value="2.0" step="0.1" min="1.01">
-        </div>
+  <div class="rush-auto-header">
+    <label for="rush-auto">Автовывод, x</label>
+    <label class="auto-toggle">
+      <input type="checkbox" id="rush-auto-enabled" checked>
+      <span class="auto-toggle-slider"></span>
+      <span class="auto-toggle-label">Вкл</span>
+    </label>
+  </div>
+  <input type="number" id="rush-auto" value="2.0" step="0.1" min="1.01">
+</div>
         <div class="rush-buttons">
           <button class="btn btn-primary" id="rush-start">Старт</button>
           <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
@@ -525,11 +586,12 @@
     const rushBackBtn    = document.getElementById('rush-back');
     const rushMultEl     = document.getElementById('rush-multiplier');
     const rushRocketEl   = document.getElementById('rush-rocket');
-    const rushStatusEl   = document.getElementById('rush-status');
-    const rushBetInput   = document.getElementById('rush-bet');
-    const rushAutoInput  = document.getElementById('rush-auto');
-    const rushStartBtn   = document.getElementById('rush-start');
-    const rushCashoutBtn = document.getElementById('rush-cashout');
+    const rushStatusEl     = document.getElementById('rush-status');
+    const rushBetInput     = document.getElementById('rush-bet');
+    const rushAutoInput    = document.getElementById('rush-auto');
+    const rushAutoEnabled  = document.getElementById('rush-auto-enabled');
+    const rushStartBtn     = document.getElementById('rush-start');
+    const rushCashoutBtn   = document.getElementById('rush-cashout');
 
     let rushTimer = null;
     let rushState = "idle"; // idle / running
@@ -644,15 +706,18 @@ updateRushHistory();
         return;
       }
 
-      resetRushForNewGame();
+   
+     resetRushForNewGame();
 
-      // читаем авто-вывод
-      const autoValRaw = parseFloat(rushAutoInput.value);
-      if (!isNaN(autoValRaw) && autoValRaw > 1.0) {
-        autoCashout = autoValRaw;
-      } else {
-        autoCashout = null;
-      }
+// читаем авто-вывод, если тумблер включён
+let isAutoOn = rushAutoEnabled && rushAutoEnabled.checked;
+const autoValRaw = parseFloat(rushAutoInput.value);
+
+if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
+  autoCashout = autoValRaw;
+} else {
+  autoCashout = null;
+}
 
       rushState = "running";
       rushBet = betValue;
