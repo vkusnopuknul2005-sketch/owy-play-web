@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>OWY Play</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+
+    body {
+      background: #05060a;
+      color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 420px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      border-left: 1px solid #14151a;
+      border-right: 1px solid #14151a;
+    }
+
+    /* Верхний бар */
+    .header {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #14151a;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1ddb6f;
+      box-shadow: 0 0 12px rgba(29, 219, 111, 0.8);
+    }
+
+    .balance {
+      text-align: right;
+    }
+
+    .balance-label {
+      font-size: 11px;
+      color: #8c8f9a;
+    }
+
+    .balance-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* Основной контент */
+    .content {
+      flex: 1;
+      padding: 14px 18px 80px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 11px;
+      color: #9ea2b0;
+      margin-bottom: 12px;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1ddb6f;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: radial-gradient(circle at top left, #182728, #090b0f);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cfd2de;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-bottom: 8px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.1s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1ddb6f, #16a451);
+      color: #05060a;
+      box-shadow: 0 6px 16px rgba(29, 219, 111, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(29, 219, 111, 0.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #cfd2de;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #9ea2b0;
+    }
+
+    /* Нижнее меню */
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      width: 100%;
+      max-width: 420px;
+      padding: 6px 10px 10px;
+      background: linear-gradient(to top, #05060a, rgba(5, 6, 10, 0.85), transparent);
+    }
+
+    .bottom-nav-inner {
+      background: rgba(8, 10, 16, 0.95);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 4px;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: #7f8491;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      padding: 4px 0;
+      border-radius: 12px;
+    }
+
+    .nav-item span {
+      font-size: 16px;
+    }
+
+    .nav-item.active {
+      color: #e7fdf0;
+      background: rgba(29, 219, 111, 0.08);
+    }
+
+    .nav-label {
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        <span>OWY Play</span>
+      </div>
+      <div class="balance">
+        <div class="balance-label">Баланс</div>
+        <div class="balance-value">1 000 OWY</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="pill">
+        <div class="pill-dot"></div>
+        <span>Играй. Рискуй. Побеждай.</span>
+      </div>
+
+      <div class="section-title">Рекомендуем сейчас</div>
+
+      <div class="cards">
+        <!-- Rush -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Rush</div>
+              <div class="card-sub">Автокэш-аут по своему множителю</div>
+            </div>
+            <div class="chip">🚀 x1.2 – x10</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-primary">Играть Rush</button>
+            <div class="tag-row">
+              <div class="tag">быстрая игра</div>
+              <div class="tag">риск / награда</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plinko -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Plinko</div>
+              <div class="card-sub">Выбирай риск: low / mid / high</div>
+            </div>
+            <div class="chip">🟢 Plinko</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-primary">Играть Plinko</button>
+            <div class="tag-row">
+              <div class="tag">low / mid / high</div>
+              <div class="tag">рандомный множитель</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Матчи -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Ставки на киберспорт</div>
+              <div class="card-sub">CS2, NAVI, VP, FaZe и другие</div>
+            </div>
+            <div class="chip">⚽ Live soon</div>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-primary">Открыть матчи</button>
+            <button class="btn btn-ghost">Мои ставки</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <div class="nav-item active">
+          <span>🏠</span>
+          <div class="nav-label">Главная</div>
+        </div>
+        <div class="nav-item">
+          <span>🎮</span>
+          <div class="nav-label">Игры</div>
+        </div>
+        <div class="nav-item">
+          <span>⚽</span>
+          <div class="nav-label">Ставки</div>
+        </div>
+        <div class="nav-item">
+          <span>👤</span>
+          <div class="nav-label">Профиль</div>
+        </div>
+      </div>
+    </nav>
+  </div>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const balanceEl = document.querySelector('.balance-value');
+
+  let tg = null;
+  let user = null;
+
+  // Проверяем, есть ли Telegram WebApp (если открыто внутри ТГ)
+  if (window.Telegram && window.Telegram.WebApp) {
+    tg = window.Telegram.WebApp;
+    tg.expand();
+    user = tg.initDataUnsafe?.user;
+  }
+
+  if (user) {
+    console.log("Привет,", user.first_name);
+    balanceEl.textContent = "1 000 OWY";
+  } else {
+    // Обычный браузер / демо-режим
+    balanceEl.textContent = "Demo • 1 000 OWY";
+  }
+
+  // Обработка кликов по основным зелёным кнопкам
+  document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = `action:${btn.textContent}`;
+
+      if (tg) {
+        // Если открыто как mini app — отправляем данные боту
+        tg.sendData(action);
+        tg.close();
+      } else {
+        // Если просто в браузере — пока только лог
+        console.log("Клик по кнопке:", action);
+        alert("Здесь, внутри Telegram, эта кнопка будет запускать игру/ставки 😉");
+      }
+    });
+  });
+</script>
+</body>
+</html>
