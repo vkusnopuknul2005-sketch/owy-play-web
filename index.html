@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>OWY Play</title>
-  <!-- ВАЖНО: режем зум жестами / даблтапом -->
+  <!-- Режем масштабирование жестами/даблтапом в мини-аппе -->
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -21,7 +21,7 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      -webkit-text-size-adjust: 100%; /* чтоб iOS не увеличивал шрифт */
+      -webkit-text-size-adjust: 100%;
     }
 
     .app {
@@ -107,16 +107,17 @@
     .cards {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       margin-bottom: 16px;
     }
 
     .card {
-      border-radius: 16px;
-      padding: 16px 14px;
+      border-radius: 18px;
+      padding: 18px 16px;
       background: radial-gradient(circle at top left, #182728, #090b0f);
       border: 1px solid rgba(255, 255, 255, 0.02);
       box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
+      min-height: 120px; /* делаем карточки крупнее */
     }
 
     .card-header {
@@ -163,7 +164,7 @@
       font-weight: 500;
       cursor: pointer;
       transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.1s ease;
-      touch-action: manipulation; /* чтобы не срабатывал даблтап-zoom на кнопке */
+      touch-action: manipulation; /* чтобы не было даблтап-зума на кнопках */
     }
 
     .btn-primary {
@@ -200,7 +201,7 @@
     /* Профиль */
     .profile-card {
       border-radius: 16px;
-      padding: 14px 14px;
+      padding: 16px 14px 16px;
       background: radial-gradient(circle at top left, #151923, #090b0f);
       border: 1px solid rgba(255, 255, 255, 0.02);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
@@ -224,13 +225,69 @@
       font-weight: 600;
     }
 
-    .profile-reset {
-      margin-top: 10px;
+    .profile-section-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 16px 0 8px;
+    }
+
+    .profile-section-title .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1ddb6f;
+    }
+
+    .profile-field {
+      margin-bottom: 10px;
+    }
+
+    .profile-field label {
+      font-size: 12px;
+      color: #9ea2b0;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .profile-field input,
+    .profile-field select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #20232b;
+      background: #080a0f;
+      color: #f5f5f5;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .profile-field input:focus,
+    .profile-field select:focus {
+      border-color: #1ddb6f;
+    }
+
+    .profile-save {
+      margin-top: 8px;
       width: 100%;
       justify-content: center;
     }
 
-    /* Нижнее меню: только Главная и Профиль */
+    .profile-reset {
+      margin-top: 8px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .profile-note {
+      font-size: 11px;
+      color: #7f8491;
+      margin-top: 6px;
+    }
+
+    /* Нижнее меню — только Главная и Профиль */
     .bottom-nav {
       position: fixed;
       left: 50%;
@@ -279,7 +336,7 @@
       font-size: 10px;
     }
 
-    /* --- Общий overlay для игр --- */
+    /* Общий overlay для игр */
     .overlay {
       position: fixed;
       inset: 0;
@@ -550,7 +607,7 @@
     </header>
 
     <main class="content">
-      <!-- ЭКРАН ГЛАВНАЯ -->
+      <!-- ГЛАВНЫЙ ЭКРАН -->
       <section id="home-screen">
         <div class="pill">
           <div class="pill-dot"></div>
@@ -600,12 +657,8 @@
 
       <!-- ЭКРАН ПРОФИЛЬ -->
       <section id="profile-screen" style="display:none;">
-        <div class="section-title">Профиль</div>
+        <div class="section-title">Личный профиль</div>
         <div class="profile-card">
-          <div class="profile-line">
-            <span>Имя</span>
-            <span id="profile-name">Demo пользователь</span>
-          </div>
           <div class="profile-line">
             <span>OWY ID</span>
             <span id="profile-id">—</span>
@@ -614,14 +667,49 @@
             <span>Баланс</span>
             <span class="profile-balance" id="profile-balance">1 000 OWY</span>
           </div>
+
+          <div class="profile-section-title">
+            <span class="dot"></span>
+            <span>Персональные данные</span>
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-name">Отображаемое имя</label>
+            <input id="profile-name" type="text" placeholder="Как тебя называть в OWY">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-username">OWY username</label>
+            <input id="profile-username" type="text" placeholder="@nickname">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-birthdate">Дата рождения</label>
+            <input id="profile-birthdate" type="date">
+          </div>
+
+          <div class="profile-field">
+            <label for="profile-gender">Пол</label>
+            <select id="profile-gender">
+              <option value="">Не указывать</option>
+              <option value="male">Мужской</option>
+              <option value="female">Женский</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary profile-save" id="profile-save">Сохранить</button>
           <button class="btn btn-ghost profile-reset" id="profile-reset">
             Сбросить демо баланс
           </button>
+          <div class="profile-note" id="profile-note">
+            Данные хранятся только у тебя на устройстве.
+          </div>
         </div>
       </section>
     </main>
 
-    <!-- НИЖНЕЕ МЕНЮ: только Главная и Профиль -->
+    <!-- Нижнее меню -->
     <nav class="bottom-nav">
       <div class="bottom-nav-inner">
         <div class="nav-item active" id="nav-home">
@@ -735,10 +823,16 @@
     const navHome       = document.getElementById('nav-home');
     const navProfile    = document.getElementById('nav-profile');
 
-    const profileNameEl     = document.getElementById('profile-name');
-    const profileIdEl       = document.getElementById('profile-id');
-    const profileBalanceEl  = document.getElementById('profile-balance');
-    const profileResetBtn   = document.getElementById('profile-reset');
+    const profileIdEl      = document.getElementById('profile-id');
+    const profileBalanceEl = document.getElementById('profile-balance');
+    const profileResetBtn  = document.getElementById('profile-reset');
+    const profileNoteEl    = document.getElementById('profile-note');
+
+    const profileNameInput     = document.getElementById('profile-name');
+    const profileUsernameInput = document.getElementById('profile-username');
+    const profileBirthInput    = document.getElementById('profile-birthdate');
+    const profileGenderSelect  = document.getElementById('profile-gender');
+    const profileSaveBtn       = document.getElementById('profile-save');
 
     // Rush элементы
     const rushOverlay     = document.getElementById('rush-overlay');
@@ -767,8 +861,10 @@
     const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
     const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
 
-    // ====== Баланс с сохранением (localStorage) ======
-    const STORAGE_KEY_BALANCE = 'owy_balance_v1';
+    // ====== Баланс с сохранением ======
+    const STORAGE_KEY_BALANCE  = 'owy_balance_v1';
+    const STORAGE_KEY_PROFILE  = 'owy_profile_info_v1';
+
     let demoBalance = 1000;
 
     function loadBalance() {
@@ -790,21 +886,70 @@
     }
 
     function updateBalanceView() {
-      balanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
+      balanceEl.textContent        = demoBalance.toLocaleString("ru-RU") + " OWY";
       profileBalanceEl.textContent = demoBalance.toLocaleString("ru-RU") + " OWY";
     }
 
-    // Инициализация профиля
-    function initProfile() {
-      if (tgUser) {
-        const name = (tgUser.first_name || '') + (tgUser.last_name ? (' ' + tgUser.last_name) : '');
-        profileNameEl.textContent = name || 'Игрок OWY';
-        profileIdEl.textContent   = tgUser.id;
-      } else {
-        profileNameEl.textContent = 'Demo пользователь';
-        profileIdEl.textContent   = '—';
-      }
+    // ===== Профиль: сохранение/загрузка =====
+    let profileData = {
+      name: "",
+      username: "",
+      birthdate: "",
+      gender: ""
+    };
+
+    function loadProfileInfo() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_PROFILE);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          profileData = { ...profileData, ...parsed };
+        }
+      } catch (e) {}
     }
+
+    function saveProfileInfo() {
+      try {
+        localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profileData));
+      } catch (e) {}
+    }
+
+    function initProfile() {
+      // если нет имени — подставим из Telegram
+      if (!profileData.name) {
+        if (tgUser) {
+          const name = (tgUser.first_name || '') +
+            (tgUser.last_name ? (' ' + tgUser.last_name) : '');
+          profileData.name = name || 'Игрок OWY';
+          if (!profileData.username && tgUser.username) {
+            profileData.username = '@' + tgUser.username;
+          }
+        } else {
+          profileData.name = 'Demo пользователь';
+        }
+      }
+
+      if (tgUser) {
+        profileIdEl.textContent = tgUser.id;
+      } else {
+        profileIdEl.textContent = '—';
+      }
+
+      profileNameInput.value     = profileData.name || '';
+      profileUsernameInput.value = profileData.username || '';
+      profileBirthInput.value    = profileData.birthdate || '';
+      profileGenderSelect.value  = profileData.gender || '';
+    }
+
+    profileSaveBtn.addEventListener('click', () => {
+      profileData.name      = profileNameInput.value.trim();
+      profileData.username  = profileUsernameInput.value.trim();
+      profileData.birthdate = profileBirthInput.value;
+      profileData.gender    = profileGenderSelect.value;
+      saveProfileInfo();
+      profileNoteEl.textContent =
+        "Сохранено ✔ Данные хранятся только у тебя на устройстве.";
+    });
 
     profileResetBtn.addEventListener('click', () => {
       demoBalance = 1000;
@@ -817,12 +962,12 @@
       if (tab === 'home') {
         navHome.classList.add('active');
         navProfile.classList.remove('active');
-        homeScreen.style.display = '';
+        homeScreen.style.display    = '';
         profileScreen.style.display = 'none';
       } else {
         navProfile.classList.add('active');
         navHome.classList.remove('active');
-        homeScreen.style.display = 'none';
+        homeScreen.style.display    = 'none';
         profileScreen.style.display = '';
       }
     }
@@ -831,8 +976,8 @@
     navProfile.addEventListener('click', () => setActiveTab('profile'));
 
     // ===== Rush =====
-    let rushTimer   = null;
-    let rushState   = "idle"; // idle / running
+    let rushTimer    = null;
+    let rushState    = "idle";
     let currentMulti = 1.0;
     let crashMulti   = 1.0;
     let rushBet      = 0;
@@ -850,15 +995,15 @@
     }
 
     function resetRushForNewGame() {
-      rushState = "idle";
+      rushState   = "idle";
       currentMulti = 1.0;
-      crashMulti = 1.0;
-      rushBet = 0;
-      rushMultEl.textContent = "x1.00";
-      rushRocketEl.style.width = "0%";
-      rushStatusEl.textContent = "Выбери ставку и жми старт";
-      rushStartBtn.disabled = false;
-      rushCashoutBtn.disabled = true;
+      crashMulti   = 1.0;
+      rushBet      = 0;
+      rushMultEl.textContent     = "x1.00";
+      rushRocketEl.style.width   = "0%";
+      rushStatusEl.textContent   = "Выбери ставку и жми старт";
+      rushStartBtn.disabled      = false;
+      rushCashoutBtn.disabled    = true;
       if (rushTimer) {
         clearInterval(rushTimer);
         rushTimer = null;
@@ -993,7 +1138,7 @@
     rushStartBtn.addEventListener('click', startRush);
     rushCashoutBtn.addEventListener('click', cashoutRush);
 
-    // ======== Plinko ========
+    // ===== Plinko =====
     const PLINKO_COLS = 9;
     const PLINKO_ROWS = 16;
 
@@ -1103,9 +1248,9 @@
       const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
       const slotY       = slotRects[0].top - layerRect.top - 8;
 
-      const colsCount = config.multipliers.length;
-      const path      = generatePlinkoPath(colsCount, PLINKO_ROWS);
-      const finalCol  = path[path.length - 1].col;
+      const colsCount  = config.multipliers.length;
+      const path       = generatePlinkoPath(colsCount, PLINKO_ROWS);
+      const finalCol   = path[path.length - 1].col;
       const multiplier = config.multipliers[finalCol];
 
       slots.forEach(s => s.classList.remove('active'));
@@ -1183,8 +1328,9 @@
     plinkoBackBtn.addEventListener('click', closePlinko);
     plinkoStartBtn.addEventListener('click', playPlinko);
 
-    // ==== Инициализация при загрузке ====
+    // ==== Инициализация ====
     loadBalance();
+    loadProfileInfo();
     initProfile();
     updateBalanceView();
     updateRushHistory();
