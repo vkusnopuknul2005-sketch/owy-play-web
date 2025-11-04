@@ -1288,10 +1288,10 @@
       if (currentMulti < 1.2) return 0.005;
       if (currentMulti < 1.5) return 0.01;
       if (currentMulti < 2.0) return 0.02;
-      if (currentMulti < 3.0) return 0.04;
-      if (currentMulti < 5.0) return 0.06;
-      if (currentMulti < 8.0) return 0.09;
-      return 0.12;
+      if (currentMulti < 3.0) return 0.025;
+      if (currentMulti < 5.0) return 0.03;
+      if (currentMulti < 8.0) return 0.035;
+      return 0.4;
     }
 
     let rushStartLocked = false;
