@@ -1494,6 +1494,7 @@
 
       hasCashedOut = true;
       cashedOutAt  = currentMulti;
+      autoCashout = null; // <— ВАЖНО: отключаем автокэш, чтобы краш мог нормально закончиться
 
       rushCashoutBtn.disabled = true;
 
