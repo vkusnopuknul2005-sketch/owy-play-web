@@ -552,7 +552,37 @@
 
     rushBackBtn.addEventListener('click', closeRush);
 
-    function startRush() {
+    function generateCrashMultiplier() {
+      const r = Math.random();
+
+      if (r < 0.05) {
+        // 5% — моментальный краш x1.00
+        return 1.0;
+      } else if (r < 0.25) {
+        // 20% — мелкие множители 1.01–1.20
+        return +(Math.random() * (1.20 - 1.01) + 1.01).toFixed(2);
+      } else if (r < 0.60) {
+        // 35% — 1.20–2.00
+        return +(Math.random() * (2.0 - 1.20) + 1.20).toFixed(2);
+      } else if (r < 0.80) {
+        // 20% — 2.00–3.00
+        return +(Math.random() * (3.0 - 2.0) + 2.0).toFixed(2);
+      } else if (r < 0.92) {
+        // 12% — 3.00–5.00
+        return +(Math.random() * (5.0 - 3.0) + 3.0).toFixed(2);
+      } else if (r < 0.98) {
+        // 6% — 5.00–10.00
+        return +(Math.random() * (10.0 - 5.0) + 5.0).toFixed(2);
+      } else if (r < 0.995) {
+        // 1.5% — 10.00–20.00
+        return +(Math.random() * (20.0 - 10.0) + 10.0).toFixed(2);
+      } else {
+        // 0.5% — 20.00–50.00, супер-редкие жирные иксы
+        return +(Math.random() * (50.0 - 20.0) + 20.0).toFixed(2);
+      }
+    }
+
+        function startRush() {
       if (rushState === "running") return;
 
       const betValue = parseInt(rushBetInput.value, 10);
@@ -566,7 +596,7 @@
         return;
       }
 
-      resetRush();
+      resetRush(); // сбрасываем прошлую игру
       rushState = "running";
       rushBet = betValue;
       demoBalance -= rushBet;
@@ -574,8 +604,8 @@
 
       rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
 
-      // рандомный краш от 1.20 до 8.00
-      crashMulti = +(Math.random() * (8.0 - 1.2) + 1.2).toFixed(2);
+      // новая функция: распределение краша от x1.00 до x50 с редкими высокими
+      crashMulti = generateCrashMultiplier();
 
       rushCashoutBtn.disabled = false;
       rushStartBtn.disabled = true;
@@ -583,13 +613,15 @@
       rushTimer = setInterval(() => {
         if (rushState !== "running") return;
 
-        currentMulti += 0.05;
-        if (currentMulti > 10) currentMulti = 10;
+        // скорость роста множителя (чуть быстрее, чем раньше)
+        currentMulti += 0.08;
 
+        // обновляем UI
         rushMultEl.textContent = "x" + currentMulti.toFixed(2);
-        const progress = Math.min(currentMulti / 10, 1) * 100;
+        const progress = Math.min(currentMulti / 10, 1) * 100; // бар заполняется до x10
         rushRocketEl.style.width = progress + "%";
 
+        // краш
         if (currentMulti >= crashMulti) {
           clearInterval(rushTimer);
           rushTimer = null;
@@ -597,6 +629,7 @@
           if (rushState === "running") {
             rushState = "crashed";
             rushCashoutBtn.disabled = true;
+            rushStartBtn.disabled = false; // можно сразу стартануть заново
             rushStatusEl.textContent =
               `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
           }
@@ -604,7 +637,7 @@
       }, 60);
     }
 
-    function cashoutRush() {
+        function cashoutRush() {
       if (rushState !== "running") return;
 
       rushState = "cashed";
@@ -620,6 +653,9 @@
 
       rushStatusEl.textContent =
         `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+
+      // сразу можно стартовать новую игру
+      rushStartBtn.disabled = false;
     }
 
     rushStartBtn.addEventListener('click', startRush);
