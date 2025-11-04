@@ -1290,6 +1290,8 @@
     let rushBet      = 0;
     let autoCashout  = null;
     let crashHistory = [];
+    let hasCashedOut = false;
+    let cashedOutAt  = null;
 
      function resetRushVisual() {
        if (!rushOwyEl) return;
@@ -1328,21 +1330,26 @@
     }
 
     function resetRushForNewGame() {
-      rushState   = "idle";
+      rushState    = "idle";
       currentMulti = 1.0;
       crashMulti   = 1.0;
       rushBet      = 0;
+      hasCashedOut = false;
+      cashedOutAt  = null;
+
       rushMultEl.textContent   = "x1.00";
       rushRocketEl.style.width = "0%";
       rushStatusEl.textContent = "Выбери ставку и жми старт";
       rushStartBtn.disabled    = false;
       rushCashoutBtn.disabled  = true;
+
       if (rushTimer) {
         clearInterval(rushTimer);
         rushTimer = null;
       }
+
       resetRushVisual();
-    }
+     }
 
     function openRush() {
       rushOverlay.style.display = "flex";
@@ -1466,47 +1473,43 @@
           rushState = "idle";
           rushCashoutBtn.disabled = true;
           rushStartBtn.disabled   = false;
-          if (rushOwyEl) {
-            rushOwyEl.classList.remove('rush-running');
+
+          if (hasCashedOut) {
+            const showCashMulti = cashedOutAt || crashMulti;
+            rushStatusEl.textContent =
+              `💥 Раунд упал на x${crashMulti.toFixed(2)}.\nТы забрал на x {showCashMulti.toFixed(2)}.`;
+          } else {
+            rushStatusEl.textContent =
+              `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+            crashRushVisual();
           }
-          rushStatusEl.textContent =
-            `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
-          crashRushVisual();
-          vibrate(90);
-        }
+
+         vibrate(90);
+       }
       }, 70);
     }
 
     function cashoutRush() {
-      if (rushState !== "running") return;
+      if (rushState !== "running" || hasCashedOut) return;
 
-      rushState = "idle";
-      if (rushTimer) {
-        clearInterval(rushTimer);
-        rushTimer = null;
-      }
+      hasCashedOut = true;
+      cashedOutAt  = currentMulti;
+
       rushCashoutBtn.disabled = true;
-      rushStartBtn.disabled   = false;
 
-      const winAmount = Math.floor(rushBet * currentMulti);
+      const winAmount = Math.floor(rushBet * cashedOutAt);
       demoBalance += winAmount;
       saveBalance();
       updateBalanceView();
 
-      crashHistory.push(crashMulti);
-      updateRushHistory();
-
-      if (currentMulti > stats.bestMulti) {
-        stats.bestMulti = currentMulti;
+      if (cashedOutAt > stats.bestMulti) {
+        stats.bestMulti = cashedOutAt;
       }
       saveStats();
       updateStatsView();
-      if (rushOwyEl) {
-      rushOwyEl.classList.remove('rush-running');
-    }
 
       rushStatusEl.textContent =
-        `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+        `✅ Забрал на x${cashedOutAt.toFixed(2)}!\nРаунд ещё идёт до краша...`;
       vibrate(70);
     }
 
