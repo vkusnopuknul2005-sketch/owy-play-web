@@ -513,16 +513,36 @@
       transform: rotate(-18deg);
      }
 
-    #rush-owy {
-      position: absolute;
-      width: 60px;
-      left: 4%;
-      bottom: 4px;
-      transform-origin: center bottom;
-      transform: translate(0%, 0%) rotate(0deg);
-      transition: transform 0.07s linear;
-      image-rendering: crisp-edges;
-     }
+     #rush-owy {
+       position: absolute;
+       width: 60px;
+       height: 60px;
+       left: 4%;
+       bottom: 6px;
+
+       background-image: url("owy.png");
+       background-size: contain;
+       background-repeat: no-repeat;
+       background-position: bottom center;
+
+       transform-origin: center bottom;
+       transform: translate(0px, 0px) rotate(0deg);
+       transition: transform 0.07s linear;
+      }
+
+      /* лёгкое подпрыгивание / дрожание — эффект бега */
+      @keyframes rush-run {
+        0%   { transform: translate(0px, 0px) rotate(-4deg); }
+        25%  { transform: translate(2px, -3px) rotate(0deg); }
+        50%  { transform: translate(0px, -5px) rotate(3deg); }
+        75%  { transform: translate(-2px, -3px) rotate(0deg); }
+        100% { transform: translate(0px, 0px) rotate(-4deg); }
+       }
+
+       /* БЕЖИМ только когда у элемента есть этот класс */
+       #rush-owy.rush-running {
+         animation: rush-run 0.22s linear infinite;
+       }
 
     .rush-rocket {
       position: absolute;
@@ -906,7 +926,7 @@
 
       <div class="rush-scene">
         <div class="rush-slope"></div>
-        <img src="owy.png" alt="OWY" id="rush-owy">
+        <div id="rush-owy"></div>
       </div>
 
       <div class="rush-track-line">
@@ -1273,13 +1293,14 @@
     let autoCashout  = null;
     let crashHistory = [];
 
-    function resetRushVisual() {
-      if (!rushOwyEl) return;
-      rushOwyEl.style.transition = 'none';
-      rushOwyEl.style.transform = 'translate(0px, 0px) rotate(0deg)';
-      requestAnimationFrame(() => {
-        rushOwyEl.style.transition = 'transform 0.07s linear';
-      });
+     function resetRushVisual() {
+       if (!rushOwyEl) return;
+       rushOwyEl.classList.remove('rush-running');
+       rushOwyEl.style.transition = 'none';
+       rushOwyEl.style.transform = 'translate(0px, 0px) rotate(0deg)';
+       requestAnimationFrame(() => {
+       rushOwyEl.style.transition = 'transform 0.07s linear';
+     });
     }
 
      function updateRushVisual() {
@@ -1396,6 +1417,9 @@
       }
 
       rushState = "running";
+       if (rushOwyEl) {
+       rushOwyEl.classList.add('rush-running');
+      }
       rushBet   = betValue;
       demoBalance -= rushBet;
       saveBalance();
@@ -1444,6 +1468,9 @@
           rushState = "idle";
           rushCashoutBtn.disabled = true;
           rushStartBtn.disabled   = false;
+          if (rushOwyEl) {
+            rushOwyEl.classList.remove('rush-running');
+          }
           rushStatusEl.textContent =
             `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
           crashRushVisual();
@@ -1476,6 +1503,9 @@
       }
       saveStats();
       updateStatsView();
+      if (rushOwyEl) {
+      rushOwyEl.classList.remove('rush-running');
+    }
 
       rushStatusEl.textContent =
         `✅ Забрал на x${currentMulti.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
