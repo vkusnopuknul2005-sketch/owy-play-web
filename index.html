@@ -397,23 +397,6 @@
       margin-top: 4px;
     }
 
-    .luck-bar {
-      margin-top: 6px;
-      width: 100%;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      overflow: hidden;
-    }
-
-    .luck-bar-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #ffd54f, #ff6f00);
-      transition: width 0.2s ease;
-    }
-
     .missions-list {
       font-size: 11px;
       color: #9ea2b0;
@@ -747,6 +730,42 @@
       margin-top: 4px;
       min-height: 14px;
     }
+
+    /* --- Новая разметка главного экрана --- */
+.big-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: calc(100vh - 230px);
+  justify-content: space-around;
+}
+
+.big-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  min-height: unset;
+  padding: 26px 20px;
+}
+
+.big-card .card-title {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.big-card .card-sub {
+  font-size: 13px;
+}
+
+.bottom-hint {
+  text-align: center;
+  font-size: 11px;
+  color: #8c909a;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
   </style>
 </head>
 <body>
@@ -757,7 +776,7 @@
         <div class="splash-dot"></div>
         <span>OWY Play</span>
       </div>
-      <div class="splash-sub">Загрузка демо-режима...</div>
+      <div class="splash-sub">Always Await. Loading demo...</div>
     </div>
 
     <header class="header">
@@ -775,20 +794,9 @@
     <main class="content">
       <!-- ГЛАВНЫЙ ЭКРАН -->
       <section id="home-screen">
-        <div class="pill">
-          <div class="pill-dot"></div>
-          <span>Играй. Рискуй. Побеждай.</span>
-        </div>
-        <div class="mood-text" id="mood-text">Сегодня удача на твоей стороне.</div>
-
-        <div class="section-title">Рекомендуем сейчас</div>
-        <div class="hint-text" id="hint-text">
-          🤖 OWY совет: попробуй Rush с небольшим автовыводом.
-        </div>
-
-        <div class="cards">
+        <div class="cards big-cards">
           <!-- Rush -->
-          <div class="card">
+          <div class="card big-card">
             <div class="card-header">
               <div>
                 <div class="card-title">Rush</div>
@@ -798,32 +806,28 @@
             </div>
             <div class="card-footer">
               <button class="btn btn-primary" id="rush-open">Играть Rush</button>
-              <div class="tag-row">
-                <div class="tag">быстрая игра</div>
-                <div class="tag">риск / награда</div>
-              </div>
             </div>
           </div>
 
-          <!-- Plinko -->
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Plinko</div>
-                <div class="card-sub">Low / Mid / High риск</div>
-              </div>
-              <div class="chip">🟢 Plinko</div>
-            </div>
-            <div class="card-footer">
-              <button class="btn btn-primary" id="plinko-open">Играть Plinko</button>
-              <div class="tag-row">
-                <div class="tag">падающие шары</div>
-                <div class="tag">риск / награда</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+  <!-- Plinko -->
+  <div class="card big-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Plinko</div>
+        <div class="card-sub">Low / Mid / High риск</div>
+      </div>
+      <div class="chip">🟢 Plinko</div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-primary" id="plinko-open">Играть Plinko</button>
+    </div>
+  </div>
+</div>
+
+<!-- OWY совет теперь внизу -->
+<div class="hint-text bottom-hint" id="hint-text">
+  🤖 OWY совет: попробуй Rush с небольшим автовыводом.
+</div>
 
       <!-- ПРОФИЛЬ -->
       <section id="profile-screen" style="display:none;">
@@ -849,15 +853,6 @@
           <div class="stats-row" id="stats-row">
             Rush: 0 игр • Plinko: 0 игр • Лучший множитель: x1.00
           </div>
-
-          <div class="profile-section-title">
-            <span class="dot"></span>
-            <span>Линия удачи</span>
-          </div>
-          <div class="luck-bar">
-            <div class="luck-bar-fill" id="luck-bar-fill"></div>
-          </div>
-          <div class="stats-row" id="luck-text">Сыграй ещё пару игр, чтобы заполнить полосу.</div>
 
           <div class="profile-section-title">
             <span class="dot"></span>
@@ -896,14 +891,6 @@
               <option value="male">Мужской</option>
               <option value="female">Женский</option>
               <option value="other">Другое</option>
-            </select>
-          </div>
-
-          <div class="profile-field">
-            <label for="theme-select">Тема интерфейса</label>
-            <select id="theme-select">
-              <option value="dark">Dark</option>
-              <option value="neon">Neon</option>
             </select>
           </div>
 
@@ -1068,14 +1055,11 @@
     const profileBirthInput    = document.getElementById('profile-birthdate');
     const profileGenderSelect  = document.getElementById('profile-gender');
     const profileSaveBtn       = document.getElementById('profile-save');
-    const themeSelect          = document.getElementById('theme-select');
 
     const rankLabelEl   = document.getElementById('rank-label');
     const xpLabelEl     = document.getElementById('xp-label');
     const xpBarFillEl   = document.getElementById('xp-bar-fill');
     const statsRowEl    = document.getElementById('stats-row');
-    const luckBarFillEl = document.getElementById('luck-bar-fill');
-    const luckTextEl    = document.getElementById('luck-text');
     const mission1El    = document.getElementById('mission-1');
     const mission2El    = document.getElementById('mission-2');
     const mission3El    = document.getElementById('mission-3');
@@ -1215,19 +1199,6 @@
       xpLabelEl.textContent   = prog.label;
       xpBarFillEl.style.width = `${prog.percent}%`;
 
-      // линия удачи
-      const luckPercent = Math.min(totalGames / 20 * 100, 100);
-      luckBarFillEl.style.width = `${luckPercent}%`;
-      if (totalGames === 0) {
-        luckTextEl.textContent = "Сыграй несколько игр, чтобы заполнить полосу удачи.";
-      } else if (luckPercent < 100) {
-        luckTextEl.textContent = `Игры сегодня: ${totalGames} • ещё ${
-          Math.max(0, 20 - totalGames)
-        } до полного заполнения.`;
-      } else {
-        luckTextEl.textContent = "Полоса удачи заполнена! Сегодня OWY на твоей стороне.";
-      }
-
       // миссии
       const m1Done = stats.rushPlays >= 5;
       const m2Done = stats.plinkoPlays >= 3;
@@ -1323,7 +1294,7 @@
 
     profileFeedbackBtn.addEventListener('click', () => {
       // замени @username на свой ник
-      const link = "https://t.me/your_nickname_here";
+      const link = "https://t.me/arhipovvv";
       if (tg && tg.openTelegramLink) {
         tg.openTelegramLink(link);
       } else {
@@ -1483,7 +1454,7 @@
       updateBalanceView();
 
       stats.rushPlays += 1;
-      stats.xp        += 5;
+      //stats.xp        += 5;
       saveStats();
       updateStatsView();
 
@@ -1517,7 +1488,7 @@
 
           if (crashMulti > stats.bestMulti) {
             stats.bestMulti = crashMulti;
-            stats.xp       += 3;
+            //stats.xp       += 3;
             saveStats();
             updateStatsView();
           }
@@ -1554,7 +1525,7 @@
       if (currentMulti > stats.bestMulti) {
         stats.bestMulti = currentMulti;
       }
-      stats.xp += 8;
+      //stats.xp += 8;
       saveStats();
       updateStatsView();
 
@@ -1680,7 +1651,7 @@
       updateBalanceView();
 
       stats.plinkoPlays += 1;
-      stats.xp          += 4;
+      //stats.xp          += 4;
       saveStats();
       updateStatsView();
 
@@ -1737,7 +1708,7 @@
         if (multiplier > stats.bestMulti) {
           stats.bestMulti = multiplier;
         }
-        stats.xp += multiplier >= 1 ? 6 : 2;
+        //stats.xp += multiplier >= 1 ? 6 : 2;
         saveStats();
         updateStatsView();
 
