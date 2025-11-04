@@ -467,8 +467,18 @@
       <div class="rush-controls">
         <div class="rush-input">
           <label for="rush-bet">Ставка, OWY</label>
-          <input type="number" id="rush-bet" value="100" min="1">
-        </div>
+          <input type="number" id="rush-bet" value="10" min="10">
+       </div>
+      <div class="rush-controls">
+  <div class="rush-input">
+    <label for="rush-bet">Ставка, OWY</label>
+    <input type="number" id="rush-bet" value="10" min="10">
+  </div>
+  <div class="rush-buttons">
+    <button class="btn btn-primary" id="rush-start">Старт</button>
+    <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
+  </div>
+</div>
         <div class="rush-buttons">
           <button class="btn btn-primary" id="rush-start">Старт</button>
           <button class="btn btn-ghost" id="rush-cashout" disabled>Забрать</button>
@@ -504,37 +514,40 @@
     updateBalanceView();
 
     // ---- Rush logic ----
-    const rushOverlay    = document.getElementById('rush-overlay');
-    const rushOpenBtn    = document.getElementById('rush-open');
-    const rushBackBtn    = document.getElementById('rush-back');
-    const rushMultEl     = document.getElementById('rush-multiplier');
-    const rushRocketEl   = document.getElementById('rush-rocket');
-    const rushStatusEl   = document.getElementById('rush-status');
-    const rushBetInput   = document.getElementById('rush-bet');
-    const rushStartBtn   = document.getElementById('rush-start');
-    const rushCashoutBtn = document.getElementById('rush-cashout');
+   const rushOverlay    = document.getElementById('rush-overlay');
+   const rushOpenBtn    = document.getElementById('rush-open');
+   const rushBackBtn    = document.getElementById('rush-back');
+   const rushMultEl     = document.getElementById('rush-multiplier');
+   const rushRocketEl   = document.getElementById('rush-rocket');
+   const rushStatusEl   = document.getElementById('rush-status');
+   const rushBetInput   = document.getElementById('rush-bet');
+   const rushAutoInput  = document.getElementById('rush-auto');
+   const rushStartBtn   = document.getElementById('rush-start');
+   const rushCashoutBtn = document.getElementById('rush-cashout');
 
     let rushTimer = null;
     let rushState = "idle"; // idle / running
     let currentMulti = 1.0;
     let crashMulti = 1.0;
     let rushBet = 0;
+    let autoCashout = null; // множитель авто-вывода, если есть
 
     function resetRushForNewGame() {
-      rushState = "idle";
-      currentMulti = 1.0;
-      crashMulti = 1.0;
-      rushBet = 0;
-      rushMultEl.textContent = "x1.00";
-      rushRocketEl.style.width = "0%";
-      rushStatusEl.textContent = "Выбери ставку и жми старт";
-      rushStartBtn.disabled = false;
-      rushCashoutBtn.disabled = true;
-      if (rushTimer) {
-        clearInterval(rushTimer);
-        rushTimer = null;
-      }
-    }
+  rushState = "idle";
+  currentMulti = 1.0;
+  crashMulti = 1.0;
+  rushBet = 0;
+  autoCashout = null;
+  rushMultEl.textContent = "x1.00";
+  rushRocketEl.style.width = "0%";
+  rushStatusEl.textContent = "Выбери ставку и жми старт";
+  rushStartBtn.disabled = false;
+  rushCashoutBtn.disabled = true;
+  if (rushTimer) {
+    clearInterval(rushTimer);
+    rushTimer = null;
+  }
+}
 
     function openRush() {
       rushOverlay.style.display = "flex";
@@ -584,34 +597,43 @@
     }
 
     // скорость роста множителя: медленно в начале, быстрее дальше
-    function calcStepDelta() {
-      if (currentMulti < 1.3) return 0.01;
-      if (currentMulti < 1.7) return 0.02;
-      if (currentMulti < 2.5) return 0.04;
-      if (currentMulti < 4.0) return 0.06;
-      if (currentMulti < 6.0) return 0.09;
-      return 0.12;
-    }
+   function calcStepDelta() {
+  if (currentMulti < 1.2) return 0.005;  // очень медленный старт
+  if (currentMulti < 1.5) return 0.01;
+  if (currentMulti < 2.0) return 0.02;
+  if (currentMulti < 3.0) return 0.04;
+  if (currentMulti < 5.0) return 0.06;
+  if (currentMulti < 8.0) return 0.09;
+  return 0.12;
+}
 
     function startRush() {
       if (rushState === "running") return;
 
       const betValue = parseInt(rushBetInput.value, 10);
-      if (isNaN(betValue) || betValue <= 0) {
-        rushStatusEl.textContent = "Ставка должна быть больше нуля 🤨";
+      if (isNaN(betValue) || betValue < 10) {
+        rushStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
         return;
-      }
+    }
 
       if (betValue > demoBalance) {
-        rushStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
-        return;
-      }
+  rushStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+  return;
+}
 
-      resetRushForNewGame();
-      rushState = "running";
-      rushBet = betValue;
-      demoBalance -= rushBet;
-      updateBalanceView();
+// читаем авто-вывод
+const autoValRaw = parseFloat(rushAutoInput.value);
+if (!isNaN(autoValRaw) && autoValRaw > 1.0) {
+  autoCashout = autoValRaw;
+} else {
+  autoCashout = null;
+}
+
+resetRushForNewGame();
+rushState = "running";
+rushBet = betValue;
+demoBalance -= rushBet;
+updateBalanceView();
 
       rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
 
@@ -623,18 +645,30 @@
       rushTimer = setInterval(() => {
         if (rushState !== "running") return;
 
-        currentMulti += calcStepDelta();
+      currentMulti += calcStepDelta();
 
-        rushMultEl.textContent = "x" + currentMulti.toFixed(2);
-        const progress = Math.min(currentMulti / 10, 1) * 100;
-        rushRocketEl.style.width = progress + "%";
+rushMultEl.textContent = "x" + currentMulti.toFixed(2);
+const progress = Math.min(currentMulti / 10, 1) * 100;
+rushRocketEl.style.width = progress + "%";
 
-        if (currentMulti >= crashMulti) {
-          if (rushTimer) {
-            clearInterval(rushTimer);
-            rushTimer = null;
-          }
+// если задан авто-вывод и мы его достигли — забираем ДО краша
+if (autoCashout && currentMulti >= autoCashout) {
+  cashoutRush();
+  return;
+}
 
+if (currentMulti >= crashMulti) {
+  if (rushTimer) {
+    clearInterval(rushTimer);
+    rushTimer = null;
+  }
+
+  rushState = "idle";
+  rushCashoutBtn.disabled = true;
+  rushStartBtn.disabled = false;
+  rushStatusEl.textContent =
+    `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
+}
           // краш
           rushState = "idle";
           rushCashoutBtn.disabled = true;
