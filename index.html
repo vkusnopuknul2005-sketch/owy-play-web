@@ -762,6 +762,17 @@
       margin-top: 4px;
       min-height: 14px;
     }
+
+@keyframes crash-flash {
+  0% { background: radial-gradient(circle at bottom, #0b1512, #05070a); }
+  30% { background: radial-gradient(circle at bottom, #203c2e, #000000); }
+  60% { background: radial-gradient(circle at bottom, #0b1512, #05070a); }
+  100% { background: radial-gradient(circle at bottom, #0b1512, #05070a); }
+}
+
+.rush-scene.flash {
+  animation: crash-flash 0.4s ease;
+}
   </style>
 </head>
 <body>
@@ -1312,6 +1323,11 @@
      }
 
     function crashRushVisual() {
+const scene = document.querySelector('.rush-scene');
+if (scene) {
+  scene.classList.add('flash');
+  setTimeout(() => scene.classList.remove('flash'), 400);
+}
   if (!rushOwyEl) return;
 
   // выключаем анимацию бега
