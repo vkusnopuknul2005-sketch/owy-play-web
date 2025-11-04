@@ -403,12 +403,12 @@
     .plinko-board {
       position: relative;
       border-radius: 16px;
-      padding: 12px 10px 16px;
+      padding: 12px 8px 20px;
       background: radial-gradient(circle at top, #172c24, #090b0f);
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
       margin-bottom: 10px;
-      height: 260px;
+      height: 320px;
       overflow: hidden;
     }
 
@@ -426,7 +426,7 @@
 
     .plinko-balls-layer {
       position: absolute;
-      inset: 0 0 28px 0;
+      inset: 0 0 32px 0;
       pointer-events: none;
       z-index: 3;
     }
@@ -441,14 +441,14 @@
       top: 0;
       left: 50%;
       margin-left: -5px;
-      transition: top 0.5s linear, left 0.5s linear;
+      transition: top 0.12s linear, left 0.12s linear;
     }
 
     .plinko-pegs-row {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 8px;
+      gap: 12px;
+      margin-bottom: 12px;
       position: relative;
       z-index: 1;
     }
@@ -464,15 +464,18 @@
       display: flex;
       justify-content: space-between;
       gap: 4px;
-      margin-top: 12px;
-      position: relative;
+      margin-top: 10px;
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 4px;
       z-index: 2;
     }
 
     .plinko-slot {
       flex: 1;
-      min-width: 28px;
-      padding: 3px 4px;
+      min-width: 24px;
+      padding: 3px 2px;
       border-radius: 999px;
       background: #050709;
       border: 1px solid #20232b;
@@ -541,15 +544,15 @@
           <div class="card-header">
             <div>
               <div class="card-title">Plinko</div>
-              <div class="card-sub">Выбирай риск: low / mid / high</div>
+              <div class="card-sub">Low / Mid / High риск</div>
             </div>
             <div class="chip">🟢 Plinko</div>
           </div>
           <div class="card-footer">
             <button class="btn btn-primary" id="plinko-open">Играть Plinko</button>
             <div class="tag-row">
-              <div class="tag">low / mid / high</div>
-              <div class="tag">рандомный множитель</div>
+              <div class="tag">падающие шары</div>
+              <div class="tag">риск / награда</div>
             </div>
           </div>
         </div>
@@ -632,6 +635,14 @@
       <div class="plinko-board mid" id="plinko-board">
         <div class="plinko-balls-layer" id="plinko-balls-layer"></div>
 
+        <!-- Ряды пинов (визуал) -->
+        <div class="plinko-pegs-row">
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+          <span class="plinko-peg"></span>
+        </div>
         <div class="plinko-pegs-row">
           <span class="plinko-peg"></span>
           <span class="plinko-peg"></span>
@@ -651,6 +662,7 @@
           <span class="plinko-peg"></span>
         </div>
 
+        <!-- Слоты с иксами -->
         <div class="plinko-slots" id="plinko-mults-row">
           <!-- JS подставит слоты -->
         </div>
@@ -703,15 +715,15 @@
     const rushCashoutBtn  = document.getElementById('rush-cashout');
 
     // Plinko элементы
-    const plinkoOverlay   = document.getElementById('plinko-overlay');
-    const plinkoOpenBtn   = document.getElementById('plinko-open');
-    const plinkoBackBtn   = document.getElementById('plinko-back');
-    const plinkoStatusEl  = document.getElementById('plinko-status');
-    const plinkoBetInput  = document.getElementById('plinko-bet');
-    const plinkoStartBtn  = document.getElementById('plinko-start');
-    const plinkoRiskBtns  = document.querySelectorAll('#plinko-risk-buttons button');
-    const plinkoBoardEl   = document.getElementById('plinko-board');
-    const plinkoMultsRow  = document.getElementById('plinko-mults-row');
+    const plinkoOverlay    = document.getElementById('plinko-overlay');
+    const plinkoOpenBtn    = document.getElementById('plinko-open');
+    const plinkoBackBtn    = document.getElementById('plinko-back');
+    const plinkoStatusEl   = document.getElementById('plinko-status');
+    const plinkoBetInput   = document.getElementById('plinko-bet');
+    const plinkoStartBtn   = document.getElementById('plinko-start');
+    const plinkoRiskBtns   = document.querySelectorAll('#plinko-risk-buttons button');
+    const plinkoBoardEl    = document.getElementById('plinko-board');
+    const plinkoMultsRow   = document.getElementById('plinko-mults-row');
     const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
 
     // Общий баланс (демо)
@@ -884,11 +896,13 @@
     rushStartBtn.addEventListener('click', startRush);
     rushCashoutBtn.addEventListener('click', cashoutRush);
 
-    // ===== Plinko логика =====
+    // ========= Plinko =========
+
+    // 9 слотов, как в классике: центр — мелочь, края — жирные
     const PLINKO_CONFIGS = {
-      low:  { multipliers: [0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5] },
-      mid:  { multipliers: [0.3, 0.5, 0.8, 1.0, 1.5, 2.0, 3.0, 5.0] },
-      high: { multipliers: [0.2, 0.3, 0.5, 1.0, 2.0, 4.0, 8.0, 15.0] }
+      low:  { multipliers: [1.20, 1.10, 1.05, 1.00, 0.90, 1.00, 1.05, 1.10, 1.20] },
+      mid:  { multipliers: [2.50, 1.50, 1.20, 1.00, 0.50, 1.00, 1.20, 1.50, 2.50] },
+      high: { multipliers: [8.00, 4.00, 2.00, 1.00, 0.20, 1.00, 2.00, 4.00, 8.00] }
     };
 
     let plinkoSelectedRisk = "mid";
@@ -897,11 +911,11 @@
       const config = PLINKO_CONFIGS[plinkoSelectedRisk];
       if (!config) return;
 
-      // фон доски
+      // фон доски по риску
       plinkoBoardEl.classList.remove("low", "mid", "high");
       plinkoBoardEl.classList.add(plinkoSelectedRisk);
 
-      // слоты с иксами
+      // слоты
       plinkoMultsRow.innerHTML = "";
       config.multipliers.forEach(m => {
         const slot = document.createElement("div");
@@ -934,6 +948,30 @@
       });
     });
 
+    // генерим путь шарика: старт из центра, на каждом "ряду" идём чуть влево/вправо
+    function generatePlinkoPath(cols, rows) {
+      let col = Math.floor(cols / 2);
+      const path = [];
+
+      for (let r = 0; r <= rows; r++) {
+        path.push({ col, row: r });
+        if (r === rows) break;
+
+        const rnd = Math.random();
+        let dir = 0;
+        // чуть чаще остаёмся в центре, реже резко уходим к краю
+        if (rnd < 0.35) dir = -1;
+        else if (rnd > 0.65) dir = 1;
+        else dir = 0;
+
+        col += dir;
+        if (col < 0) col = 0;
+        if (col > cols - 1) col = cols - 1;
+      }
+
+      return path;
+    }
+
     function playPlinko() {
       const bet = parseInt(plinkoBetInput.value, 10);
       if (isNaN(bet) || bet < 10) {
@@ -948,25 +986,27 @@
       const config = PLINKO_CONFIGS[plinkoSelectedRisk];
       if (!config) return;
 
-      const n = config.multipliers.length;
-      if (n === 0) return;
+      const slots = plinkoMultsRow.querySelectorAll('.plinko-slot');
+      const colsCount = config.multipliers.length;
 
-      // списываем ставку
+      if (!slots.length || slots.length !== colsCount) return;
+
+      // списываем ставку сразу
       demoBalance -= bet;
       updateBalanceView();
 
-      plinkoStatusEl.textContent = "Шарик падает... 🎯";
+      // слоты/слой геометрия
+      const layerRect = plinkoBallsLayer.getBoundingClientRect();
+      const slotRects = Array.from(slots).map(s => s.getBoundingClientRect());
+      const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
 
-      // выбираем слот (с перекосом к центру)
-      const r1 = Math.random();
-      const r2 = Math.random();
-      const t = (r1 + r2) / 2; // треугольное распределение
-      let index = Math.floor(t * n);
-      if (index < 0) index = 0;
-      if (index >= n) index = n - 1;
-      const multiplier = config.multipliers[index];
+      // генерим путь (например 7 "уровней")
+      const rowsCount = 7;
+      const path = generatePlinkoPath(colsCount, rowsCount);
+      const finalCol = path[path.length - 1].col;
+      const multiplier = config.multipliers[finalCol];
 
-      const slots = plinkoMultsRow.querySelectorAll('.plinko-slot');
+      // убираем прошлую активность
       slots.forEach(s => s.classList.remove('active'));
 
       // создаём шар
@@ -974,25 +1014,35 @@
       ball.className = 'plinko-ball';
       plinkoBallsLayer.appendChild(ball);
 
-      // стартовая позиция (центр сверху)
-      const layerRect = plinkoBallsLayer.getBoundingClientRect();
-      const startLeft = layerRect.width / 2 - 5;
-      ball.style.left = startLeft + "px";
+      // начальная позиция — над центром
+      const startX = layerRect.width / 2;
+      ball.style.left = (startX - 5) + "px";
       ball.style.top  = "0px";
 
-      // целевая позиция — центр выбранного слота
-      const slotRect = slots[index].getBoundingClientRect();
-      const targetLeft = slotRect.left + slotRect.width / 2 - layerRect.left - 5;
-      const targetTop  = layerRect.height - 14; // немного выше дна
+      plinkoStatusEl.textContent = "Шарик падает... 🎯";
 
-      setTimeout(() => {
-        ball.style.top  = targetTop + "px";
-        ball.style.left = targetLeft + "px";
-      }, 20);
+      const totalSteps = path.length;
+      const maxHeight = layerRect.height - 40; // чтобы не в самый низ
 
+      path.forEach((step, index) => {
+        const t = index / (totalSteps - 1); // 0..1
+        const y = maxHeight * t;
+
+        // x — по центрам слотов, но постепенно
+        const colIndex = step.col;
+        const targetCenter = slotCenters[colIndex];
+        const x = targetCenter;
+
+        setTimeout(() => {
+          ball.style.top  = y + "px";
+          ball.style.left = (x - 5) + "px";
+        }, 120 * index);
+      });
+
+      // после падения — считаем выигрыш
       setTimeout(() => {
-        if (slots[index]) {
-          slots[index].classList.add('active');
+        if (slots[finalCol]) {
+          slots[finalCol].classList.add('active');
         }
 
         const winAmount = Math.floor(bet * multiplier);
@@ -1007,16 +1057,16 @@
             `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
         }
 
-        // удаляем шар через секунду
+        // удаляем шар позже, чтобы было видно
         setTimeout(() => {
           ball.remove();
-        }, 800);
-      }, 600); // время "падения"
+        }, 1000);
+      }, 120 * (path.length));
     }
 
     plinkoStartBtn.addEventListener('click', playPlinko);
 
-    // при первой загрузке нарисуем mid
+    // при первой загрузке mid-конфиг
     renderPlinkoConfig();
   </script>
 </body>
