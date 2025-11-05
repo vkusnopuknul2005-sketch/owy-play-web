@@ -2485,7 +2485,7 @@ let lastTs = performance.now();
 startNewRushRound();
 setInterval(() => {
   const now = performance.now();
-  const dt  = now - lastTs;
+  const dt  = (now - lastTs) / 1000;
   lastTs    = now;
   tickRush(dt);
   tickDouble(dt);
