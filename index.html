@@ -854,6 +854,42 @@
 .rush-graph,
 .rush-track-line {
   display: none !important;
+/* === OWY Rush Banner === */
+.rush-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 26px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #0b0c10, #121417);
+  border: 1px solid rgba(29, 219, 111, 0.35);
+  box-shadow: 0 0 25px rgba(29, 219, 111, 0.08);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  margin-bottom: 18px;
+}
+
+.rush-banner:hover {
+  box-shadow: 0 0 35px rgba(29, 219, 111, 0.25);
+  transform: translateY(-1px);
+}
+
+.rush-banner:active {
+  transform: scale(0.98);
+}
+
+.rush-banner-text {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #1ddb6f;
+  text-shadow: 0 0 18px rgba(29, 219, 111, 0.55);
+}
+
+.rush-banner-img {
+  height: 90px;
+  width: auto;
+  filter: drop-shadow(0 0 14px rgba(29, 219, 111, 0.4));
 }
   </style>
 </head>
@@ -882,18 +918,10 @@
     <main class="content">
       <section id="home-screen">
         <div class="cards big-cards">
-          <div class="card big-card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Rush</div>
-                <div class="card-sub">Автокэш-аут по своему множителю</div>
-              </div>
-              <div class="chip">🚀 x1.0 – x100</div>
-            </div>
-            <div class="card-footer">
-              <button class="btn btn-primary" id="rush-open">Играть Rush</button>
-            </div>
-          </div>
+          <div class="rush-banner" id="rush-open">
+  <div class="rush-banner-text">Rush</div>
+  <img src="owy.png" alt="OWY Character" class="rush-banner-img">
+</div>
 
           <div class="card big-card">
             <div class="card-header">
