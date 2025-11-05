@@ -854,42 +854,21 @@
 .rush-graph,
 .rush-track-line {
   display: none !important;
-/* === OWY Rush Banner === */
+}
+
+/* === OWY Rush Banner (статичная картинка) === */
 .rush-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 28px 26px;
-  border-radius: 20px;
-  background: linear-gradient(145deg, #0b0c10, #121417);
-  border: 1px solid rgba(29, 219, 111, 0.35);
-  box-shadow: 0 0 25px rgba(29, 219, 111, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.5);
   margin-bottom: 18px;
 }
 
-.rush-banner:hover {
-  box-shadow: 0 0 35px rgba(29, 219, 111, 0.25);
-  transform: translateY(-1px);
-}
-
-.rush-banner:active {
-  transform: scale(0.98);
-}
-
-.rush-banner-text {
-  font-size: 36px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #1ddb6f;
-  text-shadow: 0 0 18px rgba(29, 219, 111, 0.55);
-}
-
-.rush-banner-img {
-  height: 90px;
-  width: auto;
-  filter: drop-shadow(0 0 14px rgba(29, 219, 111, 0.4));
+.rush-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
   </style>
 </head>
@@ -917,13 +896,12 @@
 
     <main class="content">
       <section id="home-screen">
-        <div class="cards big-cards">
-          <div class="rush-banner" id="rush-open">
-  <div class="rush-banner-text">Rush</div>
-  <img src="owy.png" alt="OWY Character" class="rush-banner-img">
-</div>
+  <div class="cards big-cards">
+    <div class="rush-banner" id="rush-open">
+      <img src="rush-banner.png" alt="Rush banner">
+    </div>
 
-          <div class="card big-card">
+    <div class="card big-card">
             <div class="card-header">
               <div>
                 <div class="card-title">Plinko</div>
@@ -1424,34 +1402,6 @@ function resetRushGraph() {
      });
     }
 
-function updateRushGraph() {
-  if (!rushGraphEl) return;
-
-  const rect = rushGraphEl.getBoundingClientRect();
-  const width  = rect.width;
-  const height = rect.height;
-  if (!width || !height) return;
-
-  // нормируем множитель от 1 до RUSH_PATH_MAX_MULTI
-  const clampedMulti = Math.min(currentMulti, RUSH_PATH_MAX_MULTI);
-  const t = (clampedMulti - 1) / (RUSH_PATH_MAX_MULTI - 1); // 0..1
-
-  const x = t * width;
-  const y = height - t * height; // вверх = рост множителя
-
-  rushGraphPoints.push({ x, y });
-  if (rushGraphPoints.length > RUSH_GRAPH_MAX_POINTS) {
-    rushGraphPoints.shift();
-  }
-
-  rushGraphEl.innerHTML = '';
-  rushGraphPoints.forEach(p => {
-    const dot = document.createElement('div');
-    dot.className = 'rush-graph-point';
-    dot.style.left = (p.x - 1.5) + 'px';
-    dot.style.top  = (p.y - 1.5) + 'px';
-    rushGraphEl.appendChild(dot);
-  });
 }function updateRushGraph() {
   if (!rushGraphEl) return;
 
