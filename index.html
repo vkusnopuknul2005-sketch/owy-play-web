@@ -908,34 +908,29 @@
 
 .double-colors-row {
   display: flex;
-  gap: 8px;
-  margin: 10px 0 8px;
-  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 6px;
+  flex-wrap: nowrap;
 }
 
 .double-color-btn {
   flex: 1;
   min-width: 0;
-  border-radius: 14px;
-  padding: 6px 8px 8px;
+  border-radius: 12px;
+  padding: 5px 6px;
   border: none;
   outline: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #f5f5f5;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   cursor: pointer;
   background: #111520;
   border: 1px solid #222738;
   transition: transform 0.05s ease, box-shadow 0.05s ease, border-color 0.1s ease, background 0.1s ease;
-}
-
-.double-color-btn span {
-  font-size: 11px;
-  opacity: 0.9;
 }
 
 .double-color-btn.blue   { background: linear-gradient(135deg,#254dff,#46a2ff); border-color: rgba(70,162,255,0.9); }
@@ -943,7 +938,7 @@
 .double-color-btn.orange { background: linear-gradient(135deg,#ff9a3b,#ff5a3b); border-color: rgba(255,154,59,0.95); }
 
 .double-color-btn.active {
-  box-shadow: 0 0 14px rgba(0,0,0,0.9);
+  box-shadow: 0 0 10px rgba(0,0,0,0.7);
   transform: translateY(1px);
 }
 
@@ -1260,17 +1255,14 @@
 
     <div class="double-colors-row">
       <button class="double-color-btn blue"   data-color="blue"   id="double-btn-blue">
-        💙 Синий x2
-        <span>Чуть-чуть дисперсии</span>
-      </button>
-      <button class="double-color-btn green"  data-color="green"  id="double-btn-green">
-        💚 Зелёный x2
-        <span>Тоже x2, но другой</span>
-      </button>
-      <button class="double-color-btn orange" data-color="orange" id="double-btn-orange">
-        🧡 Оранжевый x14
-        <span>Тот самый «джекпот»</span>
-      </button>
+  💙 Синий x2
+</button>
+<button class="double-color-btn green"  data-color="green"  id="double-btn-green">
+  💚 Зелёный x2
+</button>
+<button class="double-color-btn orange" data-color="orange" id="double-btn-orange">
+  🧡 x14
+</button>
     </div>
 
     <div class="rush-input">
@@ -1604,12 +1596,13 @@ let doubleCellWidth = 60;  // посчитаем после рендера
 let doubleStartIndex = 20; // начальная позиция на ленте
 let doubleCurrentIndex = doubleStartIndex;
 
-// генерим ленту
+const DOUBLE_CELL_WIDTH = 66; // 60px ширина + 6px gap
+
 function buildDoubleWheel() {
   if (!doubleWheelStrip) return;
   doubleWheelStrip.innerHTML = '';
 
-  // делаем большую ленту из 5 повторов
+  // большая лента из 5 повторов
   const repeats = 5;
   for (let r = 0; r < repeats; r++) {
     DOUBLE_SLOTS.forEach(color => {
@@ -1622,25 +1615,26 @@ function buildDoubleWheel() {
     });
   }
 
-  // ширина одной клетки (берём по первой)
-  const first = doubleWheelStrip.querySelector('.double-cell');
-  if (first) {
-    const rect = first.getBoundingClientRect();
-    doubleCellWidth = rect.width + 6; // 6px — gap
-  }
+  // фиксированная ширина клетки
+  doubleCellWidth = DOUBLE_CELL_WIDTH;
 
-  // ставим начальную позицию
+  // начальная позиция
   doubleCurrentIndex = doubleStartIndex;
   updateDoubleWheelTransform(0);
 }
 
 function updateDoubleWheelTransform(extraPx = 0) {
   if (!doubleWheelStrip) return;
-  const base = -doubleCurrentIndex * doubleCellWidth;
-  // центрируем относительно указателя
-  const container = doubleWheelStrip.parentElement;
-  const centerShift = container ? container.clientWidth / 2 - doubleCellWidth / 2 : 0;
-  doubleWheelStrip.style.transform = `translateY(-50%) translateX(${base + centerShift + extraPx}px)`;
+
+  const container = doubleWheelStrip.parentElement; // .double-wheel-window
+  const centerShift = container
+    ? container.clientWidth / 2 - doubleCellWidth / 2
+    : 0;
+
+  const base = -doubleCurrentIndex * doubleCellWidth + centerShift + extraPx;
+
+  doubleWheelStrip.style.transform =
+    `translateY(-50%) translateX(${base}px)`;
 }
 
 function setDoublePhaseStatus() {
