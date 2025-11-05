@@ -1156,10 +1156,6 @@
     const RUSH_PATH_MAX_MULTI = 10;
     const RUSH_PATH_MAX_X = 220;
     const RUSH_PATH_MAX_Y = 70;
-    const rushGraphEl = document.getElementById('rush-graph');
-
-let rushGraphPoints = [];
-const RUSH_GRAPH_MAX_POINTS = 60;
 
     const plinkoOverlay    = document.getElementById('plinko-overlay');
     const plinkoOpenBtn    = document.getElementById('plinko-open');
@@ -1387,11 +1383,6 @@ const RUSH_GRAPH_MAX_POINTS = 60;
     let hasCashedOut = false;
     let cashedOutAt  = null;
 
-function resetRushGraph() {
-  rushGraphPoints = [];
-  if (rushGraphEl) rushGraphEl.innerHTML = '';
-}
-
      function resetRushVisual() {
        if (!rushOwyEl) return;
        rushOwyEl.classList.remove('rush-running');
@@ -1401,36 +1392,6 @@ function resetRushGraph() {
        rushOwyEl.style.transition = 'transform 0.07s linear';
      });
     }
-
-}function updateRushGraph() {
-  if (!rushGraphEl) return;
-
-  const rect = rushGraphEl.getBoundingClientRect();
-  const width  = rect.width;
-  const height = rect.height;
-  if (!width || !height) return;
-
-  // нормируем множитель от 1 до RUSH_PATH_MAX_MULTI
-  const clampedMulti = Math.min(currentMulti, RUSH_PATH_MAX_MULTI);
-  const t = (clampedMulti - 1) / (RUSH_PATH_MAX_MULTI - 1); // 0..1
-
-  const x = t * width;
-  const y = height - t * height; // вверх = рост множителя
-
-  rushGraphPoints.push({ x, y });
-  if (rushGraphPoints.length > RUSH_GRAPH_MAX_POINTS) {
-    rushGraphPoints.shift();
-  }
-
-  rushGraphEl.innerHTML = '';
-  rushGraphPoints.forEach(p => {
-    const dot = document.createElement('div');
-    dot.className = 'rush-graph-point';
-    dot.style.left = (p.x - 1.5) + 'px';
-    dot.style.top  = (p.y - 1.5) + 'px';
-    rushGraphEl.appendChild(dot);
-  });
-}
 
      function updateRushVisual() {
        if (!rushOwyEl) return;
@@ -1504,7 +1465,6 @@ if (scene) {
       }
 
       resetRushVisual();
-resetRushGraph();
       setRushControlsRunning(false);
      }
 
@@ -1614,7 +1574,6 @@ resetRushGraph();
         rushRocketEl.style.width = progress + "%";
 
         updateRushVisual();
-        updateRushGraph();
 
         if (autoCashout && currentMulti >= autoCashout) {
           cashoutRush();
