@@ -756,6 +756,40 @@
       color: #e7fdf0;
     }
 
+.rush-history {
+  font-size: 11px;
+  color: #7f8491;
+  margin-bottom: 10px;
+  min-height: 14px;
+}
+
+/* маленькие цветные «таблетки» с множителями */
+.rush-history-chip {
+  display: inline-block;
+  padding: 1px 5px;
+  margin-right: 4px;
+  margin-top: 2px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.rush-history-chip.low {      /* слабые множители */
+  color: #ff7676;
+  background: rgba(255, 118, 118, 0.12);
+}
+
+.rush-history-chip.mid {      /* средние */
+  color: #ffd27f;
+  background: rgba(255, 210, 127, 0.14);
+}
+
+.rush-history-chip.high {     /* жирные хиты */
+  color: #c4ffd9;
+  background: rgba(29, 219, 111, 0.2);
+}
+
     .plinko-history {
       font-size: 11px;
       color: #7f8491;
@@ -1345,14 +1379,28 @@ if (scene) {
 }
 
     function updateRushHistory() {
-      if (!crashHistory.length) {
-        rushHistoryEl.textContent = "История: —";
-        return;
-      }
-      const last = crashHistory.slice(-10);
-      rushHistoryEl.textContent =
-        "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
+  if (!crashHistory.length) {
+    rushHistoryEl.textContent = "История: —";
+    return;
+  }
+
+  const last = crashHistory.slice(-10);
+
+  let html = 'История: ';
+
+  last.forEach(v => {
+    let cls = 'low';
+    if (v >= 5) {
+      cls = 'high';
+    } else if (v >= 2) {
+      cls = 'mid';
     }
+
+    html += `<span class="rush-history-chip ${cls}">x${v.toFixed(2)}</span>`;
+  });
+
+  rushHistoryEl.innerHTML = html;
+}
 
     function resetRushForNewGame() {
       rushState    = "idle";
