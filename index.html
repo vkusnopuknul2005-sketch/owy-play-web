@@ -1373,15 +1373,29 @@
         hintPhrases[Math.floor(Math.random() * hintPhrases.length)];
     }
 
-    let rushTimer    = null;
-    let rushState    = "idle";
-    let currentMulti = 1.0;
-    let crashMulti   = 1.0;
-    let rushBet      = 0;
-    let autoCashout  = null;
-    let crashHistory = [];
-    let hasCashedOut = false;
-    let cashedOutAt  = null;
+// === Глобальный Rush-движок ===
+
+// идентификатор раунда (как будто серверный)
+let rushRoundId = 1;
+
+// фаза общего раунда: ставки / идёт / крашнулся
+let rushPhase = "betting"; // "betting" | "running" | "crashed"
+
+// сколько миллисекунд осталось в текущей фазе
+let rushPhaseMsLeft = 10000; // 10с на ставки
+
+// множитель и краш для текущего раунда
+let currentMulti = 1.0;
+let crashMulti   = 1.0;
+
+// ставка конкретного игрока в ЭТОМ раунде
+let rushBet      = 0;
+let autoCashout  = null;
+let hasCashedOut = false;
+let cashedOutAt  = null;
+
+// история крашей (для чипов снизу)
+let crashHistory = [];
 
      function resetRushVisual() {
        if (!rushOwyEl) return;
