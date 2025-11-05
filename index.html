@@ -816,6 +816,163 @@
       display: block;
       width: 100%;
       height: auto;
+
+          /* === DOUBLE === */
+
+    .double-round-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-bottom: 8px;
+    }
+
+    .double-board {
+      margin: 10px 0 12px;
+    }
+
+    .double-track-wrapper {
+      position: relative;
+      height: 70px;
+      border-radius: 999px;
+      background: #050709;
+      border: 1px solid #20232b;
+      overflow: hidden;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+    }
+
+    .double-track {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      display: flex;
+      align-items: stretch;
+      transform: translateX(0);
+      transition: transform 5s cubic-bezier(0.08, 0.82, 0.17, 1);
+    }
+
+    .double-segment {
+      flex: 0 0 52px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+
+    .double-segment.blue {
+      background: radial-gradient(circle at 30% 30%, #4fc3ff, #1565c0);
+      color: #e9f6ff;
+    }
+
+    .double-segment.green {
+      background: radial-gradient(circle at 30% 30%, #66ffb2, #1b8a4a);
+      color: #eaffe9;
+    }
+
+    .double-segment.orange {
+      background: radial-gradient(circle at 30% 30%, #ffc46a, #f57c00);
+      color: #fff7ea;
+    }
+
+    .double-pointer {
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 10px solid #f5f5f5;
+      filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));
+      z-index: 2;
+    }
+
+    .double-status {
+      font-size: 12px;
+      color: #9ea2b0;
+      margin: 10px 0 6px;
+      min-height: 32px;
+    }
+
+    .double-bet-panel {
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+
+    .double-color-buttons {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .double-color-btn {
+      flex: 1;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+
+    .double-blue {
+      background: linear-gradient(135deg, #64b5f6, #1e88e5);
+      color: #05060a;
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+
+    .double-green {
+      background: linear-gradient(135deg, #81c784, #2e7d32);
+      color: #05060a;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    }
+
+    .double-orange {
+      background: linear-gradient(135deg, #ffb74d, #f57c00);
+      color: #05060a;
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.5);
+    }
+
+    .double-color-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .double-history {
+      font-size: 11px;
+      color: #7f8491;
+      min-height: 16px;
+      margin-top: 4px;
+    }
+
+    .double-history-chip {
+      display: inline-block;
+      padding: 1px 6px;
+      margin-right: 4px;
+      margin-top: 2px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .double-history-chip.blue {
+      color: #b3e5fc;
+      background: rgba(33, 150, 243, 0.18);
+    }
+
+    .double-history-chip.green {
+      color: #c8facc;
+      background: rgba(76, 175, 80, 0.2);
+    }
+
+    .double-history-chip.orange {
+      color: #ffe0b2;
+      background: rgba(255, 152, 0, 0.25);
     }
   </style>
 </head>
@@ -849,6 +1006,21 @@
             <img src="rush-banner.png" alt="Rush banner">
           </div>
 
+    <!-- NEW: Double card -->
+    <div class="card big-card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Double</div>
+          <div class="card-sub">Выбери цвет и множитель</div>
+        </div>
+        <div class="chip">🎡 Double</div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-primary" id="double-open">Играть Double</button>
+      </div>
+    </div>
+    <!-- /NEW -->
+      
           <div class="card big-card">
             <div class="card-header">
               <div>
@@ -1054,6 +1226,61 @@
     </div>
   </div>
 
+    <!-- DOUBLE OVERLAY -->
+  <div id="double-overlay" class="overlay">
+    <div class="overlay-inner">
+      <div class="overlay-header">
+        <button class="btn btn-ghost" id="double-back">← Назад</button>
+        <div class="overlay-title">Double</div>
+      </div>
+
+      <div class="double-round-info">
+        <span id="double-round-label">Раунд #1</span>
+        <span id="double-timer">До спина: 10 c</span>
+      </div>
+
+      <div class="double-board">
+        <div class="double-track-wrapper">
+          <div class="double-track" id="double-track">
+            <!-- Сегменты дорисуем из JS -->
+          </div>
+          <div class="double-pointer"></div>
+        </div>
+      </div>
+
+      <div class="double-status" id="double-status">
+        Сделай ставку на цвет и жди спина 🎡
+      </div>
+
+      <div class="double-bet-panel">
+        <div class="double-color-buttons">
+          <button class="btn double-color-btn double-blue" data-color="blue">
+            💙 Синий x2
+          </button>
+          <button class="btn double-color-btn double-green" data-color="green">
+            💚 Зелёный x2
+          </button>
+          <button class="btn double-color-btn double-orange" data-color="orange">
+            🧡 Оранжевый x14
+          </button>
+        </div>
+
+        <div class="rush-input">
+          <label for="double-bet">Ставка, OWY</label>
+          <input type="number" id="double-bet" value="10" min="10">
+        </div>
+
+        <div class="rush-buttons">
+          <button class="btn btn-primary" id="double-place-bet">Поставить</button>
+        </div>
+      </div>
+
+      <div class="double-history" id="double-history">
+        История: —
+      </div>
+    </div>
+  </div>
+
   <script>
   let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   let tgUser = null;
@@ -1120,6 +1347,18 @@
   const plinkoMultsRow   = document.getElementById('plinko-mults-row');
   const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
   const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
+
+  const doubleOverlay    = document.getElementById('double-overlay');
+  const doubleOpenBtn    = document.getElementById('double-open');
+  const doubleBackBtn    = document.getElementById('double-back');
+  const doubleStatusEl   = document.getElementById('double-status');
+  const doubleHistoryEl  = document.getElementById('double-history');
+  const doubleRoundLabel = document.getElementById('double-round-label');
+  const doubleTimerEl    = document.getElementById('double-timer');
+  const doubleTrackEl    = document.getElementById('double-track');
+  const doubleBetInput   = document.getElementById('double-bet');
+  const doublePlaceBetBtn= document.getElementById('double-place-bet');
+  const doubleColorBtns  = document.querySelectorAll('.double-color-btn');
 
   // скрываем сплэш
   setTimeout(() => { if (splashEl) splashEl.style.display = 'none'; }, 1300);
@@ -1852,6 +2091,17 @@
   if (plinkoOpenBtn)  plinkoOpenBtn.addEventListener('click', openPlinko);
   if (plinkoBackBtn)  plinkoBackBtn.addEventListener('click', closePlinko);
   if (plinkoStartBtn) plinkoStartBtn.addEventListener('click', playPlinko);
+
+    function openDouble() {
+    if (doubleOverlay) doubleOverlay.style.display = 'flex';
+  }
+
+  function closeDouble() {
+    if (doubleOverlay) doubleOverlay.style.display = 'none';
+  }
+
+  if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
+  if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
 
   // === INIT ===
 loadBalance();
