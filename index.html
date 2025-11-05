@@ -839,14 +839,21 @@
   100% { opacity: 0; }
 }
 
+/* сама анимация — просто моргнуть ярким пятном */
+@keyframes crash-flash {
+  0%   { opacity: 0; }
+  25%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 .rush-scene.flash::after {
   animation: crash-flash 0.35s ease-out;
-/* отключаем график линии в Rush */
-.rush-graph {
-  display: none !important;
-/* отключаем нижнюю прогресс-полосу Rush */
+}
+
+/* полностью выключаем линии в Rush */
+.rush-graph,
 .rush-track-line {
-  display: none;
+  display: none !important;
 }
   </style>
 </head>
@@ -1010,7 +1017,6 @@
 
       <div class="rush-scene">
   <div class="rush-slope"></div>
-  <div class="rush-graph" id="rush-graph"></div>
   <div id="rush-owy"></div>
 </div>
 
