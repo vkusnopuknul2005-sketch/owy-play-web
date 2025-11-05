@@ -1854,39 +1854,33 @@
   if (plinkoStartBtn) plinkoStartBtn.addEventListener('click', playPlinko);
 
   // === INIT ===
-  loadBalance();
-  loadProfileInfo();
-  loadStats();
-  initProfile();
-  updateBalanceView();
-  updateStatsView();
-  for (let i = 0; i < 15; i++) {
-    crashHistory.push(generateCrashMultiplier());
-  }
-  updateRushHistory();
-  updatePlinkoHistory();
-  setActiveTab('home');
-  renderPlinkoPegs();
-  renderPlinkoConfig();
-  initPhrases();
-  let lastTs = performance.now();
-  startNewRushRound();
-  setInterval(() => {
-    const now = performance.now();
-    const dt  = now - lastTs;
-    lastTs    = now;
-    tickRush(dt);
-  }, 70);
+loadBalance();
+loadProfileInfo();
+loadStats();
+initProfile();
+updateBalanceView();
+updateStatsView();
 
-  // глобальный цикл Rush
-  let lastTs = performance.now();
-  startNewRushRound();
-  setInterval(() => {
-    const now = performance.now();
-    const dt  = now - lastTs;
-    lastTs    = now;
-    tickRush(dt);
-  }, 70);
+for (let i = 0; i < 15; i++) {
+  crashHistory.push(generateCrashMultiplier());
+}
+updateRushHistory();
+updatePlinkoHistory();
+
+setActiveTab('home');
+renderPlinkoPegs();
+renderPlinkoConfig();
+initPhrases();
+
+// глобальный цикл Rush
+let lastTs = performance.now();
+startNewRushRound();
+setInterval(() => {
+  const now = performance.now();
+  const dt  = now - lastTs;
+  lastTs    = now;
+  tickRush(dt);
+}, 70);  
 </script>
 </body>
 </html>
