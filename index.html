@@ -1258,9 +1258,7 @@
     <div class="double-round-label" id="double-round-label">
   Раунд #1
 </div>
-<div class="double-sub">
-  Сделай ставку на цвет и жди спина 🎡
-</div>
+
 <div class="double-timer" id="double-timer">
   До спина: 10 c
 </div>
@@ -1585,6 +1583,12 @@ const doubleHistoryEl   = document.getElementById('double-history');
 
   // === DOUBLE GLOBAL ENGINE ===
 
+    const DOUBLE_SLOTS = [
+  'blue','green','blue','green','blue',
+  'green','blue','green','blue','green',
+  'blue','green','blue','green','orange' // одна оранжевая
+];
+
   const DOUBLE_LABELS = {
   blue: '2x',
   green: '2x',
@@ -1595,12 +1599,6 @@ const doubleHistoryEl   = document.getElementById('double-history');
     blue: 2,
     green: 2,
     orange: 14
-  };
-
-  const DOUBLE_LABELS = {
-    blue: '💙 Синий x2',
-    green: '💚 Зелёный x2',
-    orange: '🧡 x14'
   };
 
   const DOUBLE_BETTING_DURATION = 10000; // 10с на ставки
@@ -2462,8 +2460,6 @@ function closeDouble() {
 
 if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
 if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
-
-    }
 
   // === INIT ===
 loadBalance();
