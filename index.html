@@ -506,41 +506,37 @@
 }
 
     .rush-scene {
-      position: relative;
-      width: 100%;
-      height: 120px;
-      margin: 10px 0 6px;
-      border-radius: 16px;
-      background: radial-gradient(circle at bottom, #0b1512, #05070a);
-      overflow: hidden;
-      border: 1px solid rgba(29, 219, 111, 0.15);
-     }
+  position: relative;
+  width: 100%;
+  height: 120px;
+  margin: 10px 0 6px;
+  border-radius: 16px;
+  background: radial-gradient(circle at bottom, #16352c, #05070a);
+  /* стало чуть светлее и более зелёным */
+  overflow: hidden;
+  border: 1px solid rgba(29, 219, 111, 0.25);
+}
 
 .rush-graph {
   position: absolute;
   left: 8%;
-  bottom: 8px;
-  height: 2px;
-  width: 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #1ddb6f, #16a451);
-  box-shadow: 0 0 10px rgba(29, 219, 111, 0.7);
-  transform-origin: left center;
-  transform: rotate(0deg);
-  opacity: 0.95;
+  right: 8%;      /* вместо width:0 — тянем на всю ширину */
+  bottom: 12px;
+  height: 40px;   /* даём нормальную высоту под точки */
+  pointer-events: none;
 }
 
-    .rush-slope {
-      position: absolute;
-      left: -20%;
-      bottom: -30px;
-      width: 160%;
-      height: 80px;
-      background: linear-gradient(135deg, #091b16, #020305);
-      border-radius: 40px;
-      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.9);
-      transform: rotate(-18deg);
-     }
+ .rush-slope {
+  position: absolute;
+  left: -20%;
+  bottom: -30px;
+  width: 160%;
+  height: 80px;
+  background: linear-gradient(135deg, #124233, #050708);
+  border-radius: 40px;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.7);
+  transform: rotate(-18deg);
+}
 
      #rush-owy {
        position: absolute;
