@@ -1046,713 +1046,746 @@
     </div>
   </div>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    // ========== Telegram ==========
-    let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    let tgUser = null;
-    if (tg) {
-      tg.expand();
-      tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-    }
+  let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  let tgUser = null;
+  if (tg) {
+    tg.expand();
+    tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+  }
 
-    // ========== DOM ==========
-    const balanceEl        = document.querySelector('.balance-value');
-    const splashEl         = document.getElementById('splash');
+  // === DOM ===
+  const balanceEl        = document.querySelector('.balance-value');
+  const splashEl         = document.getElementById('splash');
 
-    const homeScreen       = document.getElementById('home-screen');
-    const profileScreen    = document.getElementById('profile-screen');
-    const navHome          = document.getElementById('nav-home');
-    const navProfile       = document.getElementById('nav-profile');
-    const hintTextEl       = document.getElementById('hint-text');
+  const homeScreen       = document.getElementById('home-screen');
+  const profileScreen    = document.getElementById('profile-screen');
+  const navHome          = document.getElementById('nav-home');
+  const navProfile       = document.getElementById('nav-profile');
+  const hintTextEl       = document.getElementById('hint-text');
 
-    const profileIdEl      = document.getElementById('profile-id');
-    const profileBalanceEl = document.getElementById('profile-balance');
-    const profileResetBtn  = document.getElementById('profile-reset');
-    const profileTopupBtn  = document.getElementById('profile-topup');
-    const profileFeedbackBtn = document.getElementById('profile-feedback');
-    const profileNoteEl    = document.getElementById('profile-note');
+  const profileIdEl         = document.getElementById('profile-id');
+  const profileBalanceEl    = document.getElementById('profile-balance');
+  const profileResetBtn     = document.getElementById('profile-reset');
+  const profileTopupBtn     = document.getElementById('profile-topup');
+  const profileFeedbackBtn  = document.getElementById('profile-feedback');
+  const profileNoteEl       = document.getElementById('profile-note');
 
-    const profileNameInput     = document.getElementById('profile-name');
-    const profileUsernameInput = document.getElementById('profile-username');
-    const profileBirthInput    = document.getElementById('profile-birthdate');
-    const profileGenderSelect  = document.getElementById('profile-gender');
-    const profileSaveBtn       = document.getElementById('profile-save');
+  const profileNameInput     = document.getElementById('profile-name');
+  const profileUsernameInput = document.getElementById('profile-username');
+  const profileBirthInput    = document.getElementById('profile-birthdate');
+  const profileGenderSelect  = document.getElementById('profile-gender');
+  const profileSaveBtn       = document.getElementById('profile-save');
 
-    const rankLabelEl   = document.getElementById('rank-label');
-    const xpLabelEl     = document.getElementById('xp-label');
-    const xpBarFillEl   = document.getElementById('xp-bar-fill');
-    const statsRowEl    = document.getElementById('stats-row');
-    const mission1El    = document.getElementById('mission-1');
-    const mission2El    = document.getElementById('mission-2');
-    const mission3El    = document.getElementById('mission-3');
+  const rankLabelEl   = document.getElementById('rank-label');
+  const xpLabelEl     = document.getElementById('xp-label');
+  const xpBarFillEl   = document.getElementById('xp-bar-fill');
+  const statsRowEl    = document.getElementById('stats-row');
+  const mission1El    = document.getElementById('mission-1');
+  const mission2El    = document.getElementById('mission-2');
+  const mission3El    = document.getElementById('mission-3');
 
-    // Rush DOM
-    const rushOverlay     = document.getElementById('rush-overlay');
-    const rushOpenBtn     = document.getElementById('rush-open');
-    const rushBackBtn     = document.getElementById('rush-back');
-    const rushMultEl      = document.getElementById('rush-multiplier');
-    const rushRocketEl    = document.getElementById('rush-rocket');
-    const rushStatusEl    = document.getElementById('rush-status');
-    const rushHistoryEl   = document.getElementById('rush-history');
-    const rushBetInput    = document.getElementById('rush-bet');
-    const rushAutoInput   = document.getElementById('rush-auto');
-    const rushAutoEnabled = document.getElementById('rush-auto-enabled');
-    const rushStartBtn    = document.getElementById('rush-start');
-    const rushCashoutBtn  = document.getElementById('rush-cashout');
-    const rushOwyEl       = document.getElementById('rush-owy');
+  const rushOverlay     = document.getElementById('rush-overlay');
+  const rushOpenBtn     = document.getElementById('rush-open');
+  const rushBackBtn     = document.getElementById('rush-back');
+  const rushMultEl      = document.getElementById('rush-multiplier');
+  const rushRocketEl    = document.getElementById('rush-rocket');
+  const rushStatusEl    = document.getElementById('rush-status');
+  const rushHistoryEl   = document.getElementById('rush-history');
+  const rushBetInput    = document.getElementById('rush-bet');
+  const rushAutoInput   = document.getElementById('rush-auto');
+  const rushAutoEnabled = document.getElementById('rush-auto-enabled');
+  const rushStartBtn    = document.getElementById('rush-start');
+  const rushCashoutBtn  = document.getElementById('rush-cashout');
+  const rushOwyEl       = document.getElementById('rush-owy');
 
-    // Plinko DOM
-    const plinkoOverlay    = document.getElementById('plinko-overlay');
-    const plinkoOpenBtn    = document.getElementById('plinko-open');
-    const plinkoBackBtn    = document.getElementById('plinko-back');
-    const plinkoStatusEl   = document.getElementById('plinko-status');
-    const plinkoHistoryEl  = document.getElementById('plinko-history');
-    const plinkoBetInput   = document.getElementById('plinko-bet');
-    const plinkoStartBtn   = document.getElementById('plinko-start');
-    const plinkoRiskBtns   = document.querySelectorAll('#plinko-risk-buttons button');
-    const plinkoBoardEl    = document.getElementById('plinko-board');
-    const plinkoMultsRow   = document.getElementById('plinko-mults-row');
-    const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
-    const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
+  const plinkoOverlay    = document.getElementById('plinko-overlay');
+  const plinkoOpenBtn    = document.getElementById('plinko-open');
+  const plinkoBackBtn    = document.getElementById('plinko-back');
+  const plinkoStatusEl   = document.getElementById('plinko-status');
+  const plinkoHistoryEl  = document.getElementById('plinko-history');
+  const plinkoBetInput   = document.getElementById('plinko-bet');
+  const plinkoStartBtn   = document.getElementById('plinko-start');
+  const plinkoRiskBtns   = document.querySelectorAll('#plinko-risk-buttons button');
+  const plinkoBoardEl    = document.getElementById('plinko-board');
+  const plinkoMultsRow   = document.getElementById('plinko-mults-row');
+  const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
+  const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
 
-    // Splash hide
-    setTimeout(() => {
-      if (splashEl) splashEl.style.display = 'none';
-    }, 1300);
+  // скрываем сплэш
+  setTimeout(() => { if (splashEl) splashEl.style.display = 'none'; }, 1300);
 
-    function vibrate(ms) {
-      if (navigator && navigator.vibrate) {
-        navigator.vibrate(ms);
-      }
-    }
+  function vibrate(ms) {
+    if (navigator && navigator.vibrate) navigator.vibrate(ms);
+  }
 
-    // ========== STORAGE ==========
-    const STORAGE_KEY_BALANCE  = 'owy_balance_v1';
-    const STORAGE_KEY_PROFILE  = 'owy_profile_info_v1';
-    const STORAGE_KEY_STATS    = 'owy_stats_v1';
+  // === STORAGE ===
+  const STORAGE_KEY_BALANCE = 'owy_balance_v1';
+  const STORAGE_KEY_PROFILE = 'owy_profile_info_v1';
+  const STORAGE_KEY_STATS   = 'owy_stats_v1';
 
-    let demoBalance = 1000;
+  let demoBalance = 1000;
 
-    function loadBalance() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_BALANCE);
-        const val = parseInt(raw, 10);
-        if (!isNaN(val) && val >= 0) demoBalance = val;
-      } catch (e) {
-        demoBalance = 1000;
-      }
-    }
+  function loadBalance() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_BALANCE);
+      const val = parseInt(raw, 10);
+      if (!isNaN(val) && val >= 0) demoBalance = val;
+    } catch (e) { demoBalance = 1000; }
+  }
 
-    function saveBalance() {
-      try { localStorage.setItem(STORAGE_KEY_BALANCE, String(demoBalance)); } catch (e) {}
-    }
+  function saveBalance() {
+    try { localStorage.setItem(STORAGE_KEY_BALANCE, String(demoBalance)); } catch (e) {}
+  }
 
-    function updateBalanceView() {
-      const text = demoBalance.toLocaleString("ru-RU") + " OWY";
-      balanceEl.textContent        = text;
-      profileBalanceEl.textContent = text;
-    }
+  function updateBalanceView() {
+    const txt = demoBalance.toLocaleString('ru-RU') + ' OWY';
+    if (balanceEl)        balanceEl.textContent = txt;
+    if (profileBalanceEl) profileBalanceEl.textContent = txt;
+  }
 
-    let profileData = {
-      name: "",
-      username: "",
-      birthdate: "",
-      gender: ""
-    };
+  // === PROFILE / STATS ===
+  let profileData = { name: "", username: "", birthdate: "", gender: "" };
 
-    function loadProfileInfo() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_PROFILE);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          profileData = { ...profileData, ...parsed };
-        }
-      } catch (e) {}
-    }
+  function loadProfileInfo() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_PROFILE);
+      if (raw) profileData = { ...profileData, ...JSON.parse(raw) };
+    } catch (e) {}
+  }
 
-    function saveProfileInfo() {
-      try { localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profileData)); } catch (e) {}
-    }
+  function saveProfileInfo() {
+    try { localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profileData)); } catch (e) {}
+  }
 
-    let stats = {
-      rushPlays: 0,
-      plinkoPlays: 0,
-      bestMulti: 1.0,
-      xp: 0
-    };
+  let stats = { rushPlays: 0, plinkoPlays: 0, bestMulti: 1.0, xp: 0 };
 
-    function loadStats() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_STATS);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          stats = { ...stats, ...parsed };
-        }
-      } catch (e) {}
-    }
+  function loadStats() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_STATS);
+      if (raw) stats = { ...stats, ...JSON.parse(raw) };
+    } catch (e) {}
+  }
 
-    function saveStats() {
-      try { localStorage.setItem(STORAGE_KEY_STATS, JSON.stringify(stats)); } catch (e) {}
-    }
+  function saveStats() {
+    try { localStorage.setItem(STORAGE_KEY_STATS, JSON.stringify(stats)); } catch (e) {}
+  }
 
-    function calcRank(xp) {
-      if (xp < 100)   return "BRONZE I";
-      if (xp < 200)   return "BRONZE II";
-      if (xp < 400)   return "SILVER I";
-      if (xp < 700)   return "SILVER II";
-      if (xp < 1100)  return "GOLD I";
-      return "OWY ELITE";
-    }
+  function calcRank(xp) {
+    if (xp < 100)  return 'BRONZE I';
+    if (xp < 200)  return 'BRONZE II';
+    if (xp < 400)  return 'SILVER I';
+    if (xp < 700)  return 'SILVER II';
+    if (xp < 1100) return 'GOLD I';
+    return 'OWY ELITE';
+  }
 
-    function calcXpProgress(xp) {
-      const level  = Math.floor(xp / 100);
-      const start  = level * 100;
-      const end    = start + 100;
-      const within = Math.min(Math.max(xp - start, 0), 100);
-      return { label: `${xp} / ${end} XP`, percent: (within / 100) * 100 };
-    }
+  function calcXpProgress(xp) {
+    const level  = Math.floor(xp / 100);
+    const start  = level * 100;
+    const end    = start + 100;
+    const within = Math.min(Math.max(xp - start, 0), 100);
+    return { label: `${xp} / ${end} XP`, percent: (within / 100) * 100 };
+  }
 
-    function updateStatsView() {
+  function updateStatsView() {
+    if (statsRowEl) {
       statsRowEl.textContent =
         `Rush: ${stats.rushPlays} игр • Plinko: ${stats.plinkoPlays} игр • Лучший множитель: x${stats.bestMulti.toFixed(2)}`;
+    }
 
-      const rank = calcRank(stats.xp);
-      rankLabelEl.textContent = rank;
-      const prog = calcXpProgress(stats.xp);
-      xpLabelEl.textContent   = prog.label;
-      xpBarFillEl.style.width = `${prog.percent}%`;
+    const rank = calcRank(stats.xp);
+    if (rankLabelEl) rankLabelEl.textContent = rank;
 
-      const m1Done = stats.rushPlays >= 5;
-      const m2Done = stats.plinkoPlays >= 3;
-      const m3Done = stats.rushPlays > 0 && stats.plinkoPlays > 0;
+    const prog = calcXpProgress(stats.xp);
+    if (xpLabelEl)   xpLabelEl.textContent = prog.label;
+    if (xpBarFillEl) xpBarFillEl.style.width = `${prog.percent}%`;
 
+    const m1Done = stats.rushPlays   >= 5;
+    const m2Done = stats.plinkoPlays >= 3;
+    const m3Done = stats.rushPlays > 0 && stats.plinkoPlays > 0;
+
+    if (mission1El) {
       mission1El.firstElementChild.textContent = m1Done ? "✅" : "⬜";
+      mission1El.classList.toggle('mission-done', m1Done);
+    }
+    if (mission2El) {
       mission2El.firstElementChild.textContent = m2Done ? "✅" : "⬜";
+      mission2El.classList.toggle('mission-done', m2Done);
+    }
+    if (mission3El) {
       mission3El.firstElementChild.textContent = m3Done ? "✅" : "⬜";
-
-      if (m1Done) mission1El.classList.add("mission-done");
-      if (m2Done) mission2El.classList.add("mission-done");
-      if (m3Done) mission3El.classList.add("mission-done");
+      mission3El.classList.toggle('mission-done', m3Done);
     }
+  }
 
-    // ========== PROFILE INIT ==========
-    function initProfile() {
-      profileIdEl.textContent = tgUser ? tgUser.id : "—";
+  function initProfile() {
+    if (tgUser && profileIdEl) profileIdEl.textContent = tgUser.id;
+    else if (profileIdEl)      profileIdEl.textContent = "—";
 
-      if (!profileData.name) {
-        if (tgUser) {
-          const name = (tgUser.first_name || '') +
-            (tgUser.last_name ? (' ' + tgUser.last_name) : '');
-          profileData.name = name || 'Игрок OWY';
-          if (!profileData.username && tgUser.username) {
-            profileData.username = '@' + tgUser.username;
-          }
-        } else {
-          profileData.name = 'Demo пользователь';
+    if (!profileData.name) {
+      if (tgUser) {
+        const name = (tgUser.first_name || '') +
+          (tgUser.last_name ? (' ' + tgUser.last_name) : '');
+        profileData.name = name || 'Игрок OWY';
+        if (!profileData.username && tgUser.username) {
+          profileData.username = '@' + tgUser.username;
         }
+      } else {
+        profileData.name = 'Demo пользователь';
       }
-
-      profileNameInput.value     = profileData.name || '';
-      profileUsernameInput.value = profileData.username || '';
-      profileBirthInput.value    = profileData.birthdate || '';
-      profileGenderSelect.value  = profileData.gender || '';
     }
 
+    if (profileNameInput)     profileNameInput.value     = profileData.name || '';
+    if (profileUsernameInput) profileUsernameInput.value = profileData.username || '';
+    if (profileBirthInput)    profileBirthInput.value    = profileData.birthdate || '';
+    if (profileGenderSelect)  profileGenderSelect.value  = profileData.gender || '';
+  }
+
+  if (profileSaveBtn) {
     profileSaveBtn.addEventListener('click', () => {
-      profileData.name      = profileNameInput.value.trim();
-      profileData.username  = profileUsernameInput.value.trim();
+      profileData.name      = (profileNameInput.value || '').trim();
+      profileData.username  = (profileUsernameInput.value || '').trim();
       profileData.birthdate = profileBirthInput.value;
       profileData.gender    = profileGenderSelect.value;
       saveProfileInfo();
-      profileNoteEl.textContent =
-        "Сохранено ✔ Данные хранятся только у тебя на устройстве.";
+      if (profileNoteEl) {
+        profileNoteEl.textContent = "Сохранено ✔ Данные хранятся только у тебя на устройстве.";
+      }
     });
+  }
 
+  if (profileResetBtn) {
     profileResetBtn.addEventListener('click', () => {
       demoBalance = 1000;
       saveBalance();
       updateBalanceView();
     });
+  }
 
+  if (profileTopupBtn) {
     profileTopupBtn.addEventListener('click', () => {
       demoBalance += 500;
       saveBalance();
       updateBalanceView();
-      profileNoteEl.textContent = "Докинуло +500 OWY для теста 💸";
+      if (profileNoteEl) profileNoteEl.textContent = "Докинуло +500 OWY для теста 💸";
     });
+  }
 
+  if (profileFeedbackBtn) {
     profileFeedbackBtn.addEventListener('click', () => {
       const link = "https://t.me/arhipovvv";
-      if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(link);
-      } else {
-        window.open(link, "_blank");
-      }
+      if (tg && tg.openTelegramLink) tg.openTelegramLink(link);
+      else window.open(link, "_blank");
     });
+  }
 
-    // ========== NAV ==========
-    function setActiveTab(tab) {
-      if (tab === 'home') {
-        navHome.classList.add('active');
-        navProfile.classList.remove('active');
-        homeScreen.style.display    = '';
-        profileScreen.style.display = 'none';
-      } else {
-        navProfile.classList.add('active');
-        navHome.classList.remove('active');
-        homeScreen.style.display    = 'none';
-        profileScreen.style.display = '';
-      }
+  // === NAV ===
+  function setActiveTab(tab) {
+    if (!homeScreen || !profileScreen || !navHome || !navProfile) return;
+    if (tab === 'home') {
+      navHome.classList.add('active');
+      navProfile.classList.remove('active');
+      homeScreen.style.display    = '';
+      profileScreen.style.display = 'none';
+    } else {
+      navProfile.classList.add('active');
+      navHome.classList.remove('active');
+      homeScreen.style.display    = 'none';
+      profileScreen.style.display = '';
+    }
+  }
+
+  if (navHome)    navHome.addEventListener('click', () => setActiveTab('home'));
+  if (navProfile) navProfile.addEventListener('click', () => setActiveTab('profile'));
+
+  // === HINTS ===
+  const hintPhrases = [
+    "🤖 OWY совет: попробуй Rush с небольшим автовыводом.",
+    "🤖 OWY совет: Plinko High риск — только если готов к боли.",
+    "🤖 OWY совет: начни с Mid Plinko и посмотри, как сыпет.",
+    "🤖 OWY совет: не забывай забрать раньше краша 😉",
+    "🤖 OWY совет: чередуй Rush и Plinko, чтобы прочувствовать математику."
+  ];
+
+  function initPhrases() {
+    if (!hintTextEl) return;
+    hintTextEl.textContent =
+      hintPhrases[Math.floor(Math.random() * hintPhrases.length)];
+  }
+
+  // === RUSH GLOBAL ENGINE ===
+  const RUSH_PATH_MAX_MULTI = 10;
+  const RUSH_PATH_MAX_X = 220;
+  const RUSH_PATH_MAX_Y = 70;
+
+  const RUSH_BETTING_DURATION  = 10000; // 10c ставок
+  const RUSH_AFTER_CRASH_DELAY = 3000;  // пауза между раундами
+
+  let rushRoundId      = 1;
+  let rushPhase        = 'betting'; // betting | running | crashed
+  let rushPhaseElapsed = 0;
+
+  let currentMulti = 1.0;
+  let crashMulti   = 1.0;
+
+  // состояние игрока
+  let rushHasActiveBet = false;
+  let rushBet          = 0;
+  let autoCashout      = null;
+  let hasCashedOut     = false;
+  let cashedOutAt      = null;
+
+  let crashHistory = [];
+
+  function formatMulti(m) { return 'x' + m.toFixed(2); }
+
+  function resetRushVisual() {
+    if (!rushOwyEl) return;
+    rushOwyEl.classList.remove('rush-running');
+    rushOwyEl.style.transition = 'none';
+    rushOwyEl.style.transform  = 'translate(0px, 0px) rotate(0deg)';
+    requestAnimationFrame(() => {
+      rushOwyEl.style.transition = 'transform 0.07s linear';
+    });
+  }
+
+  function updateRushVisual() {
+    if (!rushOwyEl) return;
+    const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
+    const x = RUSH_PATH_MAX_X * t;
+    const y = RUSH_PATH_MAX_Y * t;
+    rushOwyEl.style.transform = `translate(${x}px, -${y}px) rotate(0deg)`;
+  }
+
+  function crashRushVisual() {
+    const scene = document.querySelector('.rush-scene');
+    if (scene) {
+      scene.classList.add('flash');
+      setTimeout(() => scene.classList.remove('flash'), 400);
+    }
+    if (!rushOwyEl) return;
+
+    rushOwyEl.classList.remove('rush-running');
+    rushOwyEl.style.transition = 'transform 0.35s ease-in';
+
+    const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
+    const x = RUSH_PATH_MAX_X * t;
+    rushOwyEl.style.transform = `translate(${x}px, 120px) rotate(40deg)`;
+  }
+
+  function generateCrashMultiplier() {
+    const r = Math.random();
+    if (r < 0.05)   return 1.0;
+    if (r < 0.25)   return +(Math.random() * (1.25 - 1.01) + 1.01).toFixed(2);
+    if (r < 0.60)   return +(Math.random() * (2.5  - 1.25) + 1.25).toFixed(2);
+    if (r < 0.85)   return +(Math.random() * (5.0  - 2.5)  + 2.5 ).toFixed(2);
+    if (r < 0.95)   return +(Math.random() * (15.0 - 5.0)  + 5.0 ).toFixed(2);
+    if (r < 0.985)  return +(Math.random() * (40.0 - 15.0) + 15.0).toFixed(2);
+    if (r < 0.998)  return +(Math.random() * (70.0 - 40.0) + 40.0).toFixed(2);
+    return            +(Math.random() * (100.0 - 70.0) + 70.0).toFixed(2);
+  }
+
+  function calcStepDelta() {
+    const base     = 0.0075;
+    const k        = 0.0044;
+    const maxDelta = 0.085;
+    let delta = base + k * (currentMulti - 1.0);
+    if (delta > maxDelta) delta = maxDelta;
+    if (delta < 0)        delta = 0;
+    return delta;
+  }
+
+  function updateRushHistory() {
+    if (!rushHistoryEl) return;
+    if (!crashHistory.length) {
+      rushHistoryEl.textContent = "История: —";
+      return;
+    }
+    const last = crashHistory.slice(-10);
+    let html = 'История: ';
+    last.forEach(v => {
+      let cls = 'low';
+      if (v >= 5)      cls = 'high';
+      else if (v >= 2) cls = 'mid';
+      html += `<span class="rush-history-chip ${cls}">x${v.toFixed(2)}</span>`;
+    });
+    rushHistoryEl.innerHTML = html;
+  }
+
+  function resetRushPlayerState() {
+    rushHasActiveBet = false;
+    rushBet          = 0;
+    autoCashout      = null;
+    hasCashedOut     = false;
+    cashedOutAt      = null;
+    if (rushCashoutBtn) rushCashoutBtn.disabled = true;
+  }
+
+  function startNewRushRound() {
+    rushRoundId++;
+    rushPhase        = 'betting';
+    rushPhaseElapsed = 0;
+    currentMulti     = 1.0;
+    crashMulti       = generateCrashMultiplier();
+
+    if (rushMultEl)   rushMultEl.textContent = formatMulti(currentMulti);
+    if (rushRocketEl) rushRocketEl.style.width = '0%';
+    resetRushVisual();
+    resetRushPlayerState();
+
+    if (rushStatusEl) {
+      rushStatusEl.textContent = "Новый раунд. У тебя ~10 секунд, чтобы сделать ставку.";
     }
 
-    navHome.addEventListener('click', () => setActiveTab('home'));
-    navProfile.addEventListener('click', () => setActiveTab('profile'));
+    if (rushBetInput)    rushBetInput.disabled    = false;
+    if (rushAutoInput)   rushAutoInput.disabled   = false;
+    if (rushAutoEnabled) rushAutoEnabled.disabled = false;
+    if (rushStartBtn)    rushStartBtn.disabled    = false;
+  }
 
-    // ========== HINT PHRASES ==========
-    const hintPhrases = [
-      "🤖 OWY совет: попробуй Rush с небольшим автовыводом.",
-      "🤖 OWY совет: Plinko High риск — только если готов к боли.",
-      "🤖 OWY совет: начни с Mid Plinko и посмотри, как сыпет.",
-      "🤖 OWY совет: не забывай забрать раньше краша 😉",
-      "🤖 OWY совет: чередуй Rush и Plinko, чтобы прочувствовать математику."
-    ];
+  function onRushCrash() {
+    rushPhase        = 'crashed';
+    rushPhaseElapsed = 0;
 
-    function initPhrases() {
-      hintTextEl.textContent =
-        hintPhrases[Math.floor(Math.random() * hintPhrases.length)];
-    }
+    crashHistory.push(crashMulti);
+    if (crashHistory.length > 50) crashHistory.shift();
+    updateRushHistory();
 
-    // ========== RUSH GAME (локальный) ==========
-    const RUSH_PATH_MAX_MULTI = 10;
-    const RUSH_PATH_MAX_X = 220;
-    const RUSH_PATH_MAX_Y = 70;
-
-    let rushTimer    = null;
-    let rushState    = "idle"; // "idle" | "running"
-    let currentMulti = 1.0;
-    let crashMulti   = 1.0;
-    let rushBet      = 0;
-    let autoCashout  = null;
-    let hasCashedOut = false;
-    let cashedOutAt  = null;
-    let crashHistory = [];
-    let rushStartLocked = false;
-
-    function resetRushVisual() {
-      if (!rushOwyEl) return;
-      rushOwyEl.classList.remove('rush-running');
-      rushOwyEl.style.transition = 'none';
-      rushOwyEl.style.transform = 'translate(0px, 0px) rotate(0deg)';
-      requestAnimationFrame(() => {
-        rushOwyEl.style.transition = 'transform 0.07s linear';
-      });
-    }
-
-    function updateRushVisual() {
-      if (!rushOwyEl) return;
-      const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
-      const x = RUSH_PATH_MAX_X * t;
-      const y = RUSH_PATH_MAX_Y * t;
-      rushOwyEl.style.transform = `translate(${x}px, -${y}px) rotate(0deg)`;
-    }
-
-    function crashRushVisual() {
-      const scene = document.querySelector('.rush-scene');
-      if (scene) {
-        scene.classList.add('flash');
-        setTimeout(() => scene.classList.remove('flash'), 400);
-      }
-      if (!rushOwyEl) return;
-
-      rushOwyEl.classList.remove('rush-running');
-      rushOwyEl.style.transition = 'transform 0.35s ease-in';
-
-      const t = Math.min(currentMulti / RUSH_PATH_MAX_MULTI, 1);
-      const x = RUSH_PATH_MAX_X * t;
-      rushOwyEl.style.transform = `translate(${x}px, 120px) rotate(40deg)`;
-    }
-
-    function updateRushHistory() {
-      if (!crashHistory.length) {
-        rushHistoryEl.textContent = "История: —";
-        return;
-      }
-      const last = crashHistory.slice(-10);
-      let html = 'История: ';
-      last.forEach(v => {
-        let cls = 'low';
-        if (v >= 5) {
-          cls = 'high';
-        } else if (v >= 2) {
-          cls = 'mid';
-        }
-        html += `<span class="rush-history-chip ${cls}">x${v.toFixed(2)}</span>`;
-      });
-      rushHistoryEl.innerHTML = html;
-    }
-
-    function setRushControlsRunning(isRunning) {
-      rushStartBtn.disabled   = isRunning;
-      rushCashoutBtn.disabled = !isRunning;
-
-      rushBetInput.disabled   = isRunning;
-      rushAutoInput.disabled  = isRunning;
-      if (rushAutoEnabled) rushAutoEnabled.disabled = isRunning;
-    }
-
-    function resetRushForNewGame() {
-      rushState    = "idle";
-      currentMulti = 1.0;
-      crashMulti   = 1.0;
-      rushBet      = 0;
-      hasCashedOut = false;
-      cashedOutAt  = null;
-
-      rushMultEl.textContent   = "x1.00";
-      if (rushRocketEl) rushRocketEl.style.width = "0%";
-      rushStatusEl.textContent = "Выбери ставку и жми старт";
-
-      if (rushTimer) {
-        clearInterval(rushTimer);
-        rushTimer = null;
-      }
-
-      resetRushVisual();
-      setRushControlsRunning(false);
-    }
-
-    function openRush() {
-      rushOverlay.style.display = "flex";
-      resetRushForNewGame();
-    }
-
-    function closeRush() {
-      rushOverlay.style.display = "none";
-      resetRushForNewGame();
-    }
-
-    rushOpenBtn.addEventListener('click', openRush);
-    rushBackBtn.addEventListener('click', closeRush);
-
-    function generateCrashMultiplier() {
-      const r = Math.random(); // суровый рандом
-
-      if (r < 0.05)   return 1.0;
-      if (r < 0.25)   return +(Math.random() * (1.25 - 1.01) + 1.01).toFixed(2);
-      if (r < 0.60)   return +(Math.random() * (2.5  - 1.25) + 1.25).toFixed(2);
-      if (r < 0.85)   return +(Math.random() * (5.0  - 2.5)  + 2.5 ).toFixed(2);
-      if (r < 0.95)   return +(Math.random() * (15.0 - 5.0)  + 5.0 ).toFixed(2);
-      if (r < 0.985)  return +(Math.random() * (40.0 - 15.0) + 15.0).toFixed(2);
-      if (r < 0.998)  return +(Math.random() * (70.0 - 40.0) + 40.0).toFixed(2);
-      return            +(Math.random() * (100.0 - 70.0) + 70.0).toFixed(2);
-    }
-
-    function calcStepDelta() {
-      const base     = 0.0075;
-      const k        = 0.0044;
-      const maxDelta = 0.085;
-
-      let delta = base + k * (currentMulti - 1.0);
-      if (delta > maxDelta) delta = maxDelta;
-      if (delta < 0)        delta = 0;
-      return delta;
-    }
-
-    function startRush() {
-      if (rushState === "running" || rushStartLocked) return;
-      rushStartLocked = true;
-      setTimeout(() => { rushStartLocked = false; }, 500);
-
-      const betValue = parseInt(rushBetInput.value, 10);
-      if (isNaN(betValue) || betValue < 10) {
-        rushStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
-        return;
-      }
-      if (betValue > demoBalance) {
-        rushStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
-        return;
-      }
-
-      resetRushForNewGame();
-
-      const isAutoOn   = rushAutoEnabled && rushAutoEnabled.checked;
-      const autoValRaw = parseFloat(rushAutoInput.value);
-      if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.0) {
-        autoCashout = autoValRaw;
-      } else {
-        autoCashout = null;
-      }
-
-      rushState = "running";
-      if (rushOwyEl) rushOwyEl.classList.add('rush-running');
-      setRushControlsRunning(true);
-
-      rushBet       = betValue;
-      demoBalance  -= rushBet;
-      saveBalance();
-      updateBalanceView();
-
-      stats.rushPlays += 1;
-      stats.xp        += 2;
+    if (crashMulti > stats.bestMulti) {
+      stats.bestMulti = crashMulti;
       saveStats();
       updateStatsView();
-
-      rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
-      crashMulti = generateCrashMultiplier();
-
-      rushTimer = setInterval(() => {
-        if (rushState !== "running") return;
-
-        currentMulti += calcStepDelta();
-
-        rushMultEl.textContent = "x" + currentMulti.toFixed(2);
-        if (rushRocketEl) {
-          const progress = Math.min(currentMulti / 10, 1) * 100;
-          rushRocketEl.style.width = progress + "%";
-        }
-
-        updateRushVisual();
-
-        if (autoCashout && currentMulti >= autoCashout) {
-          cashoutRush();
-          return;
-        }
-
-        if (currentMulti >= crashMulti) {
-          if (rushTimer) {
-            clearInterval(rushTimer);
-            rushTimer = null;
-          }
-
-          crashHistory.push(crashMulti);
-          updateRushHistory();
-
-          if (crashMulti > stats.bestMulti) {
-            stats.bestMulti = crashMulti;
-            saveStats();
-            updateStatsView();
-          }
-
-          rushState = "idle";
-          setRushControlsRunning(false);
-          crashRushVisual();
-
-          if (hasCashedOut) {
-            const showCashMulti = cashedOutAt || crashMulti;
-            rushStatusEl.textContent =
-              `💥 Раунд упал на x${crashMulti.toFixed(2)}. Ты забрал на x${showCashMulti.toFixed(2)}.`;
-          } else {
-            rushStatusEl.textContent =
-              `💥 Краш на x${crashMulti.toFixed(2)}. Ставка ${rushBet} OWY сгорела.`;
-          }
-          vibrate(90);
-        }
-      }, 70);
     }
 
-    function cashoutRush() {
-      if (rushState !== "running" || hasCashedOut) return;
+    crashRushVisual();
 
-      hasCashedOut = true;
-      cashedOutAt  = currentMulti;
-      autoCashout  = null;
+    if (rushStatusEl) {
+      if (rushHasActiveBet) {
+        if (hasCashedOut) {
+          const show = cashedOutAt || crashMulti;
+          rushStatusEl.textContent =
+            `💥 Раунд упал на ${formatMulti(crashMulti)}. Ты забрал на ${formatMulti(show)}.`;
+        } else {
+          rushStatusEl.textContent =
+            `💥 Краш на ${formatMulti(crashMulti)}. Ставка ${rushBet} OWY сгорела.`;
+        }
+      } else {
+        rushStatusEl.textContent =
+          `Раунд упал на ${formatMulti(crashMulti)}. В следующий раз успей войти пораньше 😉`;
+      }
+    }
 
-      rushCashoutBtn.disabled = true;
+    rushHasActiveBet = false;
+    if (rushOwyEl) rushOwyEl.classList.remove('rush-running');
+    if (rushCashoutBtn) rushCashoutBtn.disabled = true;
+    vibrate(90);
+  }
 
-      const winAmount = Math.floor(rushBet * cashedOutAt);
+  function tickRush(dt) {
+    if (rushPhase === 'betting') {
+      rushPhaseElapsed += dt;
+      if (rushPhaseElapsed >= RUSH_BETTING_DURATION) {
+        rushPhase        = 'running';
+        rushPhaseElapsed = 0;
+
+        if (rushStatusEl) {
+          rushStatusEl.textContent = rushHasActiveBet
+            ? "Rush пошёл! Следи за множителем и забирай вовремя."
+            : "Rush идёт. В следующем раунде успей сделать ставку 😉";
+        }
+
+        if (rushOwyEl) rushOwyEl.classList.add('rush-running');
+
+        if (rushBetInput)    rushBetInput.disabled    = true;
+        if (rushAutoInput)   rushAutoInput.disabled   = true;
+        if (rushAutoEnabled) rushAutoEnabled.disabled = true;
+
+        if (rushCashoutBtn) rushCashoutBtn.disabled = !rushHasActiveBet;
+        if (rushStartBtn)   rushStartBtn.disabled   = true;
+      }
+      return;
+    }
+
+    if (rushPhase === 'running') {
+      currentMulti += calcStepDelta();
+
+      if (rushMultEl)   rushMultEl.textContent = formatMulti(currentMulti);
+      if (rushRocketEl) {
+        const progress = Math.min(currentMulti / 10, 1) * 100;
+        rushRocketEl.style.width = progress + '%';
+      }
+
+      updateRushVisual();
+
+      if (rushHasActiveBet && !hasCashedOut && autoCashout && currentMulti >= autoCashout) {
+        cashoutRush();
+      }
+
+      if (currentMulti >= crashMulti) onRushCrash();
+      return;
+    }
+
+    if (rushPhase === 'crashed') {
+      rushPhaseElapsed += dt;
+      if (rushPhaseElapsed >= RUSH_AFTER_CRASH_DELAY) {
+        startNewRushRound();
+      }
+    }
+  }
+
+  function startRush() {
+    if (rushPhase !== 'betting') {
+      if (rushStatusEl) rushStatusEl.textContent = "Ставки принимаются только до старта раунда. Жди следующий 🙂";
+      return;
+    }
+
+    if (rushHasActiveBet) {
+      if (rushStatusEl) rushStatusEl.textContent = "У тебя уже есть ставка в этом раунде.";
+      return;
+    }
+
+    const betValue = parseInt(rushBetInput.value, 10);
+    if (isNaN(betValue) || betValue < 10) {
+      if (rushStatusEl) rushStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+      return;
+    }
+    if (betValue > demoBalance) {
+      if (rushStatusEl) rushStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+      return;
+    }
+
+    const isAutoOn   = rushAutoEnabled && rushAutoEnabled.checked;
+    const autoValRaw = parseFloat(rushAutoInput.value);
+    if (isAutoOn && !isNaN(autoValRaw) && autoValRaw > 1.01) {
+      autoCashout = autoValRaw;
+    } else {
+      autoCashout = null;
+    }
+
+    rushHasActiveBet = true;
+    rushBet          = betValue;
+    hasCashedOut     = false;
+    cashedOutAt      = null;
+
+    demoBalance -= rushBet;
+    saveBalance();
+    updateBalanceView();
+
+    stats.rushPlays += 1;
+    stats.xp        += 5;
+    saveStats();
+    updateStatsView();
+
+    if (rushStatusEl) rushStatusEl.textContent = "Ставка принята. Ждём старта Rush 🚀";
+    vibrate(40);
+  }
+
+  function cashoutRush() {
+    if (!rushHasActiveBet || hasCashedOut || rushPhase !== 'running') return;
+
+    hasCashedOut = true;
+    cashedOutAt  = currentMulti;
+    if (rushCashoutBtn) rushCashoutBtn.disabled = true;
+
+    const winAmount = Math.floor(rushBet * cashedOutAt);
+    demoBalance += winAmount;
+    saveBalance();
+    updateBalanceView();
+
+    if (cashedOutAt > stats.bestMulti) stats.bestMulti = cashedOutAt;
+    stats.xp += 8;
+    saveStats();
+    updateStatsView();
+
+    if (rushStatusEl) {
+      rushStatusEl.textContent =
+        `✅ Забрал на ${formatMulti(cashedOutAt)}! Раунд ещё идёт до краша...`;
+    }
+    vibrate(70);
+  }
+
+  function openRush()  { if (rushOverlay) rushOverlay.style.display = 'flex'; }
+  function closeRush() { if (rushOverlay) rushOverlay.style.display = 'none'; }
+
+  if (rushOpenBtn)    rushOpenBtn.addEventListener('click', openRush);
+  if (rushBackBtn)    rushBackBtn.addEventListener('click', closeRush);
+  if (rushStartBtn)   rushStartBtn.addEventListener('click', startRush);
+  if (rushCashoutBtn) rushCashoutBtn.addEventListener('click', cashoutRush);
+
+  // === PLINKO (как было, только чуть подчистил) ===
+  const PLINKO_COLS = 9;
+  const PLINKO_ROWS = 16;
+
+  const PLINKO_CONFIGS = {
+    low:  { multipliers: [1.30, 1.15, 1.08, 1.03, 0.98, 1.03, 1.08, 1.15, 1.30] },
+    mid:  { multipliers: [2.50, 1.70, 1.20, 0.90, 0.30, 0.90, 1.20, 1.70, 2.50] },
+    high: { multipliers: [5.00, 3.00, 1.80, 0.70, 0.20, 0.70, 1.80, 3.00, 5.00] }
+  };
+
+  let plinkoSelectedRisk = 'mid';
+  let plinkoHistory = [];
+
+  function updatePlinkoHistory() {
+    if (!plinkoHistoryEl) return;
+    if (!plinkoHistory.length) {
+      plinkoHistoryEl.textContent = "История: —";
+      return;
+    }
+    const last = plinkoHistory.slice(-10);
+    plinkoHistoryEl.textContent =
+      "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
+  }
+
+  function renderPlinkoPegs() {
+    if (!plinkoPegsLayer) return;
+    plinkoPegsLayer.innerHTML = "";
+    for (let r = 0; r < PLINKO_ROWS; r++) {
+      const yPerc = 5 + (r / (PLINKO_ROWS - 1)) * 80;
+      const isOdd  = r % 2 === 1;
+      const count  = isOdd ? PLINKO_COLS - 1 : PLINKO_COLS;
+      const offset = isOdd ? 0.5 : 0;
+      for (let i = 0; i < count; i++) {
+        const peg = document.createElement("div");
+        peg.className = "plinko-peg";
+        const colPos   = i + offset;
+        const maxIndex = PLINKO_COLS - 1;
+        const xPerc    = (colPos / maxIndex) * 100;
+        peg.style.top  = yPerc + "%";
+        peg.style.left = xPerc + "%";
+        plinkoPegsLayer.appendChild(peg);
+      }
+    }
+  }
+
+  function renderPlinkoConfig() {
+    const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+    if (!config || !plinkoMultsRow) return;
+    plinkoMultsRow.innerHTML = "";
+    config.multipliers.forEach(m => {
+      const slot = document.createElement("div");
+      slot.className = "plinko-slot";
+      slot.textContent = "x" + m.toFixed(2);
+      plinkoMultsRow.appendChild(slot);
+    });
+    if (plinkoBoardEl) {
+      plinkoBoardEl.classList.remove("low", "mid", "high");
+      plinkoBoardEl.classList.add(plinkoSelectedRisk);
+    }
+  }
+
+  function generatePlinkoPath(cols, rows) {
+    let col = Math.floor(cols / 2);
+    const path = [];
+    for (let r = 0; r <= rows; r++) {
+      path.push({ col, row: r });
+      if (r === rows) break;
+      const rnd = Math.random();
+      let dir = 0;
+      if (col <= 1) {
+        if (rnd < 0.6)      dir = 1;
+        else if (rnd < 0.8) dir = 0;
+        else                dir = -1;
+      } else if (col >= cols - 2) {
+        if (rnd < 0.6)      dir = -1;
+        else if (rnd < 0.8) dir = 0;
+        else                dir = 1;
+      } else {
+        if (rnd < 0.3)      dir = -1;
+        else if (rnd > 0.7) dir = 1;
+        else                dir = 0;
+      }
+      col += dir;
+      if (col < 0)        col = 0;
+      if (col > cols - 1) col = cols - 1;
+    }
+    return path;
+  }
+
+  let plinkoStartLocked = false;
+
+  function playPlinko() {
+    if (plinkoStartLocked) return;
+    plinkoStartLocked = true;
+    setTimeout(() => { plinkoStartLocked = false; }, 400);
+
+    const bet = parseInt(plinkoBetInput.value, 10);
+    if (isNaN(bet) || bet < 10) {
+      if (plinkoStatusEl) plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+      return;
+    }
+    if (bet > demoBalance) {
+      if (plinkoStatusEl) plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+      return;
+    }
+
+    const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+    if (!config) return;
+
+    const slots = plinkoMultsRow ? plinkoMultsRow.querySelectorAll('.plinko-slot') : [];
+    if (!slots.length || slots.length !== config.multipliers.length) return;
+
+    demoBalance -= bet;
+    saveBalance();
+    updateBalanceView();
+
+    stats.plinkoPlays += 1;
+    stats.xp          += 4;
+    saveStats();
+    updateStatsView();
+
+    const layerRect   = plinkoBallsLayer.getBoundingClientRect();
+    const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
+    const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
+    const slotY       = slotRects[0].top - layerRect.top - 8;
+
+    const colsCount  = config.multipliers.length;
+    const path       = generatePlinkoPath(colsCount, PLINKO_ROWS);
+    const finalCol   = path[path.length - 1].col;
+    const multiplier = config.multipliers[finalCol];
+
+    slots.forEach(s => s.classList.remove('active'));
+
+    const ball = document.createElement('div');
+    ball.className = 'plinko-ball';
+    plinkoBallsLayer.appendChild(ball);
+
+    const startX = layerRect.width / 2;
+    ball.style.left = (startX - 5) + "px";
+    ball.style.top  = "0px";
+
+    if (plinkoStatusEl) plinkoStatusEl.textContent = "Шарик падает... 🎯";
+
+    const totalRows = PLINKO_ROWS;
+    const stepDelay = 190;
+
+    path.forEach((step, index) => {
+      const rowRatio = step.row / totalRows;
+      const y        = slotY * rowRatio;
+      const colIndex = step.col;
+      const x        = slotCenters[colIndex];
+      setTimeout(() => {
+        ball.style.top  = y + "px";
+        ball.style.left = (x - 5) + "px";
+      }, stepDelay * index);
+    });
+
+    setTimeout(() => {
+      if (slots[finalCol]) slots[finalCol].classList.add('active');
+
+      const winAmount = Math.floor(bet * multiplier);
       demoBalance += winAmount;
       saveBalance();
       updateBalanceView();
 
-      if (cashedOutAt > stats.bestMulti) {
-        stats.bestMulti = cashedOutAt;
-      }
-      stats.xp += 3;
+      plinkoHistory.push(multiplier);
+      updatePlinkoHistory();
+
+      if (multiplier > stats.bestMulti) stats.bestMulti = multiplier;
       saveStats();
       updateStatsView();
 
-      rushStatusEl.textContent =
-        `✅ Забрал на x${cashedOutAt.toFixed(2)}!\nРаунд ещё идёт до краша...`;
-      vibrate(70);
-    }
-
-    rushStartBtn.addEventListener('click', startRush);
-    rushCashoutBtn.addEventListener('click', cashoutRush);
-
-    // ========== PLINKO ==========
-    const PLINKO_COLS = 9;
-    const PLINKO_ROWS = 16;
-
-    const PLINKO_CONFIGS = {
-      low:  { multipliers: [1.30, 1.15, 1.08, 1.03, 0.98, 1.03, 1.08, 1.15, 1.30] },
-      mid:  { multipliers: [2.50, 1.70, 1.20, 0.90, 0.30, 0.90, 1.20, 1.70, 2.50] },
-      high: { multipliers: [5.00, 3.00, 1.80, 0.70, 0.20, 0.70, 1.80, 3.00, 5.00] }
-    };
-
-    let plinkoSelectedRisk = "mid";
-    let plinkoHistory = [];
-    let plinkoStartLocked = false;
-
-    function updatePlinkoHistory() {
-      if (!plinkoHistory.length) {
-        plinkoHistoryEl.textContent = "История: —";
-        return;
-      }
-      const last = plinkoHistory.slice(-10);
-      plinkoHistoryEl.textContent =
-        "История: " + last.map(v => "x" + v.toFixed(2)).join("   ");
-    }
-
-    function renderPlinkoPegs() {
-      plinkoPegsLayer.innerHTML = "";
-      for (let r = 0; r < PLINKO_ROWS; r++) {
-        const yPerc = 5 + (r / (PLINKO_ROWS - 1)) * 80;
-        const isOdd  = r % 2 === 1;
-        const count  = isOdd ? PLINKO_COLS - 1 : PLINKO_COLS;
-        const offset = isOdd ? 0.5 : 0;
-
-        for (let i = 0; i < count; i++) {
-          const peg = document.createElement("div");
-          peg.className = "plinko-peg";
-          const colPos   = i + offset;
-          const maxIndex = PLINKO_COLS - 1;
-          const xPerc    = (colPos / maxIndex) * 100;
-          peg.style.top  = yPerc + "%";
-          peg.style.left = xPerc + "%";
-          plinkoPegsLayer.appendChild(peg);
-        }
-      }
-    }
-
-    function renderPlinkoConfig() {
-      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
-      plinkoMultsRow.innerHTML = "";
-
-      config.multipliers.forEach(m => {
-        const slot = document.createElement("div");
-        slot.className = "plinko-slot";
-        slot.textContent = "x" + m.toFixed(2);
-        plinkoMultsRow.appendChild(slot);
-      });
-
-      plinkoBoardEl.classList.remove("low", "mid", "high");
-      plinkoBoardEl.classList.add(plinkoSelectedRisk);
-    }
-
-    function generatePlinkoPath(cols, rows) {
-      let col = Math.floor(cols / 2);
-      const path = [];
-      for (let r = 0; r <= rows; r++) {
-        path.push({ col, row: r });
-        if (r === rows) break;
-
-        const rnd = Math.random();
-        let dir = 0;
-        if (col <= 1) {
-          if (rnd < 0.6)      dir = 1;
-          else if (rnd < 0.8) dir = 0;
-          else                dir = -1;
-        } else if (col >= cols - 2) {
-          if (rnd < 0.6)      dir = -1;
-          else if (rnd < 0.8) dir = 0;
-          else                dir = 1;
-        } else {
-          if (rnd < 0.3)      dir = -1;
-          else if (rnd > 0.7) dir = 1;
-          else                dir = 0;
-        }
-        col += dir;
-        if (col < 0) col = 0;
-        if (col > cols - 1) col = cols - 1;
-      }
-      return path;
-    }
-
-    function playPlinko() {
-      if (plinkoStartLocked) return;
-      plinkoStartLocked = true;
-      setTimeout(() => { plinkoStartLocked = false; }, 400);
-
-      const bet = parseInt(plinkoBetInput.value, 10);
-      if (isNaN(bet) || bet < 10) {
-        plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
-        return;
-      }
-      if (bet > demoBalance) {
-        plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
-        return;
-      }
-
-      const config = PLINKO_CONFIGS[plinkoSelectedRisk];
-      const slots  = plinkoMultsRow.querySelectorAll('.plinko-slot');
-      if (!config || !slots.length || slots.length !== config.multipliers.length) return;
-
-      demoBalance -= bet;
-      saveBalance();
-      updateBalanceView();
-
-      stats.plinkoPlays += 1;
-      stats.xp          += 1;
-      saveStats();
-      updateStatsView();
-
-      const layerRect   = plinkoBallsLayer.getBoundingClientRect();
-      const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
-      const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
-      const slotY       = slotRects[0].top - layerRect.top - 8;
-
-      const colsCount  = config.multipliers.length;
-      const path       = generatePlinkoPath(colsCount, PLINKO_ROWS);
-      const finalCol   = path[path.length - 1].col;
-      const multiplier = config.multipliers[finalCol];
-
-      slots.forEach(s => s.classList.remove('active'));
-
-      const ball = document.createElement('div');
-      ball.className = 'plinko-ball';
-      plinkoBallsLayer.appendChild(ball);
-
-      const startX = layerRect.width / 2;
-      ball.style.left = (startX - 5) + "px";
-      ball.style.top  = "0px";
-
-      plinkoStatusEl.textContent = "Шарик падает... 🎯";
-
-      const totalRows = PLINKO_ROWS;
-      const stepDelay = 190;
-
-      path.forEach((step, index) => {
-        const rowRatio = step.row / totalRows;
-        const y = slotY * rowRatio;
-        const colIndex = step.col;
-        const x = slotCenters[colIndex];
-
-        setTimeout(() => {
-          ball.style.top  = y + "px";
-          ball.style.left = (x - 5) + "px";
-        }, stepDelay * index);
-      });
-
-      setTimeout(() => {
-        if (slots[finalCol]) {
-          slots[finalCol].classList.add('active');
-        }
-
-        const winAmount = Math.floor(bet * multiplier);
-        demoBalance += winAmount;
-        saveBalance();
-        updateBalanceView();
-
-        plinkoHistory.push(multiplier);
-        updatePlinkoHistory();
-
-        if (multiplier > stats.bestMulti) {
-          stats.bestMulti = multiplier;
-        }
-        saveStats();
-        updateStatsView();
-
+      if (plinkoStatusEl) {
         if (multiplier < 1) {
           plinkoStatusEl.textContent =
             `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
@@ -1760,49 +1793,60 @@
           plinkoStatusEl.textContent =
             `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
         }
-        vibrate(60);
-        setTimeout(() => ball.remove(), 1000);
-      }, stepDelay * path.length);
-    }
+      }
+      vibrate(60);
+      setTimeout(() => ball.remove(), 1000);
+    }, stepDelay * path.length);
+  }
 
+  if (plinkoRiskBtns && plinkoRiskBtns.length) {
     plinkoRiskBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
         btn.classList.add('plinko-risk-active');
-        plinkoSelectedRisk = btn.dataset.risk || "mid";
+        plinkoSelectedRisk = btn.dataset.risk || 'mid';
         renderPlinkoConfig();
       });
     });
+  }
 
-    function openPlinko() {
-      plinkoOverlay.style.display = "flex";
-      plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
-    }
+  function openPlinko() {
+    if (plinkoOverlay) plinkoOverlay.style.display = 'flex';
+    if (plinkoStatusEl) plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
+  }
 
-    function closePlinko() {
-      plinkoOverlay.style.display = "none";
-      plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
-    }
+  function closePlinko() {
+    if (plinkoOverlay) plinkoOverlay.style.display = 'none';
+    if (plinkoStatusEl) plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
+  }
 
-    plinkoOpenBtn.addEventListener('click', openPlinko);
-    plinkoBackBtn.addEventListener('click', closePlinko);
-    plinkoStartBtn.addEventListener('click', playPlinko);
+  if (plinkoOpenBtn)  plinkoOpenBtn.addEventListener('click', openPlinko);
+  if (plinkoBackBtn)  plinkoBackBtn.addEventListener('click', closePlinko);
+  if (plinkoStartBtn) plinkoStartBtn.addEventListener('click', playPlinko);
 
-    // ========== INIT ==========
-    loadBalance();
-    loadProfileInfo();
-    loadStats();
+  // === INIT ===
+  loadBalance();
+  loadProfileInfo();
+  loadStats();
+  initProfile();
+  updateBalanceView();
+  updateStatsView();
+  updateRushHistory();
+  updatePlinkoHistory();
+  setActiveTab('home');
+  renderPlinkoPegs();
+  renderPlinkoConfig();
+  initPhrases();
 
-    initProfile();
-    updateBalanceView();
-    updateStatsView();
-
-    updateRushHistory();
-    updatePlinkoHistory();
-    setActiveTab('home');
-    renderPlinkoPegs();
-    renderPlinkoConfig();
-    initPhrases();
-  </script>
+  // глобальный цикл Rush
+  let lastTs = performance.now();
+  startNewRushRound();
+  setInterval(() => {
+    const now = performance.now();
+    const dt  = now - lastTs;
+    lastTs    = now;
+    tickRush(dt);
+  }, 70);
+</script>
 </body>
 </html>
