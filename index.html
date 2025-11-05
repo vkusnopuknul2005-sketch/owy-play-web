@@ -1255,10 +1255,6 @@
       <div class="overlay-title">Double</div>
     </div>
 
-    <div class="double-round-label" id="double-round-label">
-  Раунд #1
-</div>
-
 <div class="double-timer" id="double-timer">
   До спина: 10 c
 </div>
@@ -1283,10 +1279,6 @@
     <div class="rush-input">
       <label for="double-bet">Ставка, OWY</label>
       <input type="number" id="double-bet" value="10" min="10">
-    </div>
-
-    <div class="rush-buttons">
-      <button class="btn btn-primary" id="double-place">Поставить</button>
     </div>
 
     <div class="double-history" id="double-history">
@@ -1376,7 +1368,6 @@ const doubleBtnGreen    = document.getElementById('double-btn-green');
 const doubleBtnOrange   = document.getElementById('double-btn-orange');
 
 const doubleBetInput    = document.getElementById('double-bet');
-const doublePlaceBtn    = document.getElementById('double-place');
 const doubleHistoryEl   = document.getElementById('double-history');
 
   // скрываем сплэш
@@ -1660,12 +1651,22 @@ const doubleHistoryEl   = document.getElementById('double-history');
     }
   }
 
-  function syncDoubleWheel() {
-    if (!doubleWheelStrip) return;
-    const x = -doubleCurrentIndex * doubleCellWidth + doubleCenterShift;
-    doubleWheelStrip.style.transform =
-      `translateY(-50%) translateX(${x}px)`;
-  }
+    function syncDoubleWheel() {
+  if (!doubleWheelStrip) return;
+
+  const loopLen = DOUBLE_SLOTS.length;
+  const baseLoop = 2; // рисуем всегда около 3-его повторения
+
+  // виртуальный индекс переводим в индекс внутри одного круга
+  const loopIndex = ((doubleCurrentIndex % loopLen) + loopLen) % loopLen;
+
+  // визуальный индекс — тот же цвет, но в средней части полосы
+  const visualIndex = baseLoop * loopLen + loopIndex;
+
+  const x = -visualIndex * doubleCellWidth + doubleCenterShift;
+  doubleWheelStrip.style.transform =
+    `translateY(-50%) translateX(${x}px)`;
+}
 
   function chooseRandomDoubleColor() {
     const i = Math.floor(Math.random() * DOUBLE_SLOTS.length);
@@ -1694,9 +1695,6 @@ const doubleHistoryEl   = document.getElementById('double-history');
   }
 
   function setDoublePhaseStatus() {
-    if (doubleRoundLabel) {
-      doubleRoundLabel.textContent = `Раунд #${doubleRoundId}`;
-    }
     if (!doubleTimerEl) return;
 
     if (doublePhase === 'betting') {
@@ -1805,15 +1803,6 @@ const doubleHistoryEl   = document.getElementById('double-history');
   }
   if (doubleBtnOrange) {
     doubleBtnOrange.addEventListener('click', () => placeDoubleBet('orange'));
-  }
-
-  // кнопка "Поставить" пока просто объясняет UX
-  if (doublePlaceBtn) {
-    doublePlaceBtn.addEventListener('click', () => {
-      if (doubleStatusEl) {
-        doubleStatusEl.textContent = 'Ставки делаются по цветным кнопкам выше 👆';
-      }
-    });
   }
 
   function tickDouble(dt) {
