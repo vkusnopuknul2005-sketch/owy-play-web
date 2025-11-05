@@ -548,6 +548,12 @@
       min-height: 32px;
     }
 
+    .rush-timer {
+      font-size: 11px;
+      color: #7f8491;
+      margin-top: -4px;
+    }
+
     .rush-history {
       font-size: 11px;
       color: #7f8491;
@@ -966,6 +972,8 @@
 
       <div class="rush-multiplier" id="rush-multiplier">x1.00</div>
 
+      <div class="rush-timer" id="rush-timer">До старта: 10 c</div>
+
       <div class="rush-scene">
         <div class="rush-slope"></div>
         <div id="rush-owy"></div>
@@ -1092,6 +1100,7 @@
   const rushRocketEl    = document.getElementById('rush-rocket');
   const rushStatusEl    = document.getElementById('rush-status');
   const rushHistoryEl   = document.getElementById('rush-history');
+  const rushTimerEl    = document.getElementById('rush-timer');
   const rushBetInput    = document.getElementById('rush-bet');
   const rushAutoInput   = document.getElementById('rush-auto');
   const rushAutoEnabled = document.getElementById('rush-auto-enabled');
@@ -1413,6 +1422,20 @@
     rushHistoryEl.innerHTML = html;
   }
 
+  function updateRushTimer() {
+    if (!rushTimerEl) return;
+
+    if (rushPhase === 'betting') {
+     const leftMs = Math.max(0, RUSH_BETTING_DURATION - rushPhaseElapsed);
+     const leftS  = Math.ceil(leftMs / 1000);
+     rushTimerEl.textContent = `До старта: ${leftS} c`;
+   }  else if (rushPhase === 'running') {
+     rushTimerEl.textContent = 'Игра идёт…';
+   }  else if (rushPhase === 'crashed') {
+    rushTimerEl.textContent = 'Скоро новый раунд…';
+   }
+  }
+
   function resetRushPlayerState() {
     rushHasActiveBet = false;
     rushBet          = 0;
@@ -1437,6 +1460,8 @@
     if (rushStatusEl) {
       rushStatusEl.textContent = "Новый раунд. У тебя ~10 секунд, чтобы сделать ставку.";
     }
+
+    updateRushTimer();
 
     if (rushBetInput)    rushBetInput.disabled    = false;
     if (rushAutoInput)   rushAutoInput.disabled   = false;
@@ -1485,6 +1510,8 @@
   function tickRush(dt) {
     if (rushPhase === 'betting') {
       rushPhaseElapsed += dt;
+      updateRushTimer();
+      
       if (rushPhaseElapsed >= RUSH_BETTING_DURATION) {
         rushPhase        = 'running';
         rushPhaseElapsed = 0;
@@ -1517,6 +1544,7 @@
       }
 
       updateRushVisual();
+      updateRushTimer();
 
       if (rushHasActiveBet && !hasCashedOut && autoCashout && currentMulti >= autoCashout) {
         cashoutRush();
@@ -1528,6 +1556,7 @@
 
     if (rushPhase === 'crashed') {
       rushPhaseElapsed += dt;
+      updateRushTimer();
       if (rushPhaseElapsed >= RUSH_AFTER_CRASH_DELAY) {
         startNewRushRound();
       }
@@ -1831,12 +1860,23 @@
   initProfile();
   updateBalanceView();
   updateStatsView();
+  for (let i = 0; i < 15; i++) {
+    crashHistory.push(generateCrashMultiplier());
+  }
   updateRushHistory();
   updatePlinkoHistory();
   setActiveTab('home');
   renderPlinkoPegs();
   renderPlinkoConfig();
   initPhrases();
+  let lastTs = performance.now();
+  startNewRushRound();
+  setInterval(() => {
+    const now = performance.now();
+    const dt  = now - lastTs;
+    lastTs    = now;
+    tickRush(dt);
+  }, 70);
 
   // глобальный цикл Rush
   let lastTs = performance.now();
