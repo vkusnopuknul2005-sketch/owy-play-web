@@ -763,15 +763,25 @@
       min-height: 14px;
     }
 
-@keyframes crash-flash {
-  0% { background: radial-gradient(circle at bottom, #0b1512, #05070a); }
-  30% { background: radial-gradient(circle at bottom, #203c2e, #000000); }
-  60% { background: radial-gradient(circle at bottom, #0b1512, #05070a); }
-  100% { background: radial-gradient(circle at bottom, #0b1512, #05070a); }
+/* Вспышка при краше через псевдо-элемент */
+.rush-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.65), transparent 60%);
+  opacity: 0;
 }
 
-.rush-scene.flash {
-  animation: crash-flash 0.4s ease;
+/* сама анимация — просто моргнуть ярким пятном */
+@keyframes crash-flash {
+  0%   { opacity: 0; }
+  25%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.rush-scene.flash::after {
+  animation: crash-flash 0.35s ease-out;
 }
   </style>
 </head>
@@ -960,14 +970,6 @@
       </div>
 
       <div class="rush-input">
-        <label class="auto-checkbox">
-          <input type="checkbox" id="rush-x2-risk">
-          <span class="checkmark"></span>
-          <span class="rush-x2-label">Режим x2 риск (больше крашей)</span>
-        </label>
-      </div>
-
-      <div class="rush-input">
         <label for="rush-bet">Ставка, OWY</label>
         <input type="number" id="rush-bet" value="10" min="10">
       </div>
@@ -1070,7 +1072,6 @@
     const rushBetInput    = document.getElementById('rush-bet');
     const rushAutoInput   = document.getElementById('rush-auto');
     const rushAutoEnabled = document.getElementById('rush-auto-enabled');
-    const rushX2RiskEl    = document.getElementById('rush-x2-risk');
     const rushStartBtn    = document.getElementById('rush-start');
     const rushCashoutBtn  = document.getElementById('rush-cashout');
     const rushOwyEl       = document.getElementById('rush-owy');
@@ -1364,8 +1365,7 @@ if (scene) {
       rushMultEl.textContent   = "x1.00";
       rushRocketEl.style.width = "0%";
       rushStatusEl.textContent = "Выбери ставку и жми старт";
-      rushStartBtn.disabled    = false;
-      rushCashoutBtn.disabled  = true;
+    
 
       if (rushTimer) {
         clearInterval(rushTimer);
@@ -1373,6 +1373,7 @@ if (scene) {
       }
 
       resetRushVisual();
+      setRushControlsRunning(false);
      }
 
     function openRush() {
@@ -1389,21 +1390,17 @@ if (scene) {
     rushBackBtn.addEventListener('click', closeRush);
 
     function generateCrashMultiplier() {
-      const r0 = Math.random();
-      const x2risk = rushX2RiskEl.checked;
+  const r = Math.random(); // один режим для всех
 
-      // при x2 риск шанс раннего краша выше
-      const r = x2risk ? Math.pow(r0, 0.6) : r0;
-
-      if (r < 0.05)   return 1.0;
-      if (r < 0.25)   return +(Math.random() * (1.25 - 1.01) + 1.01).toFixed(2);
-      if (r < 0.60)   return +(Math.random() * (2.5  - 1.25) + 1.25).toFixed(2);
-      if (r < 0.85)   return +(Math.random() * (5.0  - 2.5)  + 2.5 ).toFixed(2);
-      if (r < 0.95)   return +(Math.random() * (15.0 - 5.0)  + 5.0 ).toFixed(2);
-      if (r < 0.985)  return +(Math.random() * (40.0 - 15.0) + 15.0).toFixed(2);
-      if (r < 0.998)  return +(Math.random() * (70.0 - 40.0) + 40.0).toFixed(2);
-      return            +(Math.random() * (100.0 - 70.0) + 70.0).toFixed(2);
-     }
+  if (r < 0.05)   return 1.0;
+  if (r < 0.25)   return +(Math.random() * (1.25 - 1.01) + 1.01).toFixed(2);
+  if (r < 0.60)   return +(Math.random() * (2.5  - 1.25) + 1.25).toFixed(2);
+  if (r < 0.85)   return +(Math.random() * (5.0  - 2.5)  + 2.5 ).toFixed(2);
+  if (r < 0.95)   return +(Math.random() * (15.0 - 5.0)  + 5.0 ).toFixed(2);
+  if (r < 0.985)  return +(Math.random() * (40.0 - 15.0) + 15.0).toFixed(2);
+  if (r < 0.998)  return +(Math.random() * (70.0 - 40.0) + 40.0).toFixed(2);
+  return            +(Math.random() * (100.0 - 70.0) + 70.0).toFixed(2);
+}
 
     function calcStepDelta() {
       const base = 0.0075;      // базовая скорость роста
@@ -1418,6 +1415,19 @@ if (scene) {
      }
 
     let rushStartLocked = false;
+
+    function setRushControlsRunning(isRunning) {
+  // кнопки
+  rushStartBtn.disabled   = isRunning;
+  rushCashoutBtn.disabled = !isRunning;
+
+  // поля ввода
+  rushBetInput.disabled   = isRunning;
+  rushAutoInput.disabled  = isRunning;
+  if (rushAutoEnabled) {
+    rushAutoEnabled.disabled = isRunning;
+  }
+}
 
     function startRush() {
       if (rushState === "running" || rushStartLocked) return;
@@ -1449,6 +1459,7 @@ if (scene) {
        if (rushOwyEl) {
        rushOwyEl.classList.add('rush-running');
       }
+      setRushControlsRunning(true);
       rushBet   = betValue;
       demoBalance -= rushBet;
       saveBalance();
@@ -1460,9 +1471,7 @@ if (scene) {
 
       rushStatusEl.textContent = "Игра запущена... следи за множителем! 🚀";
       crashMulti = generateCrashMultiplier();
-      rushCashoutBtn.disabled = false;
-      rushStartBtn.disabled   = true;
-
+      
       rushTimer = setInterval(() => {
         if (rushState !== "running") return;
 
@@ -1495,8 +1504,7 @@ if (scene) {
   }
 
   rushState = "idle";
-  rushCashoutBtn.disabled = true;
-  rushStartBtn.disabled   = false;
+  setRushControlsRunning(false);
 
   crashRushVisual();
 
