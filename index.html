@@ -2480,13 +2480,15 @@ renderPlinkoPegs();
 renderPlinkoConfig();
 initPhrases();
 
-// глобальный цикл Rush
+// глобальный цикл Rush + Double
 let lastTs = performance.now();
 startNewRushRound();
+
 setInterval(() => {
   const now = performance.now();
-  const dt  = (now - lastTs) / 1000;
+  const dt  = now - lastTs;   // ← БЕЗ деления на 1000, dt в ms
   lastTs    = now;
+
   tickRush(dt);
   tickDouble(dt);
 }, 16);
