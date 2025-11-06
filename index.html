@@ -241,23 +241,19 @@
       margin-bottom: 20px;
     }
 
-    .big-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      height: calc(100vh - 230px);
-      justify-content: space-around;
-    }
+  .big-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 
-    .big-card {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: center;
-      min-height: unset;
-      padding: 26px 20px;
-    }
+   .big-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  padding: 26px 20px;
+}
 
     /* PROFILE */
 
@@ -1026,20 +1022,10 @@
           <div class="rush-banner" id="rush-open">
             <img src="rush-banner.png" alt="Rush banner">
           </div>
-
-    <!-- NEW: Double card -->
-    <div class="card big-card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Double</div>
-          <div class="card-sub">Выбери цвет и множитель</div>
-        </div>
-        <div class="chip">🎡 Double</div>
-      </div>
-      <div class="card-footer">
-        <button class="btn btn-primary" id="double-open">Играть Double</button>
-      </div>
-    </div>
+<!-- Double banner -->
+<div class="rush-banner" id="double-open">
+  <img src="double-banner.png" alt="Double banner">
+</div>
     <!-- /NEW -->
       
           <div class="card big-card">
@@ -2537,8 +2523,6 @@ setInterval(() => {
   tickDouble(dt);
 }, 16);
 
-buildDoubleWheel();
-updateDoubleHistoryView();
 </script>
 </body>
 </html>
