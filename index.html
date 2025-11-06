@@ -1705,7 +1705,6 @@ const doubleHistoryEl   = document.getElementById('double-history');
     if (doublePhase === 'betting') {
   const left = Math.max(0, DOUBLE_BETTING_DURATION - doublePhaseElapsed);
   doubleTimerEl.textContent = `До спина: ${Math.ceil(left)} c`;
-}
     } else if (doublePhase === 'spinning') {
       doubleTimerEl.textContent = 'Крутится...';
     } else {
@@ -2522,9 +2521,12 @@ setInterval(() => {
   const dt  = now - lastTs;   // ← БЕЗ деления на 1000, dt в ms
   lastTs    = now;
 
+  const dt = dtMs / 1000;
+
   tickRush(dt);
   tickDouble(dt);
 }, 16);
+
 buildDoubleWheel();
 updateDoubleHistoryView();
 </script>
