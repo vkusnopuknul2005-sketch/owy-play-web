@@ -2408,24 +2408,39 @@ function generatePlinkoPath(cols, rows) {
 }
 
 // генерим путь + сильно режем шанс финальной ячейки по краям
+
 function generatePlinkoOutcome(config) {
   const cols = config.multipliers.length;
   let path, finalCol;
   let tries = 0;
 
-  do {
+  // чем выше PROB и MAX_REROLLS — тем реже будут выпадать крайние ячейки
+  const EDGE_REROLL_PROB  = 0.9; // 90% перегенерировать, если попали на край
+  const EDGE_MAX_REROLLS  = 6;   // максимум 6 перегенераций
+
+  while (true) {
     path     = generatePlinkoPath(cols, PLINKO_ROWS);
     finalCol = path[path.length - 1].col;
 
     const isEdge = (finalCol === 0 || finalCol === cols - 1);
 
-    // если не край — сразу берём
+    // не край — сразу берём
     if (!isEdge) break;
 
-    // если край — в ~70% случаев перегенерируем, максимум 3 попытки
+    // край: пытаемся «уклониться» от него
+    if (tries >= EDGE_MAX_REROLLS) {
+      // слишком много попыток — оставляем как есть (иногда всё-таки даём краю выпасть)
+      break;
+    }
+
     tries++;
-    if (tries >= 3) break;          // всё-таки иногда даём упасть на край
-  } while (Math.random() < 0.7);    // 70% — повторяем генерацию
+
+    // с шансом 90% крутим ещё раз, с 10% — всё-таки оставляем этот край
+    if (Math.random() >= EDGE_REROLL_PROB) {
+      break;
+    }
+    // иначе просто идём в следующий цикл и генерим новый путь
+  }
 
   return { path, finalCol };
 }
