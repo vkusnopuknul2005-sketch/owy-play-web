@@ -2289,6 +2289,25 @@ let plinkoIsRunning    = false;
 let plinkoStartLocked  = false;
 let plinkoActiveBalls  = 0;
 
+if (plinkoRiskBtns && plinkoRiskBtns.length) {
+  plinkoRiskBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // если шарики сейчас летят — менять риск нельзя
+      if (plinkoIsRunning) return;
+
+      // снять актив с всех кнопок
+      plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
+
+      // подсветить выбранную
+      btn.classList.add('plinko-risk-active');
+
+      // сменить конфиг
+      plinkoSelectedRisk = btn.dataset.risk || 'mid';
+      renderPlinkoConfig();
+    });
+  });
+}
+
 function updatePlinkoHistory() {
   if (!plinkoHistoryEl) return;
   if (!plinkoHistory.length) {
