@@ -1592,9 +1592,9 @@ const doubleHistoryEl   = document.getElementById('double-history');
     orange: 14
   };
 
-  const DOUBLE_BETTING_DURATION = 10000; // 10с на ставки
-  const DOUBLE_SPIN_TIME        = 10000; // ~10с кручение
-  const DOUBLE_AFTER_SPIN_DELAY = 3000;  // пауза после
+  const DOUBLE_BETTING_DURATION = 10; // 10с на ставки
+  const DOUBLE_SPIN_TIME        = 8; // ~10с кручение
+  const DOUBLE_AFTER_SPIN_DELAY = 3;  // пауза после
 
   let doubleRoundId      = 1;
   let doublePhase        = 'betting'; // betting | spinning | waiting
@@ -1703,8 +1703,9 @@ const doubleHistoryEl   = document.getElementById('double-history');
     if (!doubleTimerEl) return;
 
     if (doublePhase === 'betting') {
-      const left = Math.max(0, DOUBLE_BETTING_DURATION - doublePhaseElapsed);
-      doubleTimerEl.textContent = `До спина: ${Math.ceil(left / 1000)} c`;
+  const left = Math.max(0, DOUBLE_BETTING_DURATION - doublePhaseElapsed);
+  doubleTimerEl.textContent = `До спина: ${Math.ceil(left)} c`;
+}
     } else if (doublePhase === 'spinning') {
       doubleTimerEl.textContent = 'Крутится...';
     } else {
@@ -1918,8 +1919,8 @@ const doubleHistoryEl   = document.getElementById('double-history');
   const RUSH_PATH_MAX_X = 220;
   const RUSH_PATH_MAX_Y = 70;
 
-  const RUSH_BETTING_DURATION  = 10000; // 10c ставок
-  const RUSH_AFTER_CRASH_DELAY = 3000;  // пауза между раундами
+  const RUSH_BETTING_DURATION  = 10; // 10c ставок
+  const RUSH_AFTER_CRASH_DELAY = 3;  // пауза между раундами
 
   let rushRoundId      = 1;
   let rushPhase        = 'betting'; // betting | running | crashed
@@ -1985,15 +1986,22 @@ const doubleHistoryEl   = document.getElementById('double-history');
     return            +(Math.random() * (100.0 - 70.0) + 70.0).toFixed(2);
   }
 
-  function calcStepDelta() {
-    const base     = 0.0075;
-    const k        = 0.0044;
-    const maxDelta = 0.085;
-    let delta = base + k * (currentMulti - 1.0);
-    if (delta > maxDelta) delta = maxDelta;
-    if (delta < 0)        delta = 0;
-    return delta;
-  }
+  // скорость роста множителя, завязанная на dt (секунды)
+function calcStepDelta(dt) {
+  // базовая скорость в начале (около x1 → x1.5 не спеша)
+  const basePerSec  = 0.06;  // 0.06 мультика в секунду
+  // ускорение — чем выше множитель, тем быстрее растём
+  const accelPerSec = 0.22;  // добавка к скорости за каждую +1 к мульту
+  // защита от “взлётов” на больших значениях
+  const maxPerSec   = 1.0;   // максимум x1.0 в секунду
+
+  let perSec = basePerSec + accelPerSec * (currentMulti - 1.0);
+  if (perSec > maxPerSec) perSec = maxPerSec;
+  if (perSec < 0)         perSec = 0;
+
+  // переводим “в секунду” → “за этот кадр”
+  return perSec * dt;
+}
 
   function updateRushHistory() {
     if (!rushHistoryEl) return;
@@ -2012,18 +2020,18 @@ const doubleHistoryEl   = document.getElementById('double-history');
     rushHistoryEl.innerHTML = html;
   }
 
-  function updateRushTimer() {
-    if (!rushTimerEl) return;
+function updateRushTimer() {
+  if (!rushTimerEl) return;
 
-    if (rushPhase === 'betting') {
-     const leftMs = Math.max(0, RUSH_BETTING_DURATION - rushPhaseElapsed);
-     const leftS  = Math.ceil(leftMs / 1000);
-     rushTimerEl.textContent = `До старта: ${leftS} c`;
-   }  else if (rushPhase === 'running') {
-     rushTimerEl.textContent = 'Игра идёт…';
-   }  else if (rushPhase === 'crashed') {
+  if (rushPhase === 'betting') {
+    const left = Math.max(0, RUSH_BETTING_DURATION - rushPhaseElapsed);
+    rushTimerEl.textContent = `До старта: ${Math.ceil(left)} c`;
+  } else if (rushPhase === 'running') {
+    rushTimerEl.textContent = 'Игра идёт…';
+  } else if (rushPhase === 'crashed') {
     rushTimerEl.textContent = 'Скоро новый раунд…';
-   }
+  }
+}
   }
 
   function resetRushPlayerState() {
@@ -2125,7 +2133,7 @@ const doubleHistoryEl   = document.getElementById('double-history');
     }
 
     if (rushPhase === 'running') {
-      currentMulti += calcStepDelta();
+      currentMulti += calcStepDelta(dt);
 
       if (rushMultEl)   rushMultEl.textContent = formatMulti(currentMulti);
       if (rushRocketEl) {
@@ -2244,6 +2252,7 @@ const doubleHistoryEl   = document.getElementById('double-history');
 
   let plinkoSelectedRisk = 'mid';
   let plinkoHistory = [];
+  let plinkoIsRunning = false;
 
   function updatePlinkoHistory() {
     if (!plinkoHistoryEl) return;
@@ -2299,21 +2308,25 @@ const doubleHistoryEl   = document.getElementById('double-history');
     for (let r = 0; r <= rows; r++) {
       path.push({ col, row: r });
       if (r === rows) break;
-      const rnd = Math.random();
-      let dir = 0;
-      if (col <= 1) {
-        if (rnd < 0.6)      dir = 1;
-        else if (rnd < 0.8) dir = 0;
-        else                dir = -1;
-      } else if (col >= cols - 2) {
-        if (rnd < 0.6)      dir = -1;
-        else if (rnd < 0.8) dir = 0;
-        else                dir = 1;
-      } else {
-        if (rnd < 0.3)      dir = -1;
-        else if (rnd > 0.7) dir = 1;
-        else                dir = 0;
-      }
+   const rnd = Math.random();
+let dir = 0;
+
+if (col <= 1) {
+  // сильнее толкаем к центру
+  if (rnd < 0.7)      dir = 1;   // 70% вправо
+  else if (rnd < 0.9) dir = 0;   // 20% прямо
+  else                dir = -1;  // 10% обратно к краю
+} else if (col >= cols - 2) {
+  // симметрично слева
+  if (rnd < 0.7)      dir = -1;  // 70% влево
+  else if (rnd < 0.9) dir = 0;   // 20% прямо
+  else                dir = 1;   // 10% обратно к краю
+} else {
+  // в центре чаще падаем вертикально
+  if (rnd < 0.2)      dir = -1;  // 20% влево
+  else if (rnd > 0.8) dir = 1;   // 20% вправо
+  else                dir = 0;   // 60% прямо
+}
       col += dir;
       if (col < 0)        col = 0;
       if (col > cols - 1) col = cols - 1;
@@ -2324,35 +2337,47 @@ const doubleHistoryEl   = document.getElementById('double-history');
   let plinkoStartLocked = false;
 
   function playPlinko() {
-    if (plinkoStartLocked) return;
-    plinkoStartLocked = true;
-    setTimeout(() => { plinkoStartLocked = false; }, 400);
+  // если уже идёт анимация — просто игнорим
+  if (plinkoIsRunning) return;
 
-    const bet = parseInt(plinkoBetInput.value, 10);
-    if (isNaN(bet) || bet < 10) {
-      if (plinkoStatusEl) plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
-      return;
-    }
-    if (bet > demoBalance) {
-      if (plinkoStatusEl) plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
-      return;
-    }
+  if (plinkoStartLocked) return;
+  plinkoStartLocked = true;
+  setTimeout(() => { plinkoStartLocked = false; }, 400);
 
-    const config = PLINKO_CONFIGS[plinkoSelectedRisk];
-    if (!config) return;
+  const bet = parseInt(plinkoBetInput.value, 10);
+  if (isNaN(bet) || bet < 10) {
+    if (plinkoStatusEl) plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+    return;
+  }
+  if (bet > demoBalance) {
+    if (plinkoStatusEl) plinkoStatusEl.textContent = "Недостаточно баланса для такой ставки 😔";
+    return;
+  }
 
-    const slots = plinkoMultsRow ? plinkoMultsRow.querySelectorAll('.plinko-slot') : [];
-    if (!slots.length || slots.length !== config.multipliers.length) return;
+  const config = PLINKO_CONFIGS[plinkoSelectedRisk];
+  if (!config) return;
 
-    demoBalance -= bet;
-    saveBalance();
-    updateBalanceView();
+  const slots = plinkoMultsRow ? plinkoMultsRow.querySelectorAll('.plinko-slot') : [];
+  if (!slots.length || slots.length !== config.multipliers.length) return;
 
-    stats.plinkoPlays += 1;
-    stats.xp          += 4;
-    saveStats();
-    updateStatsView();
+  // 👉 только здесь, когда всё ок, считаем что раунд реально пошёл
+  plinkoIsRunning = true;
 
+  // блокируем изменение ставки и режима
+  if (plinkoBetInput) plinkoBetInput.disabled = true;
+  if (plinkoRiskBtns && plinkoRiskBtns.length) {
+    plinkoRiskBtns.forEach(btn => btn.disabled = true);
+  }
+
+  demoBalance -= bet;
+  saveBalance();
+  updateBalanceView();
+
+  stats.plinkoPlays += 1;
+  stats.xp          += 4;
+  saveStats();
+  updateStatsView();
+ 
     const layerRect   = plinkoBallsLayer.getBoundingClientRect();
     const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
     const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
@@ -2419,15 +2444,18 @@ const doubleHistoryEl   = document.getElementById('double-history');
   }
 
   if (plinkoRiskBtns && plinkoRiskBtns.length) {
-    plinkoRiskBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
-        btn.classList.add('plinko-risk-active');
-        plinkoSelectedRisk = btn.dataset.risk || 'mid';
-        renderPlinkoConfig();
-      });
+  plinkoRiskBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // нельзя менять режим, пока шар падает
+      if (plinkoIsRunning) return;
+
+      plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
+      btn.classList.add('plinko-risk-active');
+      plinkoSelectedRisk = btn.dataset.risk || 'mid';
+      renderPlinkoConfig();
     });
-  }
+  });
+}
 
   function openPlinko() {
     if (plinkoOverlay) plinkoOverlay.style.display = 'flex';
