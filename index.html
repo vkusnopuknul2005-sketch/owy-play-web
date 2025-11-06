@@ -255,6 +255,210 @@
   padding: 26px 20px;
 }
 
+    /* PET / FLUFFIE */
+
+    .pet-card {
+      border-radius: 16px;
+      padding: 16px 14px 16px;
+      background: radial-gradient(circle at top left, #11151f, #07080d);
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.7);
+      margin-top: 10px;
+    }
+
+    .pet-text {
+      font-size: 13px;
+      color: #cfd2de;
+      margin-bottom: 12px;
+    }
+
+    .pet-field {
+      margin-bottom: 10px;
+    }
+
+    .pet-field label {
+      font-size: 12px;
+      color: #9ea2b0;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .pet-field input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #20232b;
+      background: #080a0f;
+      color: #f5f5f5;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .pet-field input:focus {
+      border-color: #1ddb6f;
+    }
+
+    .pet-gender-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pet-gender-btn {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .pet-gender-active {
+      background: rgba(29,219,111,0.14);
+      border: 1px solid rgba(29,219,111,0.7);
+      color: #e7fdf0;
+    }
+
+    .pet-color-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pet-color-pill {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid #20232b;
+      background: rgba(6,8,12,0.95);
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #cfd2de;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .pet-color-pill:active {
+      transform: scale(0.98);
+    }
+
+    .pet-color-active {
+      border-color: #1ddb6f;
+      background: radial-gradient(circle at left, rgba(29,219,111,0.2), #05070c);
+      color: #e7fdf0;
+    }
+
+    .pet-color-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+      flex-shrink: 0;
+    }
+
+    .pet-color-purple {
+      background: #8a66ff;
+      box-shadow: 0 0 12px rgba(138,102,255,0.9);
+    }
+
+    .pet-color-green {
+      background: #1ddb6f;
+      box-shadow: 0 0 12px rgba(29,219,111,0.9);
+    }
+
+    .pet-color-black {
+      background: #11131b;
+      box-shadow: 0 0 12px rgba(0,0,0,0.9);
+    }
+
+    .pet-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .pet-name {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .pet-sub {
+      font-size: 12px;
+      color: #9ea2b0;
+    }
+
+    .pet-chip {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(29,219,111,0.1);
+      border: 1px solid rgba(29,219,111,0.6);
+      color: #e7fdf0;
+    }
+
+    .pet-image-wrap {
+      margin: 10px 0 12px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .pet-image-wrap img {
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.9));
+    }
+
+    .pet-bars {
+      margin-bottom: 10px;
+    }
+
+    .pet-bar-row {
+      font-size: 11px;
+      color: #cfd2de;
+      margin-bottom: 6px;
+    }
+
+    .pet-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+      margin-top: 3px;
+    }
+
+    .pet-bar-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg,#1ddb6f,#16a451);
+      transition: width 0.2s ease;
+    }
+
+    .pet-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .pet-action-btn {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .pet-note {
+      font-size: 11px;
+      color: #9ea2b0;
+      margin-bottom: 6px;
+    }
+
+    .pet-reset-btn {
+      width: 100%;
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
     /* PROFILE */
 
     .profile-card {
@@ -1151,20 +1355,122 @@
       </section>
     </main>
 
+      <!-- PET -->
+      <section id="pet-screen" style="display:none;">
+        <div class="section-title">Твой Fluffie</div>
+
+        <div class="pet-card" id="pet-main-card">
+          <!-- состояние, когда питомца ещё нет -->
+          <div id="pet-empty-state">
+            <p class="pet-text">
+              Создай своего первого Fluffie-питомца. Он будет жить в OWY Play и
+              реагировать на то, как ты играешь.
+            </p>
+
+            <div class="pet-field">
+              <label for="pet-name-input">Имя питомца</label>
+              <input id="pet-name-input" type="text" placeholder="Например, Бусти" />
+            </div>
+
+            <div class="pet-field">
+              <label>Пол питомца</label>
+              <div class="pet-gender-row">
+                <button class="btn btn-ghost pet-gender-btn pet-gender-active"
+                        data-gender="male">Мальчик</button>
+                <button class="btn btn-ghost pet-gender-btn"
+                        data-gender="female">Девочка</button>
+              </div>
+            </div>
+
+            <div class="pet-field">
+              <label>Цвет Fluffie</label>
+              <div class="pet-color-row">
+                <button class="pet-color-pill pet-color-active"
+                        data-color="purple">
+                  <span class="pet-color-dot pet-color-purple"></span>
+                  Фиолетовый
+                </button>
+                <button class="pet-color-pill"
+                        data-color="green">
+                  <span class="pet-color-dot pet-color-green"></span>
+                  Зелёный
+                </button>
+                <button class="pet-color-pill"
+                        data-color="black">
+                  <span class="pet-color-dot pet-color-black"></span>
+                  Ночной
+                </button>
+              </div>
+            </div>
+
+            <button class="btn btn-primary pet-create-btn" id="pet-create-btn">
+              Создать Fluffie
+            </button>
+          </div>
+
+          <!-- состояние, когда питомец уже создан -->
+          <div id="pet-main-state" style="display:none;">
+            <div class="pet-header-row">
+              <div>
+                <div class="pet-name" id="pet-name-label">Fluffie</div>
+                <div class="pet-sub" id="pet-sub-label">Фиолетовый Fluffie • LVL 1</div>
+              </div>
+              <div class="pet-chip" id="pet-mood-chip">Настроение: 😊</div>
+            </div>
+
+            <div class="pet-image-wrap">
+              <img id="pet-image" src="purplefluffie.png" alt="Fluffie" />
+            </div>
+
+            <div class="pet-bars">
+              <div class="pet-bar-row">
+                <span>Настроение</span>
+                <div class="pet-bar">
+                  <div class="pet-bar-fill" id="pet-mood-fill"></div>
+                </div>
+              </div>
+              <div class="pet-bar-row">
+                <span>Энергия</span>
+                <div class="pet-bar">
+                  <div class="pet-bar-fill" id="pet-energy-fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pet-actions">
+              <button class="btn btn-ghost pet-action-btn" data-action="feed">Покормить</button>
+              <button class="btn btn-ghost pet-action-btn" data-action="play">Поиграть</button>
+              <button class="btn btn-ghost pet-action-btn" data-action="rest">Отправить спать</button>
+            </div>
+
+            <div class="pet-note" id="pet-note">
+              Fluffie чувствует себя отлично ✨
+            </div>
+
+            <button class="btn btn-ghost pet-reset-btn" id="pet-reset-btn">
+              Сбросить питомца (начать заново)
+            </button>
+          </div>
+        </div>
+      </section>
+
     <!-- NAV -->
-    <nav class="bottom-nav">
-      <div class="bottom-nav-inner">
-        <div class="nav-item active" id="nav-home">
-          <span>🏠</span>
-          <div class="nav-label">Главная</div>
-        </div>
-        <div class="nav-item" id="nav-profile">
-          <span>👤</span>
-          <div class="nav-label">Профиль</div>
-        </div>
-      </div>
-    </nav>
+   <nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="nav-item active" id="nav-home">
+      <span>🏠</span>
+      <div class="nav-label">Главная</div>
+    </div>
+    <div class="nav-item" id="nav-pet">
+      <span>🧿</span>
+      <div class="nav-label">Питомец</div>
+    </div>
+    <div class="nav-item" id="nav-profile">
+      <span>👤</span>
+      <div class="nav-label">Профиль</div>
+    </div>
   </div>
+</nav>
 
   <!-- RUSH OVERLAY -->
   <div id="rush-overlay" class="overlay">
@@ -1316,6 +1622,23 @@
   const navProfile       = document.getElementById('nav-profile');
   const hintTextEl       = document.getElementById('hint-text');
 
+  const petScreen        = document.getElementById('pet-screen');
+  const petEmptyStateEl  = document.getElementById('pet-empty-state');
+  const petMainStateEl   = document.getElementById('pet-main-state');
+  const petNameInput     = document.getElementById('pet-name-input');
+  const petCreateBtn     = document.getElementById('pet-create-btn');
+  const petGenderBtns    = document.querySelectorAll('.pet-gender-btn');
+  const petColorPills    = document.querySelectorAll('.pet-color-pill');
+  const petImageEl       = document.getElementById('pet-image');
+  const petNameLabelEl   = document.getElementById('pet-name-label');
+  const petSubLabelEl    = document.getElementById('pet-sub-label');
+  const petMoodChipEl    = document.getElementById('pet-mood-chip');
+  const petMoodFillEl    = document.getElementById('pet-mood-fill');
+  const petEnergyFillEl  = document.getElementById('pet-energy-fill');
+  const petNoteEl        = document.getElementById('pet-note');
+  const petResetBtn      = document.getElementById('pet-reset-btn');
+  const petActionBtns    = document.querySelectorAll('.pet-action-btn');
+
   const profileIdEl         = document.getElementById('profile-id');
   const profileBalanceEl    = document.getElementById('profile-balance');
   const profileResetBtn     = document.getElementById('profile-reset');
@@ -1391,6 +1714,7 @@ const doubleHistoryEl   = document.getElementById('double-history');
   const STORAGE_KEY_BALANCE = 'owy_balance_v1';
   const STORAGE_KEY_PROFILE = 'owy_profile_info_v1';
   const STORAGE_KEY_STATS   = 'owy_stats_v1';
+  const STORAGE_KEY_PET     = 'owy_pet_v1'; // 🐾
 
   let demoBalance = 1000;
 
@@ -1548,24 +1872,220 @@ const doubleHistoryEl   = document.getElementById('double-history');
     });
   }
 
+  // === PET / FLUFFIE ===
+
+  let petData = {
+    name: '',
+    gender: 'male', // male | female
+    color: 'purple', // purple | green | black
+    mood: 80,   // 0..100
+    energy: 80, // 0..100
+    level: 1,
+    createdAt: null
+  };
+
+  function loadPet() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_PET);
+      if (raw) {
+        petData = { ...petData, ...JSON.parse(raw) };
+      }
+    } catch (e) {}
+    updatePetUI();
+  }
+
+  function savePet() {
+    try {
+      localStorage.setItem(STORAGE_KEY_PET, JSON.stringify(petData));
+    } catch (e) {}
+  }
+
+  function getColorLabel(color) {
+    if (color === 'green') return 'Зелёный Fluffie';
+    if (color === 'black') return 'Ночной Fluffie';
+    return 'Фиолетовый Fluffie';
+  }
+
+  function getColorImage(color) {
+    if (color === 'green') return 'greenfluffie.png';
+    if (color === 'black') return 'blackfluffie.png';
+    return 'purplefluffie.png';
+  }
+
+  function updatePetUI() {
+    if (!petEmptyStateEl || !petMainStateEl) return;
+
+    const hasPet = !!petData.name;
+
+    if (!hasPet) {
+      petEmptyStateEl.style.display = '';
+      petMainStateEl.style.display  = 'none';
+      return;
+    }
+
+    petEmptyStateEl.style.display = 'none';
+    petMainStateEl.style.display  = '';
+
+    // имя и подзаголовок
+    if (petNameLabelEl) petNameLabelEl.textContent = petData.name;
+    if (petSubLabelEl) {
+      petSubLabelEl.textContent =
+        `${getColorLabel(petData.color)} • LVL ${petData.level}`;
+    }
+
+    // картинка
+    if (petImageEl) {
+      petImageEl.src = getColorImage(petData.color);
+    }
+
+    // настроение / энергия
+    const mood = Math.max(0, Math.min(100, petData.mood));
+    const energy = Math.max(0, Math.min(100, petData.energy));
+
+    if (petMoodFillEl)   petMoodFillEl.style.width   = mood + '%';
+    if (petEnergyFillEl) petEnergyFillEl.style.width = energy + '%';
+
+    // текст чипа настроения
+    let moodEmoji = '😊';
+    if (mood < 30) moodEmoji = '😢';
+    else if (mood < 60) moodEmoji = '😐';
+    else if (mood > 90) moodEmoji = '🤩';
+
+    if (petMoodChipEl) {
+      petMoodChipEl.textContent = `Настроение: ${moodEmoji}`;
+    }
+
+    // заметка
+    if (petNoteEl) {
+      if (mood < 30) {
+        petNoteEl.textContent = `${petData.name} грустит. Поиграй с ним или покорми его.`;
+      } else if (energy < 30) {
+        petNoteEl.textContent = `${petData.name} устал. Отправь его поспать.`;
+      } else {
+        petNoteEl.textContent = `${petData.name} чувствует себя отлично ✨`;
+      }
+    }
+  }
+
+  // выбор пола
+  if (petGenderBtns && petGenderBtns.length) {
+    petGenderBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        petGenderBtns.forEach(b => b.classList.remove('pet-gender-active'));
+        btn.classList.add('pet-gender-active');
+        petData.gender = btn.dataset.gender || 'male';
+      });
+    });
+  }
+
+  // выбор цвета
+  if (petColorPills && petColorPills.length) {
+    petColorPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        petColorPills.forEach(p => p.classList.remove('pet-color-active'));
+        pill.classList.add('pet-color-active');
+        petData.color = pill.dataset.color || 'purple';
+      });
+    });
+  }
+
+  // создание питомца
+  if (petCreateBtn) {
+    petCreateBtn.addEventListener('click', () => {
+      const name = (petNameInput.value || '').trim();
+      if (!name) {
+        if (petNoteEl) petNoteEl.textContent = 'Дай имя своему Fluffie 🙂';
+        vibrate(40);
+        return;
+      }
+      petData.name = name;
+      petData.mood = 85;
+      petData.energy = 85;
+      petData.level = 1;
+      petData.createdAt = Date.now();
+
+      savePet();
+      updatePetUI();
+      vibrate(70);
+    });
+  }
+
+  // действия с питомцем
+  if (petActionBtns && petActionBtns.length) {
+    petActionBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!petData.name) return; // нет питомца
+
+        const action = btn.dataset.action;
+
+        if (action === 'feed') {
+          petData.mood  = Math.min(100, petData.mood + 8);
+          petData.energy = Math.min(100, petData.energy + 15);
+        } else if (action === 'play') {
+          petData.mood  = Math.min(100, petData.mood + 15);
+          petData.energy = Math.max(0, petData.energy - 10);
+        } else if (action === 'rest') {
+          petData.energy = Math.min(100, petData.energy + 20);
+          petData.mood   = Math.max(0, petData.mood - 5);
+        }
+
+        savePet();
+        updatePetUI();
+        vibrate(40);
+      });
+    });
+  }
+
+  // сброс питомца
+  if (petResetBtn) {
+    petResetBtn.addEventListener('click', () => {
+      petData = {
+        name: '',
+        gender: 'male',
+        color: 'purple',
+        mood: 80,
+        energy: 80,
+        level: 1,
+        createdAt: null
+      };
+      savePet();
+      updatePetUI();
+      if (petNoteEl) {
+        petNoteEl.textContent = 'Питомец сброшен. Можно создать нового Fluffie.';
+      }
+    });
+  }
+
   // === NAV ===
-  function setActiveTab(tab) {
-    if (!homeScreen || !profileScreen || !navHome || !navProfile) return;
+    function setActiveTab(tab) {
+    if (!homeScreen || !profileScreen || !petScreen) return;
+
+    // сбрасываем актив
+    [navHome, navProfile, navPet].forEach(el => {
+      if (!el) return;
+      el.classList.remove('active');
+    });
+
+    // скрываем все экраны
+    homeScreen.style.display    = 'none';
+    profileScreen.style.display = 'none';
+    petScreen.style.display     = 'none';
+
     if (tab === 'home') {
       navHome.classList.add('active');
-      navProfile.classList.remove('active');
-      homeScreen.style.display    = '';
-      profileScreen.style.display = 'none';
-    } else {
+      homeScreen.style.display = '';
+    } else if (tab === 'profile') {
       navProfile.classList.add('active');
-      navHome.classList.remove('active');
-      homeScreen.style.display    = 'none';
       profileScreen.style.display = '';
+    } else if (tab === 'pet') {
+      navPet.classList.add('active');
+      petScreen.style.display = '';
     }
   }
 
   if (navHome)    navHome.addEventListener('click', () => setActiveTab('home'));
   if (navProfile) navProfile.addEventListener('click', () => setActiveTab('profile'));
+  if (navPet)     navPet.addEventListener('click', () => setActiveTab('pet'));
 
   // === HINTS ===
   const hintPhrases = [
@@ -2639,6 +3159,7 @@ loadStats();
 initProfile();
 updateBalanceView();
 updateStatsView();
+loadPet();
 
 for (let i = 0; i < 15; i++) {
   crashHistory.push(generateCrashMultiplier());
