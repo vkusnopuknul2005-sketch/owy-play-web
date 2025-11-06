@@ -1974,15 +1974,25 @@ let doubleWheelInited = false;
   }
 
   // скорость роста множителя, завязанная на dt (секунды)
+// скорость роста множителя, завязанная на dt (секунды)
 function calcStepDelta(dt) {
-  // базовая скорость в начале (около x1 → x1.5 не спеша)
-  const basePerSec  = 0.06;  // 0.06 мультика в секунду
-  // ускорение — чем выше множитель, тем быстрее растём
-  const accelPerSec = 0.22;  // добавка к скорости за каждую +1 к мульту
-  // защита от “взлётов” на больших значениях
-  const maxPerSec   = 1.0;   // максимум x1.0 в секунду
+  const basePerSec      = 0.06; // базовая скорость
+  const accelFastPerSec = 0.18; // ускорение до x1.3
+  const accelSlowPerSec = 0.06; // гораздо мягче после x1.3
+  const maxPerSec       = 0.5;  // верхний предел, на всякий
 
-  let perSec = basePerSec + accelPerSec * (currentMulti - 1.0);
+  let perSec;
+
+  if (currentMulti <= 1.3) {
+    // участок от x1.00 до x1.30 — практически как раньше
+    perSec = basePerSec + accelFastPerSec * (currentMulti - 1.0);
+  } else {
+    // всё, что выше x1.30 — ускоряемся гораздо медленнее
+    const extra = currentMulti - 1.3;
+    const fastPart = accelFastPerSec * (1.3 - 1.0); // фиксированный вклад первых 0.3
+    perSec = basePerSec + fastPart + accelSlowPerSec * extra;
+  }
+
   if (perSec > maxPerSec) perSec = maxPerSec;
   if (perSec < 0)         perSec = 0;
 
