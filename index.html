@@ -258,13 +258,17 @@
     /* PET / FLUFFIE */
 
     .pet-card {
-      border-radius: 16px;
-      padding: 16px 14px 16px;
+      border-radius: 18px;
+      padding: 14px 14px 14px;
       background: radial-gradient(circle at top left, #11151f, #07080d);
       border: 1px solid rgba(255,255,255,0.04);
       box-shadow: 0 10px 24px rgba(0,0,0,0.7);
       margin-top: 10px;
     }
+
+#pet-screen .section-title {
+  margin-bottom: 6px;      /* можно 4–6px вместо 8px по умолчанию */
+}
 
     .pet-text {
       font-size: 13px;
@@ -293,6 +297,13 @@
       font-size: 14px;
       outline: none;
     }
+
+.pet-error {
+  font-size: 11px;
+  color: #ff7676;
+  margin-top: 4px;
+  min-height: 13px;
+}
 
     .pet-field input:focus {
       border-color: #1ddb6f;
@@ -372,26 +383,26 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .pet-name {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
     }
 
     .pet-sub {
       font-size: 12px;
-      color: #9ea2b0;
+      color: #b1b6c4;
     }
 
     .pet-chip {
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(29,219,111,0.1);
-      border: 1px solid rgba(29,219,111,0.6);
-      color: #e7fdf0;
+      background: rgba(11,24,19,0.9);
+      border: 1px solid rgba(29,219,111,0.35);
+      box-shadow: 0 0 10px rgba(29,219,111,0.35);
     }
 
     .pet-image-wrap {
@@ -401,11 +412,23 @@
     }
 
     .pet-image-wrap img {
-      width: 140px;
-      height: 140px;
+      width: 150px;
+      height: 150px;
+      transition: transform 0.2s ease;
       object-fit: contain;
       filter: drop-shadow(0 12px 28px rgba(0,0,0,0.9));
     }
+
+@keyframes pet-bounce {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-8px) scale(1.04); }
+  60%  { transform: translateY(2px) scale(0.98); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.pet-bounce {
+  animation: pet-bounce 0.45s ease-out;
+}
 
     .pet-bars {
       margin-bottom: 10px;
@@ -434,30 +457,37 @@
       transition: width 0.2s ease;
     }
 
-    .pet-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
+   .pet-actions {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 8px;
+}
 
-    .pet-action-btn {
-      flex: 1;
-      font-size: 13px;
-    }
+.pet-action-btn {
+  flex: 1;
+  font-size: 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(9,11,18,0.95);
+}
+
+.pet-action-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+}
 
     .pet-note {
       font-size: 11px;
-      color: #9ea2b0;
-      margin-bottom: 6px;
+      color: #a1a6b5;
+      text-align: center;
     }
 
-    .pet-reset-btn {
-      width: 100%;
-      font-size: 11px;
-      opacity: 0.7;
-      margin-top: 2px;
-    }
+   
+.pet-reset-btn {
+  margin-top: 8px;
+  font-size: 11px;
+  opacity: 0.6;
+}
 
     /* PROFILE */
 
@@ -1367,9 +1397,10 @@
             </p>
 
             <div class="pet-field">
-              <label for="pet-name-input">Имя питомца</label>
-              <input id="pet-name-input" type="text" placeholder="Например, Бусти" />
-            </div>
+  <label for="pet-name-input">Имя питомца</label>
+  <input id="pet-name-input" type="text" placeholder="Например, Бусти" />
+  <div class="pet-error" id="pet-name-error"></div>
+</div>
 
             <div class="pet-field">
               <label>Пол питомца</label>
@@ -2019,21 +2050,28 @@ const doubleHistoryEl   = document.getElementById('double-history');
 
         const action = btn.dataset.action;
 
-        if (action === 'feed') {
-          petData.mood  = Math.min(100, petData.mood + 8);
-          petData.energy = Math.min(100, petData.energy + 15);
-        } else if (action === 'play') {
-          petData.mood  = Math.min(100, petData.mood + 15);
-          petData.energy = Math.max(0, petData.energy - 10);
-        } else if (action === 'rest') {
-          petData.energy = Math.min(100, petData.energy + 20);
-          petData.mood   = Math.max(0, petData.mood - 5);
-        }
+              if (action === 'feed') {
+        petData.mood  = Math.min(100, petData.mood + 8);
+        petData.energy = Math.min(100, petData.energy + 15);
+      } else if (action === 'play') {
+        petData.mood  = Math.min(100, petData.mood + 15);
+        petData.energy = Math.max(0, petData.energy - 10);
+      } else if (action === 'rest') {
+        petData.energy = Math.min(100, petData.energy + 20);
+        petData.mood   = Math.max(0, petData.mood - 5);
+      }
 
-        savePet();
-        updatePetUI();
-        vibrate(40);
-      });
+      // 👇 анимация Fluffie
+      if (petImageEl) {
+        petImageEl.classList.remove('pet-bounce');
+        // форсим перерисовку, чтобы анимация перезапускалась
+        void petImageEl.offsetWidth;
+        petImageEl.classList.add('pet-bounce');
+      }
+
+      savePet();
+      updatePetUI();
+      vibrate(40);
     });
   }
 
