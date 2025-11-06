@@ -1976,27 +1976,33 @@ let doubleWheelInited = false;
   // скорость роста множителя, завязанная на dt (секунды)
 // скорость роста множителя, завязанная на dt (секунды)
 function calcStepDelta(dt) {
-  const basePerSec      = 0.06; // базовая скорость
-  const accelFastPerSec = 0.18; // ускорение до x1.3
-  const accelSlowPerSec = 0.06; // гораздо мягче после x1.3
-  const maxPerSec       = 0.5;  // верхний предел, на всякий
+  const basePerSec = 0.05;  // базовая скорость
+  const accelPerSec = 0.12; // ускорение в начале
+  const slowAfter25 = 0.04; // мягкое ускорение после 2.5
+  const slowAfter5  = 0.015; // почти стоп после 5
+  const maxPerSec   = 0.25; // ограничитель
 
   let perSec;
 
   if (currentMulti <= 1.3) {
-    // участок от x1.00 до x1.30 — практически как раньше
-    perSec = basePerSec + accelFastPerSec * (currentMulti - 1.0);
-  } else {
-    // всё, что выше x1.30 — ускоряемся гораздо медленнее
+    // ранний этап — нормальное ускорение
+    perSec = basePerSec + accelPerSec * (currentMulti - 1.0);
+  } else if (currentMulti <= 2.5) {
+    // между 1.3 и 2.5 — замедляем прирост
     const extra = currentMulti - 1.3;
-    const fastPart = accelFastPerSec * (1.3 - 1.0); // фиксированный вклад первых 0.3
-    perSec = basePerSec + fastPart + accelSlowPerSec * extra;
+    perSec = basePerSec + 0.08 + slowAfter25 * extra;
+  } else if (currentMulti <= 5) {
+    // между 2.5 и 5 — идём ещё плавнее
+    const extra = currentMulti - 2.5;
+    perSec = basePerSec + 0.10 + slowAfter5 * extra;
+  } else {
+    // после 5x — почти стоп, визуально тянется медленно
+    perSec = basePerSec + 0.02;
   }
 
   if (perSec > maxPerSec) perSec = maxPerSec;
-  if (perSec < 0)         perSec = 0;
+  if (perSec < 0) perSec = 0;
 
-  // переводим “в секунду” → “за этот кадр”
   return perSec * dt;
 }
 
