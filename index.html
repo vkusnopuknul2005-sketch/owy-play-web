@@ -752,7 +752,7 @@
       top: 0;
       left: 50%;
       margin-left: -5px;
-      transition: top 0.12s linear, left 0.12s linear;
+      transition: top 0.2s linear, left 0.2s linear;
     }
 
    .plinko-slots {
@@ -2388,13 +2388,35 @@ function generatePlinkoPath(cols, rows) {
   return path;
 }
 
+// генерим путь + сильно режем шанс финальной ячейки по краям
+function generatePlinkoOutcome(config) {
+  const cols = config.multipliers.length;
+  let path, finalCol;
+  let tries = 0;
+
+  do {
+    path     = generatePlinkoPath(cols, PLINKO_ROWS);
+    finalCol = path[path.length - 1].col;
+
+    const isEdge = (finalCol === 0 || finalCol === cols - 1);
+
+    // если не край — сразу берём
+    if (!isEdge) break;
+
+    // если край — в ~70% случаев перегенерируем, максимум 3 попытки
+    tries++;
+    if (tries >= 3) break;          // всё-таки иногда даём упасть на край
+  } while (Math.random() < 0.7);    // 70% — повторяем генерацию
+
+  return { path, finalCol };
+}
+
 function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
   if (!plinkoBallsLayer) return;
 
   const layerRect = plinkoBallsLayer.getBoundingClientRect();
 
-  const path       = generatePlinkoPath(config.multipliers.length, PLINKO_ROWS);
-  const finalCol   = path[path.length - 1].col;
+  const { path, finalCol } = generatePlinkoOutcome(config);
   const multiplier = config.multipliers[finalCol];
 
   const ball = document.createElement("div");
@@ -2406,8 +2428,8 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
   ball.style.top  = "0px";
 
   const totalRows      = PLINKO_ROWS;
-  const stepDelayStart = 170;
-  const stepDelayEnd   = 110;
+  const stepDelayStart = 360;
+  const stepDelayEnd   = 240;
 
   path.forEach((step, index) => {
     const rowRatio = step.row / totalRows;
@@ -2468,11 +2490,19 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
 }
 
 function playPlinko() {
-  if (plinkoIsRunning) return;
+  // если уже 5 шариков в полёте — не даём запускать ещё
+  if (plinkoActiveBalls >= PLINKO_MAX_BALLS) {
+    if (plinkoStatusEl) {
+      plinkoStatusEl.textContent =
+        "На доске уже 5 шариков, дождись, пока они упадут 🙂";
+    }
+    return;
+  }
 
+  // анти-даблклик по кнопке
   if (plinkoStartLocked) return;
   plinkoStartLocked = true;
-  setTimeout(() => { plinkoStartLocked = false; }, 400);
+  setTimeout(() => { plinkoStartLocked = false; }, 250);
 
   const bet = parseInt(plinkoBetInput.value, 10);
   if (isNaN(bet) || bet < 10) {
@@ -2480,19 +2510,19 @@ function playPlinko() {
     return;
   }
 
-  const ballsCount = Math.max(1, Math.min(PLINKO_MAX_BALLS, plinkoBallsPerShot));
-  const totalCost  = bet * ballsCount;
-
-  if (totalCost > demoBalance) {
-    if (plinkoStatusEl) plinkoStatusEl.textContent =
-      "Недостаточно баланса для такого количества шаров 😔";
+  if (bet > demoBalance) {
+    if (plinkoStatusEl) {
+      plinkoStatusEl.textContent = "Недостаточно баланса для этой ставки 😔";
+    }
     return;
   }
 
   const config = PLINKO_CONFIGS[plinkoSelectedRisk];
   if (!config) return;
 
-  const slots = plinkoMultsRow ? plinkoMultsRow.querySelectorAll(".plinko-slot") : [];
+  const slots = plinkoMultsRow
+    ? plinkoMultsRow.querySelectorAll(".plinko-slot")
+    : [];
   if (!slots.length || slots.length !== config.multipliers.length) return;
 
   const layerRect   = plinkoBallsLayer.getBoundingClientRect();
@@ -2500,47 +2530,35 @@ function playPlinko() {
   const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
   const slotY       = slotRects[0].top - layerRect.top - 8;
 
+  // снимаем старую подсветку
   slots.forEach(s => s.classList.remove("active"));
 
-  // списываем общую стоимость
-  demoBalance -= totalCost;
+  // списываем ставку за ОДИН шар
+  demoBalance -= bet;
   saveBalance();
   updateBalanceView();
 
-  stats.plinkoPlays += ballsCount;
-  stats.xp          += 4 * ballsCount;
+  // статистика — по количеству шаров
+  stats.plinkoPlays += 1;
+  stats.xp          += 4;
   saveStats();
   updateStatsView();
 
-  plinkoIsRunning = true;
-  if (plinkoBetInput) plinkoBetInput.disabled = true;
-  if (plinkoRiskBtns && plinkoRiskBtns.length) {
-    plinkoRiskBtns.forEach(btn => btn.disabled = true);
+  // если это первый шар в текущем “раунде” — фиксируем настройки
+  if (!plinkoIsRunning) {
+    plinkoIsRunning = true;
+    if (plinkoBetInput) plinkoBetInput.disabled = true;
+    if (plinkoRiskBtns && plinkoRiskBtns.length) {
+      plinkoRiskBtns.forEach(btn => btn.disabled = true);
+    }
   }
 
   if (plinkoStatusEl) {
-    plinkoStatusEl.textContent =
-      `${ballsCount} шарик(а) падают... 🎯`;
+    plinkoStatusEl.textContent = "Шарик падает... 🎯";
   }
 
-  for (let i = 0; i < ballsCount; i++) {
-    const delayOffset = i * 180; // чтобы не шли идеально в одну линию
-    setTimeout(() => {
-      runOnePlinkoBall(bet, config, slots, slotCenters, slotY);
-    }, delayOffset);
-  }
-}
-
-if (plinkoRiskBtns && plinkoRiskBtns.length) {
-  plinkoRiskBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (plinkoIsRunning) return;
-      plinkoRiskBtns.forEach(b => b.classList.remove('plinko-risk-active'));
-      btn.classList.add('plinko-risk-active');
-      plinkoSelectedRisk = btn.dataset.risk || 'mid';
-      renderPlinkoConfig();
-    });
-  });
+  // запускаем ровно один шарик
+  runOnePlinkoBall(bet, config, slots, slotCenters, slotY);
 }
 
   function openPlinko() {
