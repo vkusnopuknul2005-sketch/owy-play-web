@@ -2493,7 +2493,7 @@ function closeDouble() {
 if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
 if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
 
-  // === INIT ===
+ // === INIT ===
 loadBalance();
 loadProfileInfo();
 loadStats();
@@ -2512,16 +2512,20 @@ renderPlinkoPegs();
 renderPlinkoConfig();
 initPhrases();
 
-// глобальный цикл Rush + Double
+buildDoubleWheel();
+updateDoubleHistoryView();
+startNewDoubleRound();   // сразу показываем "Новый раунд..."
+
 let lastTs = performance.now();
 startNewRushRound();
 
+// глобальный цикл Rush + Double
 setInterval(() => {
   const now  = performance.now();
-  const dtMs = now - lastTs;   // dt в миллисекундах
+  const dtMs = now - lastTs;   // разница в миллисекундах
   lastTs     = now;
 
-  const dt = dtMs / 1000;      // превращаем в секунды
+  const dt = dtMs / 1000;      // переводим в секунды
 
   tickRush(dt);
   tickDouble(dt);
