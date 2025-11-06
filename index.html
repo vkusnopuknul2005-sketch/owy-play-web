@@ -2044,28 +2044,27 @@ const doubleHistoryEl   = document.getElementById('double-history');
 
   // действия с питомцем
   if (petActionBtns && petActionBtns.length) {
-    petActionBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (!petData.name) return; // нет питомца
+  petActionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!petData.name) return; // нет питомца
 
-        const action = btn.dataset.action;
+      const action = btn.dataset.action;
 
-              if (action === 'feed') {
-        petData.mood  = Math.min(100, petData.mood + 8);
+      if (action === 'feed') {
+        petData.mood   = Math.min(100, petData.mood + 8);
         petData.energy = Math.min(100, petData.energy + 15);
       } else if (action === 'play') {
-        petData.mood  = Math.min(100, petData.mood + 15);
-        petData.energy = Math.max(0, petData.energy - 10);
+        petData.mood   = Math.min(100, petData.mood + 15);
+        petData.energy = Math.max(0,  petData.energy - 10);
       } else if (action === 'rest') {
         petData.energy = Math.min(100, petData.energy + 20);
-        petData.mood   = Math.max(0, petData.mood - 5);
+        petData.mood   = Math.max(0,  petData.mood - 5);
       }
 
-      // 👇 анимация Fluffie
+      // анимация Fluffie
       if (petImageEl) {
         petImageEl.classList.remove('pet-bounce');
-        // форсим перерисовку, чтобы анимация перезапускалась
-        void petImageEl.offsetWidth;
+        void petImageEl.offsetWidth; // перезапуск анимации
         petImageEl.classList.add('pet-bounce');
       }
 
@@ -2073,7 +2072,8 @@ const doubleHistoryEl   = document.getElementById('double-history');
       updatePetUI();
       vibrate(40);
     });
-  }
+  });
+}
 
   // сброс питомца
   if (petResetBtn) {
