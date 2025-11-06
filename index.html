@@ -844,7 +844,7 @@
   transform: translateY(-50%);
   display: flex;
   gap: 6px;
-  transition: transform 0.06s linear;
+  /* без transition, двигаем только из JS */
 }
 
 .double-cell {
@@ -1615,6 +1615,8 @@ const doubleHistoryEl   = document.getElementById('double-history');
   let doubleSpinTargetIndex= doubleCurrentIndex;
 
   const doubleStatusEl = document.getElementById('double-status');
+
+let doubleWheelInited = false;
 
  function buildDoubleWheel() {
   if (!doubleWheelStrip) return;
@@ -2475,14 +2477,19 @@ if (col <= 1) {
   if (plinkoBackBtn)  plinkoBackBtn.addEventListener('click', closePlinko);
   if (plinkoStartBtn) plinkoStartBtn.addEventListener('click', playPlinko);
 
-  function openDouble() {
-   if (doubleOverlay) {
-    doubleOverlay.style.display = 'flex';
-    // после открытия пересчитать ширину окна
-    setTimeout(() => {
-      recalcDoubleGeometry();
-      syncDoubleWheel();
-    }, 0);
+function openDouble() {
+  if (!doubleOverlay) return;
+
+  doubleOverlay.style.display = 'flex';
+
+  // первый заход — строим колесо
+  if (!doubleWheelInited) {
+    buildDoubleWheel();
+    doubleWheelInited = true;
+  } else {
+    // на всякий случай пересчёт размеров
+    recalcDoubleGeometry();
+    syncDoubleWheel();
   }
 }
 
@@ -2512,20 +2519,19 @@ renderPlinkoPegs();
 renderPlinkoConfig();
 initPhrases();
 
-buildDoubleWheel();
+// истории хватает, само колесо строим при первом openDouble
 updateDoubleHistoryView();
-startNewDoubleRound();   // сразу показываем "Новый раунд..."
+startNewDoubleRound();
 
 let lastTs = performance.now();
 startNewRushRound();
 
-// глобальный цикл Rush + Double
 setInterval(() => {
   const now  = performance.now();
-  const dtMs = now - lastTs;   // разница в миллисекундах
+  const dtMs = now - lastTs;
   lastTs     = now;
 
-  const dt = dtMs / 1000;      // переводим в секунды
+  const dt = dtMs / 1000;
 
   tickRush(dt);
   tickDouble(dt);
