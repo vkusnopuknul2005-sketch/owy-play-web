@@ -2517,11 +2517,11 @@ let lastTs = performance.now();
 startNewRushRound();
 
 setInterval(() => {
-  const now = performance.now();
-  const dt  = now - lastTs;   // ← БЕЗ деления на 1000, dt в ms
-  lastTs    = now;
+  const now  = performance.now();
+  const dtMs = now - lastTs;   // dt в миллисекундах
+  lastTs     = now;
 
-  const dt = dtMs / 1000;
+  const dt = dtMs / 1000;      // превращаем в секунды
 
   tickRush(dt);
   tickDouble(dt);
