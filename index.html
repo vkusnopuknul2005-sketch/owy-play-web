@@ -2003,22 +2003,22 @@ function calcStepDelta(dt) {
   return perSec * dt;
 }
 
-  function updateRushHistory() {
-    if (!rushHistoryEl) return;
-    if (!crashHistory.length) {
-      rushHistoryEl.textContent = "История: —";
-      return;
-    }
-    const last = crashHistory.slice(-10);
-    let html = 'История: ';
-    last.forEach(v => {
-      let cls = 'low';
-      if (v >= 5)      cls = 'high';
-      else if (v >= 2) cls = 'mid';
-      html += `<span class="rush-history-chip ${cls}">x${v.toFixed(2)}</span>`;
-    });
-    rushHistoryEl.innerHTML = html;
+ function updateRushHistory() {
+  if (!rushHistoryEl) return;
+  if (!crashHistory.length) {
+    rushHistoryEl.textContent = "История: —";
+    return;
   }
+  const last = crashHistory.slice(-10);
+  let html = 'История: ';
+  last.forEach(v => {
+    let cls = 'low';
+    if (v >= 5)      cls = 'high';
+    else if (v >= 2) cls = 'mid';
+    html += `<span class="rush-history-chip ${cls}">x${v.toFixed(2)}</span>`;
+  });
+  rushHistoryEl.innerHTML = html;
+}
 
 function updateRushTimer() {
   if (!rushTimerEl) return;
@@ -2032,8 +2032,6 @@ function updateRushTimer() {
     rushTimerEl.textContent = 'Скоро новый раунд…';
   }
 }
-  }
-
   function resetRushPlayerState() {
     rushHasActiveBet = false;
     rushBet          = 0;
@@ -2415,32 +2413,39 @@ if (col <= 1) {
     });
 
     setTimeout(() => {
-      if (slots[finalCol]) slots[finalCol].classList.add('active');
+  if (slots[finalCol]) slots[finalCol].classList.add('active');
 
-      const winAmount = Math.floor(bet * multiplier);
-      demoBalance += winAmount;
-      saveBalance();
-      updateBalanceView();
+  const winAmount = Math.floor(bet * multiplier);
+  demoBalance += winAmount;
+  saveBalance();
+  updateBalanceView();
 
-      plinkoHistory.push(multiplier);
-      updatePlinkoHistory();
+  plinkoHistory.push(multiplier);
+  updatePlinkoHistory();
 
-      if (multiplier > stats.bestMulti) stats.bestMulti = multiplier;
-      saveStats();
-      updateStatsView();
+  if (multiplier > stats.bestMulti) stats.bestMulti = multiplier;
+  saveStats();
+  updateStatsView();
 
-      if (plinkoStatusEl) {
-        if (multiplier < 1) {
-          plinkoStatusEl.textContent =
-            `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
-        } else {
-          plinkoStatusEl.textContent =
-            `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
-        }
-      }
-      vibrate(60);
-      setTimeout(() => ball.remove(), 1000);
-    }, stepDelay * path.length);
+  if (plinkoStatusEl) {
+    if (multiplier < 1) {
+      plinkoStatusEl.textContent =
+        `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
+    } else {
+      plinkoStatusEl.textContent =
+        `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+    }
+  }
+  vibrate(60);
+  setTimeout(() => ball.remove(), 1000);
+
+  // 👉 раунд закончился — разблокируем всё
+  plinkoIsRunning = false;
+  if (plinkoBetInput) plinkoBetInput.disabled = false;
+  if (plinkoRiskBtns && plinkoRiskBtns.length) {
+    plinkoRiskBtns.forEach(btn => btn.disabled = false);
+  }
+}, stepDelay * path.length);
   }
 
   if (plinkoRiskBtns && plinkoRiskBtns.length) {
