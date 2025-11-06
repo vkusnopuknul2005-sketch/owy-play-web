@@ -762,7 +762,7 @@
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: 10px;
+  bottom: 20px;
   z-index: 3;
 }
 
@@ -2355,14 +2355,21 @@ const PLINKO_CONFIGS = {
   }
 }
 
-  function generatePlinkoPath(cols, rows) {
+ function generatePlinkoPath(cols, rows) {
   const center = Math.floor(cols / 2);
   let col = center;              // стартуем из центра
   const path = [];
 
+  const lastStraightRows = 3;    // последние 3 "шага" — строго вниз, без дёрганий
+
   for (let r = 0; r <= rows; r++) {
     path.push({ col, row: r });
     if (r === rows) break;
+
+    // внизу уже не гуляем влево/вправо — шар падает строго в слот
+    if (rows - r <= lastStraightRows) {
+      continue;
+    }
 
     const dist       = Math.abs(col - center);   // насколько далеко от центра
     const edgeFactor = dist / center;            // 0 в центре, 1 у краёв
@@ -2370,21 +2377,27 @@ const PLINKO_CONFIGS = {
     let pStraight, pOut, pIn;
 
     if (plinkoSelectedRisk === 'low') {
-      // Low: стараемся держаться ближе к центру
-      pStraight = 0.6 + 0.2 * (1 - edgeFactor);  // чаще прямо, особенно в центре
-      pOut      = 0.15 + 0.15 * edgeFactor;      // чуть-чуть тянет к краю
-      pIn       = 1 - pStraight - pOut;          // остальное — обратно к центру
+      // Low: держим около центра, но не "идеальная прямая"
+      pStraight = 0.55 + 0.20 * (1 - edgeFactor); // центр ~0.75, края ~0.55
+      pOut      = 0.10 + 0.05 * edgeFactor;       // центр 0.10, края 0.15
+      pIn       = 1 - pStraight - pOut;           // остальное — возвращаем к центру
     } else if (plinkoSelectedRisk === 'mid') {
-      // Mid: почти честная симметрия
+      // Mid: чуть более хаотичный, но без перекоса в края
       pStraight = 0.45;
-      pOut      = 0.30;
-      pIn       = 0.25;
+      pOut      = 0.28;
+      pIn       = 0.27;
     } else {
-      // High: тянем к краям, особенно когда уже далеко от центра
-      pStraight = 0.20 + 0.15 * (1 - edgeFactor);
-      pOut      = 0.45 + 0.15 * edgeFactor;      // чем ближе к краю — тем больше шанс ещё дальше
-      pIn       = 1 - pStraight - pOut;
+      // High: тянем к краям, но без диких 28x каждую вторую игру
+      pStraight = 0.25 + 0.10 * (1 - edgeFactor); // центр 0.35, края 0.25
+      pOut      = 0.40 + 0.15 * edgeFactor;       // центр 0.40, края 0.55
+      pIn       = 1 - pStraight - pOut;           // чуть реже тянем обратно
     }
+
+    // на всякий случай нормализуем, чтобы сумма была 1
+    const sum = pStraight + pOut + pIn;
+    pStraight /= sum;
+    pOut      /= sum;
+    pIn       /= sum;
 
     const rnd = Math.random();
     let dir = 0;
@@ -2401,16 +2414,16 @@ const PLINKO_CONFIGS = {
     }
 
     col += dir;
-    if (col < 0)          col = 0;
-    if (col > cols - 1)   col = cols - 1;
+    if (col < 0)        col = 0;
+    if (col > cols - 1) col = cols - 1;
   }
 
   return path;
 }
 
-  let plinkoStartLocked = false;
+let plinkoStartLocked = false;
 
-  function playPlinko() {
+function playPlinko() {
   // если уже идёт анимация — просто игнорим
   if (plinkoIsRunning) return;
 
@@ -2451,78 +2464,85 @@ const PLINKO_CONFIGS = {
   stats.xp          += 4;
   saveStats();
   updateStatsView();
- 
-    const layerRect   = plinkoBallsLayer.getBoundingClientRect();
-    const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
-    const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
-    const slotY       = slotRects[0].top - layerRect.top - 8;
 
-    const colsCount  = config.multipliers.length;
-    const path       = generatePlinkoPath(colsCount, PLINKO_ROWS);
-    const finalCol   = path[path.length - 1].col;
-    const multiplier = config.multipliers[finalCol];
+  const layerRect   = plinkoBallsLayer.getBoundingClientRect();
+  const slotRects   = Array.from(slots).map(s => s.getBoundingClientRect());
+  const slotCenters = slotRects.map(r => r.left + r.width / 2 - layerRect.left);
 
-    slots.forEach(s => s.classList.remove('active'));
+  // высота до центра слотов — туда мы примерно и падаем
+  const slotY = slotRects[0].top - layerRect.top - 8;
 
-    const ball = document.createElement('div');
-    ball.className = 'plinko-ball';
-    plinkoBallsLayer.appendChild(ball);
+  const colsCount  = config.multipliers.length;
 
-    const startX = layerRect.width / 2;
-    ball.style.left = (startX - 5) + "px";
-    ball.style.top  = "0px";
+  // генерим путь с учётом риска
+  const path       = generatePlinkoPath(colsCount, PLINKO_ROWS);
+  const finalCol   = path[path.length - 1].col;
+  const multiplier = config.multipliers[finalCol];
 
-    if (plinkoStatusEl) plinkoStatusEl.textContent = "Шарик падает... 🎯";
+  // снимаем подсветку со всех слотов
+  slots.forEach(s => s.classList.remove('active'));
 
-    const totalRows = PLINKO_ROWS;
-    const stepDelay = 190;
+  const ball = document.createElement('div');
+  ball.className = 'plinko-ball';
+  plinkoBallsLayer.appendChild(ball);
 
-    path.forEach((step, index) => {
-      const rowRatio = step.row / totalRows;
-      const y        = slotY * rowRatio;
-      const colIndex = step.col;
-      const x        = slotCenters[colIndex];
-      setTimeout(() => {
-        ball.style.top  = y + "px";
-        ball.style.left = (x - 5) + "px";
-      }, stepDelay * index);
-    });
+  const startX = layerRect.width / 2;
+  ball.style.left = (startX - 5) + "px";
+  ball.style.top  = "0px";
+
+  if (plinkoStatusEl) plinkoStatusEl.textContent = "Шарик падает... 🎯";
+
+  const totalRows = PLINKO_ROWS;
+  const stepDelay = 190;
+
+  path.forEach((step, index) => {
+    const rowRatio = step.row / totalRows;
+    const y        = slotY * rowRatio;
+    const colIndex = step.col;
+    const x        = slotCenters[colIndex];
 
     setTimeout(() => {
-  if (slots[finalCol]) slots[finalCol].classList.add('active');
+      ball.style.top  = y + "px";
+      ball.style.left = (x - 5) + "px";
+    }, stepDelay * index);
+  });
 
-  const winAmount = Math.floor(bet * multiplier);
-  demoBalance += winAmount;
-  saveBalance();
-  updateBalanceView();
+  // финальный этап — подсветка слота + начисление
+  setTimeout(() => {
+    if (slots[finalCol]) slots[finalCol].classList.add('active');
 
-  plinkoHistory.push(multiplier);
-  updatePlinkoHistory();
+    const winAmount = Math.floor(bet * multiplier);
+    demoBalance += winAmount;
+    saveBalance();
+    updateBalanceView();
 
-  if (multiplier > stats.bestMulti) stats.bestMulti = multiplier;
-  saveStats();
-  updateStatsView();
+    plinkoHistory.push(multiplier);
+    updatePlinkoHistory();
 
-  if (plinkoStatusEl) {
-    if (multiplier < 1) {
-      plinkoStatusEl.textContent =
-        `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
-    } else {
-      plinkoStatusEl.textContent =
-        `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+    if (multiplier > stats.bestMulti) stats.bestMulti = multiplier;
+    saveStats();
+    updateStatsView();
+
+    if (plinkoStatusEl) {
+      if (multiplier < 1) {
+        plinkoStatusEl.textContent =
+          `Шар попал в x${multiplier.toFixed(2)}.\nВернулось ${winAmount} OWY.`;
+      } else {
+        plinkoStatusEl.textContent =
+          `Шар попал в x${multiplier.toFixed(2)}!\nВыигрыш: ${winAmount} OWY.`;
+      }
     }
-  }
-  vibrate(60);
-  setTimeout(() => ball.remove(), 1000);
+    vibrate(60);
+    setTimeout(() => ball.remove(), 1000);
 
-  // 👉 раунд закончился — разблокируем всё
-  plinkoIsRunning = false;
-  if (plinkoBetInput) plinkoBetInput.disabled = false;
-  if (plinkoRiskBtns && plinkoRiskBtns.length) {
-    plinkoRiskBtns.forEach(btn => btn.disabled = false);
-  }
-}, stepDelay * path.length);
-  }
+    // 👉 раунд закончился — разблокируем всё
+    plinkoIsRunning = false;
+    if (plinkoBetInput) plinkoBetInput.disabled = false;
+    if (plinkoRiskBtns && plinkoRiskBtns.length) {
+      plinkoRiskBtns.forEach(btn => btn.disabled = false);
+    }
+  }, stepDelay * path.length);
+}
 
   if (plinkoRiskBtns && plinkoRiskBtns.length) {
   plinkoRiskBtns.forEach(btn => {
