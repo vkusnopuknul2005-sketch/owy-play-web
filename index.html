@@ -1308,6 +1308,51 @@
   transform: translateY(-4px);
 }
 
+/* === TAP-TAP GAME === */
+
+.taptap-board {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  background: radial-gradient(circle at top, #171b24, #05060a);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.8);
+  margin-inline: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.taptap-target {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: radial-gradient(circle at top, #1ddb6f, #0f7b45);
+  box-shadow: 0 0 14px rgba(29,219,111,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #05060a;
+  cursor: pointer;
+  transform: scale(0.4);
+  opacity: 0;
+  transition: transform 0.12s ease-out, opacity 0.12s ease-out;
+}
+
+.taptap-target--alive {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.taptap-target--hit {
+  transform: scale(0.2);
+  opacity: 0;
+}
+
 /* === DOUBLE === */
 
 .double-wheel-wrap {
@@ -1646,6 +1691,31 @@
     </div>
   </div>
 </div>
+
+<!-- TAP-TAP OVERLAY -->
+<div id="taptap-overlay" class="overlay">
+  <div class="overlay-inner">
+    <div class="overlay-header">
+      <button class="btn btn-ghost" id="taptap-back">← Назад</button>
+      <div class="overlay-title">Tap-tap</div>
+    </div>
+
+    <div class="rush-status" id="taptap-status">
+      Успей тапнуть как можно больше целей за 30 секунд.
+    </div>
+
+    <div class="rush-timer" id="taptap-timer">
+      Осталось: 30 c
+    </div>
+
+    <div class="taptap-board" id="taptap-board"></div>
+
+    <div class="rush-status" id="taptap-score">
+      Очки: 0
+    </div>
+  </div>
+</div>
+
       <!-- PET -->
       <section id="pet-screen" style="display:none;">
         <div class="section-title">Твой Fluffie</div>
@@ -1804,14 +1874,13 @@
         </div>
       </div>
 
-      <!-- Заглушки под будущие игры -->
-      <div class="card big-card">
-        <div class="card-title">Tap-tap (скоро)</div>
+           <div class="card big-card" id="mini-open-taptap">
+        <div class="card-title">Tap-tap</div>
         <div class="card-sub">
           Быстрые тап-челленджи для энергии Fluffie.
         </div>
         <div class="card-footer">
-          <button class="btn btn-ghost" disabled>Coming soon</button>
+          <button class="btn btn-primary">Играть</button>
         </div>
       </div>
 
@@ -2459,6 +2528,15 @@ window.addEventListener('load', hideSplash);
   function vibrate(ms) {
     if (navigator && navigator.vibrate) navigator.vibrate(ms);
   }
+
+// === TAP-TAP DOM ===
+const taptapOverlay  = document.getElementById('taptap-overlay');
+const taptapBackBtn  = document.getElementById('taptap-back');
+const taptapBoardEl  = document.getElementById('taptap-board');
+const taptapTimerEl  = document.getElementById('taptap-timer');
+const taptapScoreEl  = document.getElementById('taptap-score');
+const taptapStatusEl = document.getElementById('taptap-status');
+const miniOpenTapTapBtn = document.getElementById('mini-open-taptap');
 
   // === STORAGE ===
   const STORAGE_KEY_BALANCE = 'owy_balance_v1';
@@ -3724,6 +3802,179 @@ if (miniOpenMatch3Btn) {
     closeMiniOverlay();
     openMatch3Overlay(); // функцию объявим в секции игры
   });
+}
+if (miniOpenTapTapBtn) {
+  miniOpenTapTapBtn.addEventListener('click', () => {
+    closeMiniOverlay();
+    openTapTapOverlay();
+  });
+}
+
+if (taptapBackBtn) {
+  taptapBackBtn.addEventListener('click', () => {
+    endTapTapGame(true); // выходим без награды
+  });
+}
+
+// === TAP-TAP GAME LOGIC ===
+
+let taptapScore = 0;
+let taptapTimeLeft = 30;
+let taptapTimerId = null;
+let taptapSpawnId = null;
+let taptapRunning = false;
+
+function resetTapTap() {
+  taptapScore = 0;
+  taptapTimeLeft = 30;
+  taptapRunning = false;
+
+  if (taptapScoreEl) taptapScoreEl.textContent = 'Очки: 0';
+  if (taptapTimerEl) taptapTimerEl.textContent = 'Осталось: 30 c';
+  if (taptapStatusEl) {
+    taptapStatusEl.textContent =
+      'Успей тапнуть как можно больше целей за 30 секунд.';
+  }
+
+  if (taptapBoardEl) taptapBoardEl.innerHTML = '';
+
+  if (taptapTimerId) {
+    clearInterval(taptapTimerId);
+    taptapTimerId = null;
+  }
+  if (taptapSpawnId) {
+    clearInterval(taptapSpawnId);
+    taptapSpawnId = null;
+  }
+}
+
+function spawnTapTapTarget() {
+  if (!taptapBoardEl || !taptapRunning) return;
+
+  const rect = taptapBoardEl.getBoundingClientRect();
+  const size = 54;
+  const padding = 8;
+
+  const maxX = rect.width - size - padding * 2;
+  const maxY = rect.height - size - padding * 2;
+
+  if (maxX <= 0 || maxY <= 0) return;
+
+  const x = padding + Math.random() * maxX;
+  const y = padding + Math.random() * maxY;
+
+  const el = document.createElement('div');
+  el.className = 'taptap-target';
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
+  el.textContent = '+1';
+
+  // анимация появления
+  requestAnimationFrame(() => {
+    el.classList.add('taptap-target--alive');
+  });
+
+  // тап по кружку
+  el.addEventListener('click', () => {
+    if (!taptapRunning) return;
+    taptapScore++;
+    if (taptapScoreEl) taptapScoreEl.textContent = 'Очки: ' + taptapScore;
+
+    el.classList.remove('taptap-target--alive');
+    el.classList.add('taptap-target--hit');
+    vibrate(30);
+
+    setTimeout(() => {
+      el.remove();
+    }, 120);
+  }, { once: true });
+
+  taptapBoardEl.appendChild(el);
+
+  // автоуничтожение, если не тапнули
+  setTimeout(() => {
+    if (!el.parentNode) return;
+    el.classList.remove('taptap-target--alive');
+    el.classList.add('taptap-target--hit');
+    setTimeout(() => el.remove(), 150);
+  }, 1000);
+}
+
+function startTapTapGame() {
+  resetTapTap();
+  taptapRunning = true;
+
+  // таймер
+  taptapTimerId = setInterval(() => {
+    taptapTimeLeft--;
+    if (taptapTimerEl) {
+      taptapTimerEl.textContent = 'Осталось: ' + taptapTimeLeft + ' c';
+    }
+    if (taptapTimeLeft <= 0) {
+      endTapTapGame();
+    }
+  }, 1000);
+
+  // спавним цель каждые ~700мс
+  taptapSpawnId = setInterval(() => {
+    spawnTapTapTarget();
+  }, 700);
+}
+
+function endTapTapGame(skipReward) {
+  taptapRunning = false;
+
+  if (taptapTimerId) {
+    clearInterval(taptapTimerId);
+    taptapTimerId = null;
+  }
+  if (taptapSpawnId) {
+    clearInterval(taptapSpawnId);
+    taptapSpawnId = null;
+  }
+
+  if (!skipReward && petData && petData.name) {
+    // простая формула: XP и настроение
+    const xpGain   = Math.max(1, Math.floor(taptapScore / 5));
+    const moodGain = Math.min(20, Math.floor(taptapScore / 4));
+
+    petData.xp     = (petData.xp || 0) + xpGain;
+    petData.mood   = Math.min(100, petData.mood + moodGain);
+    petData.energy = Math.max(0,  petData.energy - 8);
+    petData.hunger = Math.max(0,  (petData.hunger || 0) - 5);
+    petData.lastUpdateAt = Date.now();
+
+    const info = calcPetLevelFromXp(petData.xp || 0);
+    petData.level = info.level;
+    savePet();
+    updatePetUI();
+
+    if (taptapStatusEl) {
+      taptapStatusEl.textContent =
+        `Игра окончена: ${taptapScore} очков. Fluffie получил +${xpGain} XP и +${moodGain} к настроению 🎯`;
+    }
+  } else {
+    if (taptapStatusEl) {
+      taptapStatusEl.textContent = `Игра остановлена. Результат: ${taptapScore} очков.`;
+    }
+  }
+
+  // закрываем overlay чуть позже, чтобы текст успели прочитать
+  setTimeout(() => {
+    closeTapTapOverlay();
+  }, 700);
+}
+
+function openTapTapOverlay() {
+  if (!taptapOverlay) return;
+  taptapOverlay.style.display = 'flex';
+  startTapTapGame();
+}
+
+function closeTapTapOverlay() {
+  if (!taptapOverlay) return;
+  resetTapTap();
+  taptapOverlay.style.display = 'none';
 }
 
  // === PLINKO ===
