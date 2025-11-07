@@ -596,6 +596,67 @@
   opacity: 0.6;
 }
 
+.pet-shop-btn {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* Магазин Fluffie */
+
+.pet-shop-card {
+  padding-bottom: 14px;
+}
+
+.pet-shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.pet-shop-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: rgba(6, 8, 14, 0.9);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.pet-shop-item-main {
+  max-width: 65%;
+}
+
+.pet-shop-item-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pet-shop-item-desc {
+  font-size: 11px;
+  color: #9ea2b0;
+  margin-top: 2px;
+}
+
+.pet-shop-item-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.pet-shop-price {
+  font-size: 12px;
+  color: #e7fdf0;
+}
+
+.pet-shop-note {
+  font-size: 11px;
+  color: #9ea2b0;
+  margin-top: 10px;
+}
+
 /* === PET MATCH-3 GAME === */
 
 .pet-game-info {
@@ -1823,9 +1884,13 @@
     <button class="btn btn-ghost pet-action-btn" data-action="rest">Отправить спать</button>
   </div>
 
-  <div class="pet-note" id="pet-note">
+   <div class="pet-note" id="pet-note">
     Fluffie чувствует себя отлично ✨
   </div>
+
+  <button class="btn btn-ghost pet-shop-btn" id="pet-shop-open">
+    Магазин Fluffie
+  </button>
 
   <button class="btn btn-ghost pet-reset-btn" id="pet-reset-btn">
     Сбросить питомца (начать заново)
@@ -1894,6 +1959,63 @@
         </div>
       </div>
 
+<!-- PET SHOP OVERLAY -->
+<div id="pet-shop-overlay" class="match3-overlay">
+  <div class="match3-card pet-shop-card">
+    <div class="match3-header">
+      <div class="match3-title">Магазин Fluffie</div>
+      <button class="btn btn-ghost" id="pet-shop-close">Закрыть</button>
+    </div>
+
+    <div class="pet-shop-items">
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">Печенька</div>
+          <div class="pet-shop-item-desc">
+            +15 сытость • +5 настроение • +3 XP питомцу
+          </div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">20 OWY</div>
+          <button class="btn btn-primary pet-shop-buy" data-item="cookie">
+            Купить
+          </button>
+        </div>
+      </div>
+
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">Энергетик</div>
+          <div class="pet-shop-item-desc">
+            +25 энергия • −5 сытость • +4 XP питомцу
+          </div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">35 OWY</div>
+          <button class="btn btn-primary pet-shop-buy" data-item="energy">
+            Купить
+          </button>
+        </div>
+      </div>
+
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">Подарок 🎁</div>
+          <div class="pet-shop-item-desc">
+            +20 настроение • +8 XP питомцу
+          </div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">50 OWY</div>
+          <button class="btn btn-primary pet-shop-buy" data-item="gift">
+            Купить
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pet-shop-note" id="pet-shop-note">
+      Все покупки только в демо, без реальных денег.
     </div>
   </div>
 </div>
@@ -2073,6 +2195,11 @@
   const miniOverlay       = document.getElementById('mini-overlay');
   const miniBackBtn       = document.getElementById('mini-back');
   const miniOpenMatch3Btn = document.getElementById('mini-open-match3');
+  const petShopOpenBtn   = document.getElementById('pet-shop-open');
+  const petShopOverlay   = document.getElementById('pet-shop-overlay');
+  const petShopCloseBtn  = document.getElementById('pet-shop-close');
+  const petShopNoteEl    = document.getElementById('pet-shop-note');
+  const petShopBuyBtns   = document.querySelectorAll('.pet-shop-buy');
 
   const profileIdEl         = document.getElementById('profile-id');
   const profileBalanceEl    = document.getElementById('profile-balance');
@@ -3012,6 +3139,92 @@ if (petActionBtns && petActionBtns.length) {
   });
 }
 
+  function openPetShop() {
+    if (!petShopOverlay) return;
+    petShopOverlay.style.display = 'flex';
+    if (petShopNoteEl) {
+      petShopNoteEl.textContent = 'Купи что-нибудь вкусное для Fluffie 🍪';
+    }
+  }
+
+  function closePetShop() {
+    if (!petShopOverlay) return;
+    petShopOverlay.style.display = 'none';
+  }
+
+  function handlePetShopBuy(item) {
+    if (!petData.name) {
+      if (petShopNoteEl) {
+        petShopNoteEl.textContent =
+          'Сначала создай питомца, а потом уже балуй его покупками 🙂';
+      }
+      vibrate(40);
+      return;
+    }
+
+    let cost = 0;
+    let mood = 0, energy = 0, hunger = 0, xp = 0;
+    let itemLabel = '';
+
+    if (item === 'cookie') {
+      cost = 20;
+      hunger = +15;
+      mood   = +5;
+      xp     = 3;
+      itemLabel = 'печеньку';
+    } else if (item === 'energy') {
+      cost = 35;
+      energy = +25;
+      hunger = -5;
+      xp     = 4;
+      itemLabel = 'энергетик';
+    } else if (item === 'gift') {
+      cost = 50;
+      mood = +20;
+      xp   = 8;
+      itemLabel = 'подарок';
+    } else {
+      return;
+    }
+
+    if (demoBalance < cost) {
+      if (petShopNoteEl) {
+        petShopNoteEl.textContent = 'Недостаточно OWY для этой покупки 😔';
+      }
+      vibrate(40);
+      return;
+    }
+
+    // списываем демо-баланс
+    demoBalance -= cost;
+    saveBalance();
+    updateBalanceView();
+
+    // применяем эффект к Fluffie
+    petData.mood   = Math.max(0, Math.min(100, petData.mood + mood));
+    petData.energy = Math.max(0, Math.min(100, petData.energy + energy));
+    petData.hunger = Math.max(0, Math.min(100, (petData.hunger || 0) + hunger));
+    petData.xp     = (petData.xp || 0) + xp;
+
+    const lvlInfo = calcPetLevelFromXp(petData.xp || 0);
+    petData.level      = lvlInfo.level;
+    petData.lastUpdateAt = Date.now();
+
+    savePet();
+    updatePetUI();
+
+    // общий XP профиля слегка подрастёт тоже
+    stats.xp += Math.max(1, xp);
+    saveStats();
+    updateStatsView();
+
+    if (petShopNoteEl) {
+      petShopNoteEl.textContent =
+        `${petData.name} получил ${itemLabel}! XP +${xp}, настроение/энергия обновлены ✨`;
+    }
+    vibrate(60);
+  }
+
   // сброс питомца
   if (petResetBtn) {
     petResetBtn.addEventListener('click', () => {
@@ -3027,6 +3240,30 @@ if (petActionBtns && petActionBtns.length) {
         createdAt: null,
         lastUpdateAt: null
       };
+
+  // магазин Fluffie
+  if (petShopOpenBtn) {
+    petShopOpenBtn.addEventListener('click', () => {
+      openPetShop();
+      vibrate(30);
+    });
+  }
+
+  if (petShopCloseBtn) {
+    petShopCloseBtn.addEventListener('click', () => {
+      closePetShop();
+      vibrate(20);
+    });
+  }
+
+  if (petShopBuyBtns && petShopBuyBtns.length) {
+    petShopBuyBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.dataset.item;
+        handlePetShopBuy(item);
+      });
+    });
+  }
       savePet();
       updatePetUI();
       if (petNoteEl) {
