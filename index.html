@@ -3832,6 +3832,112 @@ function renderPlinkoConfig() {
   }
 }
 
+function findAllMatches(board) {
+  const rows = board.length;
+  const cols = board[0].length;
+  const toClear = Array.from({ length: rows }, () =>
+    Array(cols).fill(false)
+  );
+  let hasMatches = false;
+
+  // Горизонтали
+  for (let r = 0; r < rows; r++) {
+    let runColor = board[r][0];
+    let runStart = 0;
+
+    for (let c = 1; c <= cols; c++) {
+      const color = c < cols ? board[r][c] : null; // sentinel в конце
+      if (color === runColor) continue;
+
+      // Закончилась серия цвета runColor
+      const runLen = c - runStart;
+      if (runColor != null && runLen >= 3) {
+        hasMatches = true;
+        for (let k = runStart; k < c; k++) {
+          toClear[r][k] = true;
+        }
+      }
+
+      runColor = color;
+      runStart = c;
+    }
+  }
+
+  // Вертикали
+  for (let c = 0; c < cols; c++) {
+    let runColor = board[0][c];
+    let runStart = 0;
+
+    for (let r = 1; r <= rows; r++) {
+      const color = r < rows ? board[r][c] : null;
+      if (color === runColor) continue;
+
+      const runLen = r - runStart;
+      if (runColor != null && runLen >= 3) {
+        hasMatches = true;
+        for (let k = runStart; k < r; k++) {
+          toClear[k][c] = true;
+        }
+      }
+
+      runColor = color;
+      runStart = r;
+    }
+  }
+
+  return hasMatches ? toClear : null;
+}
+
+function clearMatches(board, mask) {
+  const rows = board.length;
+  const cols = board[0].length;
+  let cleared = 0;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (mask[r][c]) {
+        board[r][c] = null; // пусто
+        cleared++;
+      }
+    }
+  }
+  return cleared; // можно умножать на очки
+}
+
+function dropTiles(board) {
+  const rows = board.length;
+  const cols = board[0].length;
+
+  for (let c = 0; c < cols; c++) {
+    let writeRow = rows - 1; // куда будем "ронять"
+    for (let r = rows - 1; r >= 0; r--) {
+      if (board[r][c] != null) {
+        board[writeRow][c] = board[r][c];
+        if (writeRow !== r) board[r][c] = null;
+        writeRow--;
+      }
+    }
+    // генерим новые сверху
+    for (let r = writeRow; r >= 0; r--) {
+      board[r][c] = randomGemType(); // своя функция рандома
+    }
+  }
+}
+
+function resolveBoardLoop() {
+  while (true) {
+    const mask = findAllMatches(board);
+    if (!mask) break;
+
+    const cleared = clearMatches(board, mask);
+    // тут добавляем очки: score += cleared * 10;
+    dropTiles(board);
+  }
+
+  // после всех падений — перерисовываем DOM
+  renderBoard();
+}
+
 // симметричный рандомный путь, внизу без дёрганий
 function generatePlinkoPath(cols, rows) {
   const center = Math.floor(cols / 2);
