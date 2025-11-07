@@ -596,6 +596,77 @@
   opacity: 0.6;
 }
 
+/* === PET MATCH-3 GAME === */
+
+.pet-game-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #cfd2de;
+  margin-bottom: 10px;
+}
+
+.pet-game-score,
+.pet-game-timer {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(6, 8, 12, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pet-game-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  justify-items: center;
+}
+
+.pet-game-tile {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.1s ease;
+}
+
+.pet-game-tile:active {
+  transform: scale(0.95);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.8);
+}
+
+.pet-game-tile-selected {
+  border-color: #1ddb6f;
+  box-shadow: 0 0 12px rgba(29, 219, 111, 0.7);
+}
+
+/* цвета "камней" */
+.pet-game-gem-0 {
+  background: linear-gradient(135deg, #8a66ff, #c29dff);
+}
+.pet-game-gem-1 {
+  background: linear-gradient(135deg, #1ddb6f, #40f7a0);
+}
+.pet-game-gem-2 {
+  background: linear-gradient(135deg, #ffb943, #ff8a3b);
+}
+.pet-game-gem-3 {
+  background: linear-gradient(135deg, #ff5a7a, #ff9ab0);
+}
+.pet-game-gem-4 {
+  background: linear-gradient(135deg, #46a2ff, #8ec8ff);
+}
+
+#pet-game-note {
+  margin-top: 12px;
+}
+
     /* PROFILE */
 
     .profile-card {
@@ -1494,6 +1565,27 @@
         </div>
       </section>
 
+<!-- PET MATCH-3 OVERLAY -->
+<div id="pet-game-overlay" class="overlay">
+  <div class="overlay-inner">
+    <div class="overlay-header">
+      <button class="btn btn-ghost" id="pet-game-back">← Назад</button>
+      <div class="overlay-title">Fluffie — 3 в ряд</div>
+    </div>
+
+    <div class="pet-game-info">
+      <div class="pet-game-score" id="pet-game-score">Очки: 0</div>
+      <div class="pet-game-timer" id="pet-game-timer">Время: 60 c</div>
+    </div>
+
+    <div class="pet-game-grid" id="pet-game-grid"></div>
+
+    <div class="pet-note" id="pet-game-note">
+      Собирай комбинации из 3+ камней, чтобы радовать Fluffie и качать уровень ✨
+    </div>
+  </div>
+</div>
+
       <!-- PET -->
       <section id="pet-screen" style="display:none;">
         <div class="section-title">Твой Fluffie</div>
@@ -1866,6 +1958,14 @@ const doubleBtnOrange   = document.getElementById('double-btn-orange');
 
 const doubleBetInput    = document.getElementById('double-bet');
 const doubleHistoryEl   = document.getElementById('double-history');
+
+// === PET MATCH-3 DOM ===
+const petGameOverlay   = document.getElementById('pet-game-overlay');
+const petGameBackBtn   = document.getElementById('pet-game-back');
+const petGameGridEl    = document.getElementById('pet-game-grid');
+const petGameScoreEl   = document.getElementById('pet-game-score');
+const petGameTimerEl   = document.getElementById('pet-game-timer');
+const petGameNoteEl    = document.getElementById('pet-game-note');
 
   function hideSplash() {
   if (!splashEl) return;
@@ -2328,33 +2428,28 @@ if (petActionBtns && petActionBtns.length) {
       const action = btn.dataset.action;
 
       if (action === 'feed') {
-        // кормёжка: сытость + настроение + чуть энергии, немного XP
+        // кормёжка
         petData.hunger = Math.min(100, (petData.hunger || 0) + 20);
         petData.mood   = Math.min(100, petData.mood + 8);
         petData.energy = Math.min(100, petData.energy + 10);
         petData.xp     = (petData.xp || 0) + 3;
       } else if (action === 'play') {
-        // игра: сильный рост настроения, падают энергия и сытость, XP побольше
-        petData.mood   = Math.min(100, petData.mood + 15);
-        petData.energy = Math.max(0,  petData.energy - 10);
-        petData.hunger = Math.max(0,  (petData.hunger || 0) - 6);
-        petData.xp     = (petData.xp || 0) + 5;
+        // теперь «Поиграть» = открыть мини-игру «3 в ряд»
+        openPetGame();
+        vibrate(30);
+        return; // не трогаем статы здесь, они начислятся по результату игры
       } else if (action === 'rest') {
-        // сон: энергия вверх, настроение немного проседает, сытость падает
+        // сон
         petData.energy = Math.min(100, petData.energy + 20);
         petData.mood   = Math.max(0,  petData.mood - 3);
         petData.hunger = Math.max(0,  (petData.hunger || 0) - 4);
         petData.xp     = (petData.xp || 0) + 2;
       }
 
-      // пересчитываем уровень по XP
       const info = calcPetLevelFromXp(petData.xp || 0);
       petData.level = info.level;
-
-      // обновляем "последнее взаимодействие"
       petData.lastUpdateAt = Date.now();
 
-      // анимация Fluffie
       if (petImageEl) {
         petImageEl.classList.remove('pet-bounce');
         void petImageEl.offsetWidth;
@@ -3514,6 +3609,355 @@ function closeDouble() {
 
 if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
 if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
+
+// === PET MATCH-3 MINI GAME ===
+
+const PET_GAME_ROWS   = 6;
+const PET_GAME_COLS   = 6;
+const PET_GAME_COLORS = 5;
+const PET_GAME_DURATION = 60; // секунд
+
+let petGameBoard      = [];
+let petGameSelected   = null; // {row, col} или null
+let petGameScore      = 0;
+let petGameTimeLeft   = PET_GAME_DURATION;
+let petGameTimerId    = null;
+let petGameIsRunning  = false;
+
+function createEmptyPetBoard() {
+  const board = [];
+  for (let r = 0; r < PET_GAME_ROWS; r++) {
+    const row = [];
+    for (let c = 0; c < PET_GAME_COLS; c++) {
+      row.push(0);
+    }
+    board.push(row);
+  }
+  return board;
+}
+
+function randomGem() {
+  return Math.floor(Math.random() * PET_GAME_COLORS);
+}
+
+// заполнение без стартовых матчей 3+
+function initPetGameBoard() {
+  petGameBoard = createEmptyPetBoard();
+  for (let r = 0; r < PET_GAME_ROWS; r++) {
+    for (let c = 0; c < PET_GAME_COLS; c++) {
+      let color;
+      do {
+        color = randomGem();
+      } while (
+        (c >= 2 &&
+          petGameBoard[r][c - 1] === color &&
+          petGameBoard[r][c - 2] === color) ||
+        (r >= 2 &&
+          petGameBoard[r - 1][c] === color &&
+          petGameBoard[r - 2][c] === color)
+      );
+      petGameBoard[r][c] = color;
+    }
+  }
+}
+
+function renderPetGameBoard() {
+  if (!petGameGridEl) return;
+  petGameGridEl.innerHTML = '';
+
+  for (let r = 0; r < PET_GAME_ROWS; r++) {
+    for (let c = 0; c < PET_GAME_COLS; c++) {
+      const val = petGameBoard[r][c];
+      const tile = document.createElement('div');
+      tile.className = 'pet-game-tile pet-game-gem-' + val;
+      tile.dataset.row = String(r);
+      tile.dataset.col = String(c);
+
+      if (petGameSelected &&
+          petGameSelected.row === r &&
+          petGameSelected.col === c) {
+        tile.classList.add('pet-game-tile-selected');
+      }
+
+      petGameGridEl.appendChild(tile);
+    }
+  }
+}
+
+function areAdjacent(a, b) {
+  const dr = Math.abs(a.row - b.row);
+  const dc = Math.abs(a.col - b.col);
+  return (dr + dc === 1);
+}
+
+function swapGems(a, b) {
+  const tmp = petGameBoard[a.row][a.col];
+  petGameBoard[a.row][a.col] = petGameBoard[b.row][b.col];
+  petGameBoard[b.row][b.col] = tmp;
+}
+
+function findMatches() {
+  const matched = [];
+  for (let r = 0; r < PET_GAME_ROWS; r++) {
+    matched[r] = [];
+    for (let c = 0; c < PET_GAME_COLS; c++) {
+      matched[r][c] = false;
+    }
+  }
+
+  // горизонтальные
+  for (let r = 0; r < PET_GAME_ROWS; r++) {
+    let runStart = 0;
+    for (let c = 1; c <= PET_GAME_COLS; c++) {
+      const same =
+        c < PET_GAME_COLS &&
+        petGameBoard[r][c] === petGameBoard[r][c - 1];
+      if (!same) {
+        const runLength = c - runStart;
+        if (runLength >= 3) {
+          for (let k = runStart; k < c; k++) {
+            matched[r][k] = true;
+          }
+        }
+        runStart = c;
+      }
+    }
+  }
+
+  // вертикальные
+  for (let c = 0; c < PET_GAME_COLS; c++) {
+    let runStart = 0;
+    for (let r = 1; r <= PET_GAME_ROWS; r++) {
+      const same =
+        r < PET_GAME_ROWS &&
+        petGameBoard[r][c] === petGameBoard[r - 1][c];
+      if (!same) {
+        const runLength = r - runStart;
+        if (runLength >= 3) {
+          for (let k = runStart; k < r; k++) {
+            matched[k][c] = true;
+          }
+        }
+        runStart = r;
+      }
+    }
+  }
+
+  const result = [];
+  for (let r = 0; r < PET_GAME_ROWS; r++) {
+    for (let c = 0; c < PET_GAME_COLS; c++) {
+      if (matched[r][c]) result.push({ row: r, col: c });
+    }
+  }
+  return result;
+}
+
+function applyMatches(matches) {
+  if (!matches.length) return 0;
+  let count = 0;
+
+  // очищаем
+  matches.forEach(cell => {
+    const { row, col } = cell;
+    if (petGameBoard[row][col] !== null) {
+      petGameBoard[row][col] = null;
+      count++;
+    }
+  });
+
+  // гравитация по колонкам
+  for (let c = 0; c < PET_GAME_COLS; c++) {
+    const colVals = [];
+    for (let r = PET_GAME_ROWS - 1; r >= 0; r--) {
+      const v = petGameBoard[r][c];
+      if (v !== null && v !== undefined) colVals.push(v);
+    }
+    let r = PET_GAME_ROWS - 1;
+    colVals.forEach(v => {
+      petGameBoard[r][c] = v;
+      r--;
+    });
+    while (r >= 0) {
+      petGameBoard[r][c] = randomGem();
+      r--;
+    }
+  }
+
+  // очки — 10 за камень
+  petGameScore += count * 10;
+  if (petGameScoreEl) {
+    petGameScoreEl.textContent = 'Очки: ' + petGameScore;
+  }
+
+  return count;
+}
+
+function resolveBoardCascade() {
+  let totalCleared = 0;
+  while (true) {
+    const matches = findMatches();
+    if (!matches.length) break;
+    const cleared = applyMatches(matches);
+    totalCleared += cleared;
+  }
+  renderPetGameBoard();
+  return totalCleared;
+}
+
+function handlePetGameTileClick(row, col) {
+  if (!petGameIsRunning) return;
+
+  const clicked = { row, col };
+  if (!petGameSelected) {
+    petGameSelected = clicked;
+    renderPetGameBoard();
+    return;
+  }
+
+  // клик по той же — отмена
+  if (petGameSelected.row === row && petGameSelected.col === col) {
+    petGameSelected = null;
+    renderPetGameBoard();
+    return;
+  }
+
+  // если соседняя — пробуем свап
+  if (areAdjacent(petGameSelected, clicked)) {
+    swapGems(petGameSelected, clicked);
+    const matches = findMatches();
+    if (!matches.length) {
+      // нет матчей — откатываем
+      swapGems(petGameSelected, clicked);
+      petGameSelected = null;
+      renderPetGameBoard();
+      return;
+    }
+    // есть матчи — запускаем каскад
+    petGameSelected = null;
+    resolveBoardCascade();
+    vibrate(30);
+  } else {
+    // не сосед — просто выбираем новую
+    petGameSelected = clicked;
+    renderPetGameBoard();
+  }
+}
+
+if (petGameGridEl) {
+  petGameGridEl.addEventListener('click', (e) => {
+    const tile = e.target.closest('.pet-game-tile');
+    if (!tile) return;
+    const r = parseInt(tile.dataset.row, 10);
+    const c = parseInt(tile.dataset.col, 10);
+    if (isNaN(r) || isNaN(c)) return;
+    handlePetGameTileClick(r, c);
+  });
+}
+
+function updatePetGameTimerView() {
+  if (!petGameTimerEl) return;
+  petGameTimerEl.textContent = 'Время: ' + petGameTimeLeft + ' c';
+}
+
+function finishPetGame(fromTimer) {
+  if (!petGameIsRunning) return;
+  petGameIsRunning = false;
+
+  if (petGameTimerId) {
+    clearInterval(petGameTimerId);
+    petGameTimerId = null;
+  }
+
+  // считаем награды
+  let xpGain = 0;
+  if (petGameScore > 0) {
+    xpGain = Math.max(1, Math.floor(petGameScore / 40)); // каждые ~40 очков ≈ 1 XP
+  }
+
+  if (xpGain > 0 && petData && petData.name) {
+    petData.xp     = (petData.xp || 0) + xpGain;
+    petData.mood   = Math.min(100, petData.mood + Math.min(20, xpGain * 3));
+    petData.energy = Math.max(0,  petData.energy - Math.min(25, 6 + xpGain));
+    petData.hunger = Math.max(0,  (petData.hunger || 0) - Math.min(20, 5 + xpGain));
+
+    const info = calcPetLevelFromXp(petData.xp || 0);
+    petData.level = info.level;
+    petData.lastUpdateAt = Date.now();
+
+    savePet();
+    updatePetUI();
+  }
+
+  if (petGameNoteEl) {
+    if (petGameScore <= 0) {
+      petGameNoteEl.textContent = 'В этот раз без комбинаций. Попробуй ещё, Fluffie верит в тебя 🙂';
+    } else {
+      petGameNoteEl.textContent =
+        `Раунд закончен: ${petGameScore} очков, +${xpGain} XP для Fluffie 🧿`;
+    }
+  }
+
+  vibrate(60);
+}
+
+function openPetGame() {
+  if (!petData || !petData.name) {
+    if (petNoteEl) {
+      petNoteEl.textContent = 'Сначала создай Fluffie, потом можно играть с ним 🙂';
+    }
+    return;
+  }
+
+  if (!petGameOverlay) return;
+
+  petGameScore     = 0;
+  petGameTimeLeft  = PET_GAME_DURATION;
+  petGameSelected  = null;
+  petGameIsRunning = true;
+
+  initPetGameBoard();
+  renderPetGameBoard();
+
+  if (petGameScoreEl) {
+    petGameScoreEl.textContent = 'Очки: 0';
+  }
+  updatePetGameTimerView();
+
+  petGameOverlay.style.display = 'flex';
+  vibrate(30);
+
+  if (petGameNoteEl) {
+    petGameNoteEl.textContent =
+      'Меняй местами соседние камни, чтобы собирать 3+ за 60 секунд ✨';
+  }
+
+  if (petGameTimerId) clearInterval(petGameTimerId);
+  petGameTimerId = setInterval(() => {
+    if (!petGameIsRunning) return;
+    petGameTimeLeft -= 1;
+    if (petGameTimeLeft <= 0) {
+      petGameTimeLeft = 0;
+      updatePetGameTimerView();
+      finishPetGame(true);
+      return;
+    }
+    updatePetGameTimerView();
+  }, 1000);
+}
+
+function closePetGame() {
+  if (petGameOverlay) petGameOverlay.style.display = 'none';
+  if (petGameIsRunning) {
+    // при принудительном выходе тоже завершаем, но без доп. бонусов
+    finishPetGame(false);
+  }
+}
+
+if (petGameBackBtn) {
+  petGameBackBtn.addEventListener('click', () => {
+    closePetGame();
+  });
+}
 
  // === INIT ===
 loadBalance();
