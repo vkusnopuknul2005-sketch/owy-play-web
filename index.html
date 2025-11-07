@@ -1897,15 +1897,16 @@ const doubleHistoryEl   = document.getElementById('double-history');
 
   // === PET / FLUFFIE ===
 
-  let petData = {
-    name: '',
-    gender: 'male', // male | female
-    color: 'purple', // purple | green | black
-    mood: 80,   // 0..100
-    energy: 80, // 0..100
-    level: 1,
-    createdAt: null
-  };
+ let petData = {
+  name: '',
+  gender: 'male', // male | female
+  color: 'purple', // purple | green | black
+  mood: 80,   // 0..100
+  energy: 80, // 0..100
+  level: 1,
+  createdAt: null,
+  lastUpdateAt: null
+};
 
   function loadPet() {
     try {
@@ -1916,6 +1917,43 @@ const doubleHistoryEl   = document.getElementById('double-history');
     } catch (e) {}
     updatePetUI();
   }
+
+function getPetBonus() {
+  if (!petData.name) return 0;
+
+  const mood = petData.mood || 0;
+
+  if (mood >= 95) return 0.05;  // +5%
+  if (mood >= 80) return 0.025; // +2.5%
+  if (mood >= 50) return 0.01;  // +1%
+  return 0;
+}
+
+function applyPetDecay() {
+  if (!petData.name || !petData.lastUpdateAt) return;
+
+  const now = Date.now();
+  const diffMs = now - petData.lastUpdateAt;
+
+  // сколько минут прошло
+  const diffMinutes = diffMs / 60000;
+
+  if (diffMinutes < 1) return; // меньше минуты — не трогаем
+
+  // Настройки "старения"
+  const moodPerHour   = 6;   // -6 настроения за час
+  const energyPerHour = 4;   // -4 энергии за час
+
+  const moodDelta   = (moodPerHour   / 60) * diffMinutes;
+  const energyDelta = (energyPerHour / 60) * diffMinutes;
+
+  petData.mood   = Math.max(0, petData.mood   - moodDelta);
+  petData.energy = Math.max(0, petData.energy - energyDelta);
+
+  petData.lastUpdateAt = now;
+  savePet();
+  updatePetUI();
+}
 
   function savePet() {
     try {
@@ -2025,7 +2063,9 @@ const doubleHistoryEl   = document.getElementById('double-history');
       petData.mood = 85;
       petData.energy = 85;
       petData.level = 1;
+      const now = Date.now();
       petData.createdAt = Date.now();
+      petData.lastUpdateAt = now;
 
       savePet();
       updatePetUI();
@@ -2052,6 +2092,9 @@ const doubleHistoryEl   = document.getElementById('double-history');
         petData.mood   = Math.max(0,  petData.mood - 5);
       }
 
+      // обновляем "последнее взаимодействие"
+      petData.lastUpdateAt = Date.now();
+
       // анимация Fluffie
       if (petImageEl) {
         petImageEl.classList.remove('pet-bounce');
@@ -2070,14 +2113,15 @@ const doubleHistoryEl   = document.getElementById('double-history');
   if (petResetBtn) {
     petResetBtn.addEventListener('click', () => {
       petData = {
-        name: '',
-        gender: 'male',
-        color: 'purple',
-        mood: 80,
-        energy: 80,
-        level: 1,
-        createdAt: null
-      };
+  name: '',
+  gender: 'male',
+  color: 'purple',
+  mood: 80,
+  energy: 80,
+  level: 1,
+  createdAt: null,
+  lastUpdateAt: null
+};
       savePet();
       updatePetUI();
       if (petNoteEl) {
@@ -2402,7 +2446,7 @@ let doubleWheelInited = false;
 
       syncDoubleWheel();
 
-     if (t >= 1) {
+   if (t >= 1) {
   doublePhase        = 'waiting';
   doublePhaseElapsed = 0;
 
@@ -2411,12 +2455,12 @@ let doubleWheelInited = false;
   if (doubleHistory.length > 50) doubleHistory.shift();
   updateDoubleHistoryView();
 
-  let totalWin = 0;
+  let baseWin = 0;
   ['blue','green','orange'].forEach(color => {
     const bet = doubleBets[color];
     if (!bet) return;
     if (color === doubleResultColor) {
-      totalWin += Math.floor(bet * DOUBLE_MULTIS[color]);
+      baseWin += Math.floor(bet * DOUBLE_MULTIS[color]);
     }
   });
 
@@ -2432,13 +2476,23 @@ let doubleWheelInited = false;
       ? 'оранжевый'
       : (doubleResultColor === 'blue' ? 'синий' : 'зелёный');
 
-  if (totalWin > 0) {
+  if (baseWin > 0) {
+    const petBonus   = getPetBonus();
+    const bonusWin   = Math.floor(baseWin * petBonus);
+    const totalWin   = baseWin + bonusWin;
+
     demoBalance += totalWin;
     saveBalance();
     updateBalanceView();
+
     if (doubleStatusEl) {
-      doubleStatusEl.textContent =
-        `Выпал ${colorName} x${multi}. Ты выиграл +${totalWin} OWY 🎉`;
+      if (petBonus > 0) {
+        doubleStatusEl.textContent =
+          `Выпал ${colorName} x${multi}. Ты выиграл +${totalWin} OWY (включая +${bonusWin} от Fluffie 🧿)`;
+      } else {
+        doubleStatusEl.textContent =
+          `Выпал ${colorName} x${multi}. Ты выиграл +${totalWin} OWY 🎉`;
+      }
     }
   } else if (doubleHasBet) {
     if (doubleStatusEl) {
@@ -2784,28 +2838,37 @@ function updateRushTimer() {
   }
 
   function cashoutRush() {
-    if (!rushHasActiveBet || hasCashedOut || rushPhase !== 'running') return;
+  if (!rushHasActiveBet || hasCashedOut || rushPhase !== 'running') return;
 
-    hasCashedOut = true;
-    cashedOutAt  = currentMulti;
-    if (rushCashoutBtn) rushCashoutBtn.disabled = true;
+  hasCashedOut = true;
+  cashedOutAt  = currentMulti;
+  if (rushCashoutBtn) rushCashoutBtn.disabled = true;
 
-    const winAmount = Math.floor(rushBet * cashedOutAt);
-    demoBalance += winAmount;
-    saveBalance();
-    updateBalanceView();
+  const baseWin   = Math.floor(rushBet * cashedOutAt);
+  const petBonus  = getPetBonus();
+  const bonusWin  = Math.floor(baseWin * petBonus);
+  const winAmount = baseWin + bonusWin;
 
-    if (cashedOutAt > stats.bestMulti) stats.bestMulti = cashedOutAt;
-    stats.xp += 8;
-    saveStats();
-    updateStatsView();
+  demoBalance += winAmount;
+  saveBalance();
+  updateBalanceView();
 
-    if (rushStatusEl) {
+  if (cashedOutAt > stats.bestMulti) stats.bestMulti = cashedOutAt;
+  stats.xp += 8;
+  saveStats();
+  updateStatsView();
+
+  if (rushStatusEl) {
+    if (petBonus > 0) {
       rushStatusEl.textContent =
-        `✅ Забрал на ${formatMulti(cashedOutAt)}! Раунд ещё идёт до краша...`;
+        `✅ Забрал на ${formatMulti(cashedOutAt)}! +${winAmount} OWY (включая +${bonusWin} от Fluffie 🧿)`;
+    } else {
+      rushStatusEl.textContent =
+        `✅ Забрал на ${formatMulti(cashedOutAt)}! Выигрыш +${winAmount} OWY.`;
     }
-    vibrate(70);
   }
+  vibrate(70);
+}
 
   function openRush()  { if (rushOverlay) rushOverlay.style.display = 'flex'; }
   function closeRush() { if (rushOverlay) rushOverlay.style.display = 'none'; }
@@ -3042,10 +3105,14 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
       slots[finalCol].classList.add("active");
     }
 
-    const winAmount = Math.floor(bet * multiplier);
-    demoBalance += winAmount;
-    saveBalance();
-    updateBalanceView();
+    const baseWin   = Math.floor(bet * multiplier);
+const petBonus  = getPetBonus();
+const bonusWin  = Math.floor(baseWin * petBonus);
+const winAmount = baseWin + bonusWin;
+
+demoBalance += winAmount;
+saveBalance();
+updateBalanceView();
 
     plinkoHistory.push(multiplier);
     updatePlinkoHistory();
@@ -3066,9 +3133,14 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
       if (plinkoRiskBtns && plinkoRiskBtns.length) {
         plinkoRiskBtns.forEach(btn => btn.disabled = false);
       }
-      if (plinkoStatusEl) {
-        plinkoStatusEl.textContent = "Раунд завершён. Запускай ещё 😉";
-      }
+     if (plinkoStatusEl) {
+  if (petBonus > 0 && winAmount > 0) {
+    plinkoStatusEl.textContent =
+      `Раунд завершён. Ты получил +${winAmount} OWY (включая +${bonusWin} от Fluffie 🧿)`;
+  } else {
+    plinkoStatusEl.textContent = "Раунд завершён. Запускай ещё 😉";
+  }
+}
     }
   }, approxTotalTime);
 }
@@ -3190,6 +3262,7 @@ initProfile();
 updateBalanceView();
 updateStatsView();
 loadPet();
+applyPetDecay();
 
 for (let i = 0; i < 15; i++) {
   crashHistory.push(generateCrashMultiplier());
@@ -3209,6 +3282,7 @@ startNewDoubleRound();
 let lastTs = performance.now();
 startNewRushRound();
 
+// игровой цикл Rush + Double
 setInterval(() => {
   const now  = performance.now();
   const dtMs = now - lastTs;
@@ -3219,6 +3293,11 @@ setInterval(() => {
   tickRush(dt);
   tickDouble(dt);
 }, 16);
+
+// деградация настроения/энергии Fluffie раз в 3 минуты
+setInterval(() => {
+  applyPetDecay();
+}, 180000);
 
 </script>
 </body>
