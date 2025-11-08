@@ -1939,7 +1939,7 @@
         </div>
       </div>
 
-           <div class="card big-card" id="mini-open-taptap">
+      <div class="card big-card" id="mini-open-taptap">
         <div class="card-title">Tap-tap</div>
         <div class="card-sub">
           Быстрые тап-челленджи для энергии Fluffie.
@@ -1959,7 +1959,12 @@
         </div>
       </div>
 
-<!-- PET SHOP OVERLAY -->
+    </div> <!-- /cards -->
+  </div>   <!-- /overlay-inner -->
+</div>     <!-- /mini-overlay -->
+
+
+<!-- PET SHOP OVERLAY (УЖЕ ОТДЕЛЬНО, НЕ ВНУТРИ mini-overlay) -->
 <div id="pet-shop-overlay" class="overlay">
   <div class="match3-card pet-shop-card">
     <div class="match3-header">
@@ -1968,50 +1973,7 @@
     </div>
 
     <div class="pet-shop-items">
-      <div class="pet-shop-item">
-        <div class="pet-shop-item-main">
-          <div class="pet-shop-item-name">Печенька</div>
-          <div class="pet-shop-item-desc">
-            +15 сытость • +5 настроение • +3 XP питомцу
-          </div>
-        </div>
-        <div class="pet-shop-item-side">
-          <div class="pet-shop-price">20 OWY</div>
-          <button class="btn btn-primary pet-shop-buy" data-item="cookie">
-            Купить
-          </button>
-        </div>
-      </div>
-
-      <div class="pet-shop-item">
-        <div class="pet-shop-item-main">
-          <div class="pet-shop-item-name">Энергетик</div>
-          <div class="pet-shop-item-desc">
-            +25 энергия • −5 сытость • +4 XP питомцу
-          </div>
-        </div>
-        <div class="pet-shop-item-side">
-          <div class="pet-shop-price">35 OWY</div>
-          <button class="btn btn-primary pet-shop-buy" data-item="energy">
-            Купить
-          </button>
-        </div>
-      </div>
-
-      <div class="pet-shop-item">
-        <div class="pet-shop-item-main">
-          <div class="pet-shop-item-name">Подарок 🎁</div>
-          <div class="pet-shop-item-desc">
-            +20 настроение • +8 XP питомцу
-          </div>
-        </div>
-        <div class="pet-shop-item-side">
-          <div class="pet-shop-price">50 OWY</div>
-          <button class="btn btn-primary pet-shop-buy" data-item="gift">
-            Купить
-          </button>
-        </div>
-      </div>
+      ...
     </div>
 
     <div class="pet-shop-note" id="pet-shop-note">
@@ -3225,52 +3187,53 @@ if (petActionBtns && petActionBtns.length) {
     vibrate(60);
   }
 
-  // сброс питомца
-  if (petResetBtn) {
-    petResetBtn.addEventListener('click', () => {
-      petData = {
-        name: '',
-        gender: 'male',
-        color: 'purple',
-        mood: 80,
-        energy: 80,
-        hunger: 70,
-        xp: 0,
-        level: 1,
-        createdAt: null,
-        lastUpdateAt: null
-      };
+// сброс питомца
+if (petResetBtn) {
+  petResetBtn.addEventListener('click', () => {
+    petData = {
+      name: '',
+      gender: 'male',
+      color: 'purple',
+      mood: 80,
+      energy: 80,
+      hunger: 70,
+      xp: 0,
+      level: 1,
+      createdAt: null,
+      lastUpdateAt: null
+    };
 
-  // магазин Fluffie
-  if (petShopOpenBtn) {
-    petShopOpenBtn.addEventListener('click', () => {
-      openPetShop();
-      vibrate(30);
-    });
-  }
+    savePet();
+    updatePetUI();
+    if (petNoteEl) {
+      petNoteEl.textContent = 'Питомец сброшен. Можно создать нового Fluffie.';
+    }
+  });
+}
 
-  if (petShopCloseBtn) {
-    petShopCloseBtn.addEventListener('click', () => {
-      closePetShop();
-      vibrate(20);
-    });
-  }
+// магазин Fluffie
+if (petShopOpenBtn) {
+  petShopOpenBtn.addEventListener('click', () => {
+    openPetShop();
+    vibrate(30);
+  });
+}
 
-  if (petShopBuyBtns && petShopBuyBtns.length) {
-    petShopBuyBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const item = btn.dataset.item;
-        handlePetShopBuy(item);
-      });
+if (petShopCloseBtn) {
+  petShopCloseBtn.addEventListener('click', () => {
+    closePetShop();
+    vibrate(20);
+  });
+}
+
+if (petShopBuyBtns && petShopBuyBtns.length) {
+  petShopBuyBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.dataset.item;
+      handlePetShopBuy(item);
     });
-  }
-      savePet();
-      updatePetUI();
-      if (petNoteEl) {
-        petNoteEl.textContent = 'Питомец сброшен. Можно создать нового Fluffie.';
-      }
-    });
-  }
+  });
+}
 
   // === NAV ===
     function setActiveTab(tab) {
