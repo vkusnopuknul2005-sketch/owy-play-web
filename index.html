@@ -3990,6 +3990,15 @@ function updateHiloButtonsOdds(currentRank) {
   }
 }
 
+// шаговый множитель для конкретного выбора (high / low)
+// опирается на те же расчёты, что и кнопки
+function getHiloStepMulti(prediction, card) {
+  const rank = card && card.rank ? card.rank : null;
+  const { low, high } = calcHiloStepMultipliers(rank || '7'); // дефолт — середина
+
+  return prediction === 'high' ? high : low;
+}
+
 // === UI helper'ы ===
 
 function updateHiloRoundLabel() {
@@ -4250,49 +4259,6 @@ function hiloCashout() {
 if (hiloLowBtn)  hiloLowBtn.addEventListener('click', () => playHilo('low'));
 if (hiloHighBtn) hiloHighBtn.addEventListener('click', () => playHilo('high'));
 if (hiloCashoutBtn) hiloCashoutBtn.addEventListener('click', hiloCashout);
-
-
-// возвращает мульты для "ниже" и "выше" для текущей карты
-function calcHiloStepMultipliers(rank) {
-  const idx = HILO_RANKS.indexOf(rank);
-  if (idx === -1) {
-    return { low: 1.0, high: 1.0 };
-  }
-
-  const total = HILO_RANKS.length; // 13
-
-  // вероятность, что следующая карта будет <= текущей
-  const pLow  = (idx + 1) / total;
-  // вероятность, что >= текущей
-  const pHigh = (total - idx) / total;
-
-  // небольшой «хаус-эдж» как в демо — 96%
-  const edge = 0.96;
-
-  const lowMulti  = Math.max(1.01, edge / pLow);
-  const highMulti = Math.max(1.01, edge / pHigh);
-
-  return { low: lowMulti, high: highMulti };
-}
-
-// обновляет текст на кнопках и подпись
-function updateHiloButtonsOdds(currentRank) {
-  if (!hiloLowBtn || !hiloHighBtn) return;
-
-  const { low, high } = calcHiloStepMultipliers(currentRank);
-  const lowStr  = low.toFixed(2);
-  const highStr = high.toFixed(2);
-
-  hiloLowBtn.innerHTML  =
-    `Ниже / равно<span class="hilo-odd">~x${lowStr}</span>`;
-  hiloHighBtn.innerHTML =
-    `Выше / равно<span class="hilo-odd">~x${highStr}</span>`;
-
-  if (hiloOddsLabelEl) {
-    hiloOddsLabelEl.textContent =
-      `Текущий шаг: ~x${Math.max(low, high).toFixed(2)} при правильном ответе.`;
-  }
-}
 
 // === END HILO ===
 
