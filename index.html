@@ -2289,15 +2289,7 @@
   </div>
 </div>
 
-  <script>
-  let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-  let tgUser = null;
-  if (tg) {
-    tg.expand();
-    tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-  }
-
-  <!-- HILO OVERLAY -->
+<!-- HILO OVERLAY -->
   <div id="hilo-overlay" class="overlay">
     <div class="overlay-inner">
       <div class="overlay-header">
@@ -2336,6 +2328,14 @@
       </div>
     </div>
   </div>
+
+  <script>
+  let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  let tgUser = null;
+  if (tg) {
+    tg.expand();
+    tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+  }
 
   // === DOM ===
   const balanceEl        = document.querySelector('.balance-value');
