@@ -1296,6 +1296,102 @@
       min-height: 14px;
     }
 
+    /* HILO BANNER */
+
+    .hilo-banner {
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+      background: radial-gradient(circle at top, #181f2c, #05060a 70%);
+      border: 1px solid rgba(70, 162, 255, 0.45);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .hilo-banner:active {
+      transform: scale(0.98);
+      box-shadow: 0 8px 20px rgba(70,162,255,0.5);
+      border-color: rgba(70,162,255,0.8);
+    }
+
+    .hilo-banner-left {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hilo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #dbe7ff;
+      background: rgba(70,162,255,0.1);
+      border: 1px solid rgba(70,162,255,0.4);
+      margin-bottom: 6px;
+    }
+
+    .hilo-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .hilo-subtitle {
+      font-size: 12px;
+      color: #9ea2b0;
+      max-width: 210px;
+    }
+
+    .hilo-banner-right {
+      position: relative;
+      width: 80px;
+      height: 70px;
+      flex-shrink: 0;
+    }
+
+    .hilo-card-mini {
+      position: absolute;
+      width: 60px;
+      height: 80px;
+      border-radius: 12px;
+      background: #f5f5f5;
+      color: #1b1d22;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.9);
+    }
+
+    .hilo-card-mini.prev {
+      left: 0;
+      top: 8px;
+      transform: rotate(-8deg);
+      background: #fdf4f4;
+      color: #d64545;
+    }
+
+    .hilo-card-mini.next {
+      right: 0;
+      top: -2px;
+      transform: rotate(10deg);
+      background: linear-gradient(135deg,#142334,#3354a8);
+      color: #f5f5f5;
+    }
+
+    .hilo-card-mini.next span {
+      opacity: 0.85;
+    }
+
     /* RUSH BANNER */
 
     .rush-banner {
@@ -1591,6 +1687,69 @@
   color: #ffddb3;
   background: rgba(255,164,81,0.18);
 }
+
+    /* HILO */
+
+    .hilo-sub {
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-bottom: 6px;
+    }
+
+    .hilo-round-label {
+      font-size: 13px;
+      font-weight: 500;
+      margin: 6px 0 4px;
+      color: #cfd2de;
+    }
+
+    .hilo-card-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      margin: 10px 0 6px;
+    }
+
+    .hilo-card {
+      width: 90px;
+      height: 130px;
+      border-radius: 14px;
+      background: #f5f5f5;
+      color: #1b1d22;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .hilo-card-back {
+      background: linear-gradient(135deg,#142334,#3354a8);
+      color: #f5f5f5;
+    }
+
+    .hilo-buttons {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0 4px;
+    }
+
+    .hilo-buttons .btn {
+      flex: 1;
+      font-size: 13px;
+      text-align: center;
+      padding-inline: 10px;
+    }
+
+    .hilo-status {
+      font-size: 12px;
+      color: #9ea2b0;
+      margin-top: 6px;
+      min-height: 36px;
+    }
+
   </style>
 </head>
 <body>
@@ -1643,6 +1802,22 @@
 <div class="rush-banner" id="plinko-open">
   <img src="plinko-banner.png" alt="Plinko banner">
 </div>
+
+        <!-- HiLo banner -->
+        <div class="hilo-banner" id="hilo-open">
+          <div class="hilo-banner-left">
+            <div class="hilo-badge">новая игра</div>
+            <div class="hilo-title">HiLo карты</div>
+            <div class="hilo-subtitle">
+              Выше или ниже? Мгновенные раунды, коэффициенты и бонус от Fluffie.
+            </div>
+          </div>
+          <div class="hilo-banner-right">
+            <div class="hilo-card-mini prev">7♦</div>
+            <div class="hilo-card-mini next"><span>?</span></div>
+          </div>
+        </div>
+
     <!-- /NEW -->
 
         <div class="hint-text bottom-hint" id="hint-text">
@@ -2122,6 +2297,46 @@
     tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   }
 
+  <!-- HILO OVERLAY -->
+  <div id="hilo-overlay" class="overlay">
+    <div class="overlay-inner">
+      <div class="overlay-header">
+        <button class="btn btn-ghost" id="hilo-back">← Назад</button>
+        <div class="overlay-title">HiLo</div>
+      </div>
+
+      <div class="hilo-sub">
+        Сделай прогноз — следующая карта будет выше или ниже текущей по номиналу.
+        Каждый клик — отдельный раунд.
+      </div>
+
+      <div class="hilo-round-label" id="hilo-round-label">Раунд 1</div>
+
+      <div class="hilo-card-wrap">
+        <div class="hilo-card" id="hilo-current-card">7♦</div>
+        <div class="hilo-card hilo-card-back" id="hilo-next-card">❔</div>
+      </div>
+
+      <div class="hilo-sub" id="hilo-odds-label">
+        Шансы уже учтены в коэффициентах.
+      </div>
+
+      <div class="rush-input">
+        <label for="hilo-bet">Ставка, OWY</label>
+        <input type="number" id="hilo-bet" value="10" min="10">
+      </div>
+
+      <div class="hilo-buttons">
+        <button class="btn btn-primary" id="hilo-low-btn">Ниже / равно</button>
+        <button class="btn btn-primary" id="hilo-high-btn">Выше / равно</button>
+      </div>
+
+      <div class="hilo-status" id="hilo-status">
+        Ставь и жми кнопку, чтобы сыграть.
+      </div>
+    </div>
+  </div>
+
   // === DOM ===
   const balanceEl        = document.querySelector('.balance-value');
   const splashEl         = document.getElementById('splash');
@@ -2233,6 +2448,19 @@ const doubleBtnOrange   = document.getElementById('double-btn-orange');
 
 const doubleBetInput    = document.getElementById('double-bet');
 const doubleHistoryEl   = document.getElementById('double-history');
+
+  // === HILO DOM ===
+  const hiloOverlay        = document.getElementById('hilo-overlay');
+  const hiloOpenBtn        = document.getElementById('hilo-open');
+  const hiloBackBtn        = document.getElementById('hilo-back');
+  const hiloCurrentCardEl  = document.getElementById('hilo-current-card');
+  const hiloNextCardEl     = document.getElementById('hilo-next-card');
+  const hiloBetInput       = document.getElementById('hilo-bet');
+  const hiloLowBtn         = document.getElementById('hilo-low-btn');
+  const hiloHighBtn        = document.getElementById('hilo-high-btn');
+  const hiloStatusEl       = document.getElementById('hilo-status');
+  const hiloOddsLabelEl    = document.getElementById('hilo-odds-label');
+  const hiloRoundLabelEl   = document.getElementById('hilo-round-label');
 
 // === MATCH-3 (Fluffie) ===
 
@@ -2667,7 +2895,7 @@ const miniOpenTapTapBtn = document.getElementById('mini-open-taptap');
     try { localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profileData)); } catch (e) {}
   }
 
-  let stats = { rushPlays: 0, plinkoPlays: 0, bestMulti: 1.0, xp: 0 };
+  let stats = { rushPlays: 0, plinkoPlays: 0, hiloPlays: 0, bestMulti: 1.0, xp: 0 };
 
   function loadStats() {
     try {
@@ -2699,8 +2927,8 @@ const miniOpenTapTapBtn = document.getElementById('mini-open-taptap');
 
   function updateStatsView() {
     if (statsRowEl) {
-      statsRowEl.textContent =
-        `Rush: ${stats.rushPlays} игр • Plinko: ${stats.plinkoPlays} игр • Лучший множитель: x${stats.bestMulti.toFixed(2)}`;
+          statsRowEl.textContent =
+        `Rush: ${stats.rushPlays} игр • Plinko: ${stats.plinkoPlays} игр • HiLo: ${stats.hiloPlays || 0} игр • Лучший множитель: x${stats.bestMulti.toFixed(2)}`;
     }
 
     const rank = calcRank(stats.xp);
@@ -3633,6 +3861,196 @@ let doubleWheelInited = false;
       }
     }
   }
+
+  const HILO_RANKS = [2,3,4,5,6,7,8,9,10,11,12,13,14]; // 11-J,12-Q,13-K,14-A
+  const HILO_SUITS = ['♠','♥','♦','♣'];
+  const HILO_RANK_NAMES = {
+    11: 'J',
+    12: 'Q',
+    13: 'K',
+    14: 'A'
+  };
+
+  let hiloCurrentCard = null; // {rank, suit}
+  let hiloRound       = 1;
+  let hiloIsBusy      = false;
+  let hiloLowMulti    = 2.0;
+  let hiloHighMulti   = 2.0;
+
+  function hiloRandomCard() {
+    const rank = HILO_RANKS[Math.floor(Math.random()*HILO_RANKS.length)];
+    const suit = HILO_SUITS[Math.floor(Math.random()*HILO_SUITS.length)];
+    return { rank, suit };
+  }
+
+  function hiloCardLabel(card) {
+    if (!card) return '?';
+    const name = HILO_RANK_NAMES[card.rank] || String(card.rank);
+    return name + card.suit;
+  }
+
+  function hiloUpdateOdds() {
+    if (!hiloCurrentCard) return;
+
+    const rankIndex = HILO_RANKS.indexOf(hiloCurrentCard.rank); // 0..12
+    const ranksCount = HILO_RANKS.length;
+
+    const lower   = rankIndex;                     // сколько рангов ниже
+    const higher  = ranksCount - 1 - rankIndex;    // сколько выше
+    const same    = 1;
+
+    const pLowOrSame  = (lower + same)  / ranksCount;
+    const pHighOrSame = (higher + same) / ranksCount;
+
+    // небольшой "хаус-эдж" 4%
+    const edge = 0.96;
+
+    hiloLowMulti  = +(edge / pLowOrSame).toFixed(2);
+    hiloHighMulti = +(edge / pHighOrSame).toFixed(2);
+
+    if (hiloLowBtn) {
+      hiloLowBtn.textContent = `Ниже / равно x${hiloLowMulti.toFixed(2)}`;
+    }
+    if (hiloHighBtn) {
+      hiloHighBtn.textContent = `Выше / равно x${hiloHighMulti.toFixed(2)}`;
+    }
+
+    if (hiloOddsLabelEl) {
+      hiloOddsLabelEl.textContent =
+        `Текущая карта: ${hiloCardLabel(hiloCurrentCard)}. Шансы учтены в коэффициентах.`;
+    }
+  }
+
+  function updateHiloUI() {
+    if (!hiloCurrentCard) {
+      hiloCurrentCard = hiloRandomCard();
+    }
+
+    if (hiloCurrentCardEl) {
+      hiloCurrentCardEl.textContent = hiloCardLabel(hiloCurrentCard);
+    }
+    if (hiloNextCardEl) {
+      hiloNextCardEl.textContent = '❔';
+    }
+    if (hiloRoundLabelEl) {
+      hiloRoundLabelEl.textContent = `Раунд ${hiloRound}`;
+    }
+    hiloUpdateOdds();
+  }
+
+  function openHilo() {
+    if (!hiloOverlay) return;
+    hiloOverlay.style.display = 'flex';
+    if (!hiloCurrentCard) {
+      hiloCurrentCard = hiloRandomCard();
+    }
+    hiloRound  = 1;
+    hiloIsBusy = false;
+    updateHiloUI();
+    if (hiloStatusEl) {
+      hiloStatusEl.textContent = 'Сделай ставку и выбери — выше или ниже следующая карта.';
+    }
+  }
+
+  function closeHilo() {
+    if (!hiloOverlay) return;
+    hiloOverlay.style.display = 'none';
+  }
+
+  function playHilo(direction) {
+    if (hiloIsBusy) return;
+    if (!hiloCurrentCard) hiloCurrentCard = hiloRandomCard();
+
+    const betVal = parseInt(hiloBetInput.value, 10);
+    if (isNaN(betVal) || betVal < 10) {
+      if (hiloStatusEl) {
+        hiloStatusEl.textContent = 'Минимальная ставка — 10 OWY 🤨';
+      }
+      return;
+    }
+    if (betVal > demoBalance) {
+      if (hiloStatusEl) {
+        hiloStatusEl.textContent = 'Недостаточно баланса для такой ставки 😔';
+      }
+      return;
+    }
+
+    let chosenMulti = direction === 'low' ? hiloLowMulti : hiloHighMulti;
+    if (!chosenMulti || chosenMulti <= 1) {
+      chosenMulti = 2.0;
+    }
+
+    demoBalance -= betVal;
+    saveBalance();
+    updateBalanceView();
+
+    const nextCard = hiloRandomCard();
+    const win = direction === 'low'
+      ? (nextCard.rank <= hiloCurrentCard.rank)
+      : (nextCard.rank >= hiloCurrentCard.rank);
+
+    // показываем новую карту
+    if (hiloNextCardEl) {
+      hiloNextCardEl.textContent = hiloCardLabel(nextCard);
+    }
+
+    stats.hiloPlays = (stats.hiloPlays || 0) + 1;
+
+    let baseWin = 0;
+    let bonusWin = 0;
+    let totalWin = 0;
+    if (win) {
+      baseWin = Math.floor(betVal * chosenMulti);
+      const petBonus = getPetBonus();
+      bonusWin = Math.floor(baseWin * petBonus);
+      totalWin = baseWin + bonusWin;
+
+      demoBalance += totalWin;
+      saveBalance();
+      updateBalanceView();
+
+      if (chosenMulti > stats.bestMulti) {
+        stats.bestMulti = chosenMulti;
+      }
+      stats.xp += 5;
+    } else {
+      stats.xp += 2;
+    }
+    saveStats();
+    updateStatsView();
+
+    if (hiloStatusEl) {
+      const dirText = direction === 'low' ? 'ниже или равно' : 'выше или равно';
+      if (win) {
+        if (bonusWin > 0) {
+          hiloStatusEl.textContent =
+            `Выпала карта ${hiloCardLabel(nextCard)} — это ${dirText} 👍 Выигрыш +${totalWin} OWY (включая +${bonusWin} от Fluffie 🧿).`;
+        } else {
+          hiloStatusEl.textContent =
+            `Выпала карта ${hiloCardLabel(nextCard)} — это ${dirText} 👍 Выигрыш +${totalWin} OWY.`;
+        }
+      } else {
+        hiloStatusEl.textContent =
+          `Выпала карта ${hiloCardLabel(nextCard)} — ставка не сыграла 💀`;
+      }
+    }
+
+    vibrate(40);
+    hiloIsBusy = true;
+
+    setTimeout(() => {
+      // переносим новую карту в "текущую" и идём в следующий раунд
+      hiloCurrentCard = nextCard;
+      hiloRound += 1;
+      hiloIsBusy = false;
+      updateHiloUI();
+    }, 900);
+  }
+
+  if (hiloOpenBtn)  hiloOpenBtn.addEventListener('click', openHilo);
+  if (hiloBackBtn)  hiloBackBtn.addEventListener('click', closeHilo);
+  if (hiloLowBtn)   hiloLowBtn.addEventListener('click', () => playHilo('low'));
+  if (hiloHighBtn)  hiloHighBtn.addEventListener('click', () => playHilo('high'));
     
   // === RUSH GLOBAL ENGINE ===
   const RUSH_PATH_MAX_MULTI = 10;
