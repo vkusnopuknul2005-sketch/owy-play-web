@@ -1312,6 +1312,13 @@
       overflow: hidden;
     }
 
+.hilo-odd {
+  font-size: 11px;
+  opacity: 0.8;
+  display: block;
+  margin-top: 2px;
+}
+
     .hilo-banner:active {
       transform: scale(0.98);
       box-shadow: 0 8px 20px rgba(70,162,255,0.5);
@@ -2455,6 +2462,26 @@ const doubleBtnOrange   = document.getElementById('double-btn-orange');
 
 const doubleBetInput    = document.getElementById('double-bet');
 const doubleHistoryEl   = document.getElementById('double-history');
+
+function handleHideKeyboard(e) {
+  const active = document.activeElement;
+  if (!active) return;
+
+  const tag = active.tagName;
+  const isInput =
+    tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+  if (!isInput) return;
+
+  // если тапнули по другому инпуту — не закрываем
+  if (e.target.closest('input, textarea, select')) return;
+
+  active.blur();
+}
+
+// глобально: любой тап по экрану вне инпутов скрывает клавиатуру
+document.addEventListener('touchstart', handleHideKeyboard, true);
+document.addEventListener('click', handleHideKeyboard, true);
 
 // === MATCH-3 (Fluffie) ===
 
@@ -3954,10 +3981,22 @@ function updateHiloCardsUI() {
   if (hiloCurrentCardEl) {
     if (hiloCurrentCard) {
       hiloCurrentCardEl.textContent = formatHiloCard(hiloCurrentCard);
+
+      // 🔥 вот здесь считаем и ставим коэффициенты на кнопки
+      updateHiloButtonsOdds(hiloCurrentCard.rank);
     } else {
       hiloCurrentCardEl.textContent = '—';
+
+      // если карты нет — возвращаем дефолтные тексты
+      if (hiloLowBtn)  hiloLowBtn.textContent  = 'Ниже / равно';
+      if (hiloHighBtn) hiloHighBtn.textContent = 'Выше / равно';
+      if (hiloOddsLabelEl) {
+        hiloOddsLabelEl.textContent =
+          'Шансы уже учтены в коэффициентах.';
+      }
     }
   }
+
   if (hiloNextCardEl) {
     hiloNextCardEl.textContent = '❔';
   }
@@ -4167,6 +4206,49 @@ function hiloCashout() {
 if (hiloLowBtn)  hiloLowBtn.addEventListener('click', () => playHilo('low'));
 if (hiloHighBtn) hiloHighBtn.addEventListener('click', () => playHilo('high'));
 if (hiloCashoutBtn) hiloCashoutBtn.addEventListener('click', hiloCashout);
+
+
+// возвращает мульты для "ниже" и "выше" для текущей карты
+function calcHiloStepMultipliers(rank) {
+  const idx = HILO_RANKS.indexOf(rank);
+  if (idx === -1) {
+    return { low: 1.0, high: 1.0 };
+  }
+
+  const total = HILO_RANKS.length; // 13
+
+  // вероятность, что следующая карта будет <= текущей
+  const pLow  = (idx + 1) / total;
+  // вероятность, что >= текущей
+  const pHigh = (total - idx) / total;
+
+  // небольшой «хаус-эдж» как в демо — 96%
+  const edge = 0.96;
+
+  const lowMulti  = Math.max(1.01, edge / pLow);
+  const highMulti = Math.max(1.01, edge / pHigh);
+
+  return { low: lowMulti, high: highMulti };
+}
+
+// обновляет текст на кнопках и подпись
+function updateHiloButtonsOdds(currentRank) {
+  if (!hiloLowBtn || !hiloHighBtn) return;
+
+  const { low, high } = calcHiloStepMultipliers(currentRank);
+  const lowStr  = low.toFixed(2);
+  const highStr = high.toFixed(2);
+
+  hiloLowBtn.innerHTML  =
+    `Ниже / равно<span class="hilo-odd">~x${lowStr}</span>`;
+  hiloHighBtn.innerHTML =
+    `Выше / равно<span class="hilo-odd">~x${highStr}</span>`;
+
+  if (hiloOddsLabelEl) {
+    hiloOddsLabelEl.textContent =
+      `Текущий шаг: ~x${Math.max(low, high).toFixed(2)} при правильном ответе.`;
+  }
+}
 
 // === END HILO ===
 
@@ -5194,6 +5276,8 @@ function closeDouble() {
 
 if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
 if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
+
+
 
 
  // === INIT ===
