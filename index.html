@@ -3925,8 +3925,14 @@ function drawHiloCard() {
 }
 
 function rankIndex(card) {
-  if (!card) return -1;
-  return HILO_RANKS.indexOf(card.rank);
+  // безопасный дефолт — середина колоды (7)
+  if (!card) return Math.floor(HILO_RANKS.length / 2);
+
+  const rank = typeof card === 'string' ? card : card.rank;
+  const idx = HILO_RANKS.indexOf(rank);
+
+  // если что-то странное — тоже середина
+  return idx === -1 ? Math.floor(HILO_RANKS.length / 2) : idx;
 }
 
 function formatHiloCard(card) {
@@ -4024,7 +4030,6 @@ function updateHiloCashoutBtnLabel() {
   hiloCashoutBtn.textContent = `Забрать +${totalWin} OWY`;
 }
 
-// полностью сбрасываем серию и сразу берём НОВУЮ карту
 function resetHiloRoundState() {
   hiloInRound     = false;
   hiloIsBusy      = false;
@@ -4032,16 +4037,24 @@ function resetHiloRoundState() {
   hiloBaseBet     = 0;
   hiloTotalMulti  = 1.0;
 
-  // новая колода + стартовая карта
-  buildHiloDeck();
+  // если вдруг колода пуста — пересобираем
+  if (!hiloDeck.length) {
+    buildHiloDeck();
+  }
+
+  // берём новую стартовую карту
   hiloCurrentCard = drawHiloCard();
-  hiloNextCard    = null;
+  hiloNextCard = null;
 
   updateHiloRoundLabel();
   updateHiloCardsUI();
-  updateHiloButtonsOdds(hiloCurrentCard.rank);
-  updateHiloCashoutBtnLabel();
 
+  // обновляем коэффициенты на кнопках под новую карту
+  if (hiloCurrentCard) {
+    updateHiloButtonsOdds(hiloCurrentCard.rank);
+  }
+
+  updateHiloCashoutBtnLabel();
   if (hiloCashoutBtn) hiloCashoutBtn.disabled = true;
 }
 
@@ -4071,7 +4084,7 @@ function playHilo(prediction) {
 
   let betVal;
 
-  // НОВАЯ серия: каждый раз списываем ставку
+  // === старт новой серии ===
   if (!hiloInRound) {
     betVal = parseInt(hiloBetInput.value, 10);
 
@@ -4111,17 +4124,19 @@ function playHilo(prediction) {
 
   // гарантируем, что есть текущая карта
   if (!hiloCurrentCard) {
+    if (!hiloDeck.length) buildHiloDeck();
     hiloCurrentCard = drawHiloCard();
     updateHiloCardsUI();
-    updateHiloButtonsOdds(hiloCurrentCard.rank);
   }
 
-  const { low, high } = calcHiloStepMultipliers(hiloCurrentCard.rank);
-  const stepMulti = prediction === 'high' ? high : low;
-
+  // считаем мультипликатор шага
+  const stepMulti = getHiloStepMulti(prediction, hiloCurrentCard);
   if (hiloOddsLabelEl) {
     hiloOddsLabelEl.textContent =
       `Текущий шаг: ~x${stepMulti.toFixed(2)} при правильном ответе.`;
+  }
+  if (hiloCurrentCard) {
+    updateHiloButtonsOdds(hiloCurrentCard.rank);
   }
 
   // тянем следующую карту
@@ -4135,20 +4150,20 @@ function playHilo(prediction) {
     }, 120);
   }
 
-  // считаем результат после "анимации"
+  // после короткой "анимации" считаем результат
   setTimeout(() => {
     const curIdx  = rankIndex(hiloCurrentCard);
     const nextIdx = rankIndex(hiloNextCard);
 
     let isWin;
     if (prediction === 'high') {
-      isWin = nextIdx >= curIdx;
+      isWin = nextIdx >= curIdx; // выше / равно
     } else {
-      isWin = nextIdx <= curIdx;
+      isWin = nextIdx <= curIdx; // ниже / равно
     }
 
     if (isWin) {
-      // победа — продолжаем серию
+      // серия продолжается
       hiloTotalMulti *= stepMulti;
       hiloRound += 1;
 
@@ -4162,8 +4177,15 @@ function playHilo(prediction) {
         hiloCashoutBtn.disabled = false;
       }
       updateHiloCashoutBtnLabel();
+
+      // текущая карта становится только что открытой
+      hiloCurrentCard = hiloNextCard;
+      updateHiloCardsUI();
+      if (hiloCurrentCard) {
+        updateHiloButtonsOdds(hiloCurrentCard.rank);
+      }
     } else {
-      // проигрыш — ставка сгорела, серия сбрасывается
+      // проигрыш — ставка сгорела, серия обнуляется
       if (hiloStatusEl) {
         hiloStatusEl.textContent =
           `Промах. Ставка ${betVal} OWY сгорела. Начни новую серию, если хочешь ещё раз.`;
@@ -4173,13 +4195,18 @@ function playHilo(prediction) {
       saveStats();
       updateStatsView();
 
-      resetHiloRoundState();
-    }
+      // показываем проигрышную карту
+      hiloCurrentCard = hiloNextCard;
+      updateHiloCardsUI();
+      if (hiloCurrentCard) {
+        updateHiloButtonsOdds(hiloCurrentCard.rank);
+      }
 
-    // текущая карта для следующего шага — та, что только что открыли
-    hiloCurrentCard = hiloNextCard;
-    updateHiloCardsUI();
-    updateHiloButtonsOdds(hiloCurrentCard.rank);
+      // через небольшой таймаут готовим чистый новый раунд
+      setTimeout(() => {
+        resetHiloRoundState();
+      }, 400);
+    }
 
     hiloIsBusy = false;
   }, 600);
