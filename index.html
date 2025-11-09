@@ -3870,311 +3870,320 @@ let doubleWheelInited = false;
     }
   }
 
-   // === HILO (серия + кэшаут) ===
+ // === HILO ===
 
-  const HILO_RANKS = [2,3,4,5,6,7,8,9,10,11,12,13,14]; // 11-J,12-Q,13-K,14-A
-  const HILO_SUITS = ['♠','♥','♦','♣'];
-  const HILO_RANK_NAMES = {
-    11: 'J',
-    12: 'Q',
-    13: 'K',
-    14: 'A'
-  };
+const hiloOverlay       = document.getElementById('hilo-overlay');
+const hiloOpenBtn       = document.getElementById('hilo-open');   // баннер на главной
+const hiloBackBtn       = document.getElementById('hilo-back');
 
-  let hiloCurrentCard = null;  // {rank, suit}
-  let hiloRound       = 1;
-  let hiloIsBusy      = false;
+const hiloRoundLabel    = document.getElementById('hilo-round-label');
+const hiloCurrentCardEl = document.getElementById('hilo-current-card');
+const hiloNextCardEl    = document.getElementById('hilo-next-card');
+const hiloBetInput      = document.getElementById('hilo-bet');
+const hiloStatusEl      = document.getElementById('hilo-status');
+const hiloOddsLabelEl   = document.getElementById('hilo-odds-label');
 
-  let hiloLowMulti    = 2.0;   // локальный множитель для "ниже/равно"
-  let hiloHighMulti   = 2.0;   // локальный множитель для "выше/равно"
+const hiloLowBtn        = document.getElementById('hilo-low-btn');
+const hiloHighBtn       = document.getElementById('hilo-high-btn');
+const hiloCashoutBtn    = document.getElementById('hilo-cashout');
 
-  // новое: состояние серии
-  let hiloInRound     = false; // есть активная серия / ставка
-  let hiloBaseBet     = 0;     // ставка, которую внесли один раз
-  let hiloTotalMulti  = 1.0;   // общий множитель серии
-  let hiloStreak      = 0;     // сколько подряд угадано
+const HILO_RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const HILO_SUITS = ['♠','♥','♦','♣'];
 
-  function hiloRandomCard() {
-    const rank = HILO_RANKS[Math.floor(Math.random()*HILO_RANKS.length)];
-    const suit = HILO_SUITS[Math.floor(Math.random()*HILO_SUITS.length)];
-    return { rank, suit };
-  }
+let hiloDeck = [];
 
-  function hiloCardLabel(card) {
-    if (!card) return '?';
-    const name = HILO_RANK_NAMES[card.rank] || String(card.rank);
-    return name + card.suit;
-  }
-
-  function hiloUpdateOdds() {
-    if (!hiloCurrentCard) return;
-
-    const rankIndex = HILO_RANKS.indexOf(hiloCurrentCard.rank); // 0..12
-    const ranksCount = HILO_RANKS.length;
-
-    const lower   = rankIndex;                     // сколько рангов ниже
-    const higher  = ranksCount - 1 - rankIndex;    // сколько выше
-    const same    = 1;
-
-    const pLowOrSame  = (lower + same)  / ranksCount;
-    const pHighOrSame = (higher + same) / ranksCount;
-
-    // хаус-эдж ~4%
-    const edge = 0.96;
-
-    hiloLowMulti  = +(edge / pLowOrSame).toFixed(2);
-    hiloHighMulti = +(edge / pHighOrSame).toFixed(2);
-
-    if (hiloLowBtn) {
-      hiloLowBtn.textContent = `Ниже / равно x${hiloLowMulti.toFixed(2)}`;
-    }
-    if (hiloHighBtn) {
-      hiloHighBtn.textContent = `Выше / равно x${hiloHighMulti.toFixed(2)}`;
-    }
-
-    if (hiloOddsLabelEl) {
-      hiloOddsLabelEl.textContent =
-        `Текущая карта: ${hiloCardLabel(hiloCurrentCard)}. ` +
-        `Локальные множители: ниже/равно x${hiloLowMulti.toFixed(2)}, ` +
-        `выше/равно x${hiloHighMulti.toFixed(2)}. ` +
-        `Текущий множитель серии: x${hiloTotalMulti.toFixed(2)}.`;
-    }
-
-    if (hiloCashoutBtn) {
-      hiloCashoutBtn.textContent = `Кэш-аут x${hiloTotalMulti.toFixed(2)}`;
+function buildHiloDeck() {
+  hiloDeck = [];
+  for (const suit of HILO_SUITS) {
+    for (const rank of HILO_RANKS) {
+      hiloDeck.push({ rank, suit });
     }
   }
+  // тасуем
+  for (let i = hiloDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [hiloDeck[i], hiloDeck[j]] = [hiloDeck[j], hiloDeck[i]];
+  }
+}
 
-  function updateHiloUI() {
-    if (!hiloCurrentCard) {
-      hiloCurrentCard = hiloRandomCard();
-    }
+function drawHiloCard() {
+  if (!hiloDeck.length) buildHiloDeck();
+  return hiloDeck.pop();
+}
 
-    if (hiloCurrentCardEl) {
-      hiloCurrentCardEl.textContent = hiloCardLabel(hiloCurrentCard);
-    }
-    if (hiloNextCardEl) {
-      hiloNextCardEl.textContent = '❔';
-    }
-    if (hiloRoundLabelEl) {
-      hiloRoundLabelEl.textContent = `Раунд ${hiloRound}`;
-    }
+function rankIndex(card) {
+  return HILO_RANKS.indexOf(card.rank);
+}
 
-    hiloUpdateOdds();
+function formatHiloCard(card) {
+  return card.rank + card.suit;
+}
+
+// состояние серии
+let hiloCurrentCard = null;
+let hiloNextCard    = null;
+
+let hiloInRound     = false;  // идет серия или нет
+let hiloIsBusy      = false;  // анимация/ход в процессе
+let hiloRound       = 1;      // номер шага в серии
+let hiloBaseBet     = 0;      // базовая ставка серии
+let hiloTotalMulti  = 1.0;    // общий множитель серии
+
+// считаем коэффициент шага с учетом шансов
+function getHiloStepMulti(prediction, card) {
+  const idx   = rankIndex(card);
+  const total = HILO_RANKS.length; // 13
+
+  let success;
+  if (prediction === 'high') {
+    // следующая карта >= текущей
+    success = (total - 1 - idx) + 1; // больше + равна
+  } else {
+    // следующая карта <= текущей
+    success = idx + 1;               // меньше + равна
   }
 
-  function openHilo() {
-    if (!hiloOverlay) return;
-    hiloOverlay.style.display = 'flex';
+  const p = success / total;   // вероятность выигрыша на шаге
+  const raw = 1 / p;           // честный множитель
+  const houseEdge = 0.96;      // ~4% преимущество
 
-    if (!hiloCurrentCard) {
-      hiloCurrentCard = hiloRandomCard();
+  let multi = raw * houseEdge;
+
+  if (multi < 1.1) multi = 1.1;
+  if (multi > 4.0) multi = 4.0;
+
+  return multi;
+}
+
+function updateHiloRoundLabel() {
+  if (!hiloRoundLabel) return;
+  if (!hiloInRound) {
+    hiloRoundLabel.textContent = 'Новый раунд';
+  } else {
+    hiloRoundLabel.textContent = `Раунд ${hiloRound}`;
+  }
+}
+
+function updateHiloCardsUI() {
+  if (hiloCurrentCardEl) {
+    if (hiloCurrentCard) {
+      hiloCurrentCardEl.textContent = formatHiloCard(hiloCurrentCard);
+    } else {
+      hiloCurrentCardEl.textContent = '—';
+    }
+  }
+  if (hiloNextCardEl) {
+    hiloNextCardEl.textContent = '❔';
+  }
+}
+
+function updateHiloCashoutBtnLabel() {
+  if (!hiloCashoutBtn) return;
+
+  // если серии нет или мульти 1х — просто "Кэшаут"
+  if (!hiloInRound || !hiloBaseBet || hiloTotalMulti <= 1.0) {
+    hiloCashoutBtn.textContent = 'Кэшаут';
+    return;
+  }
+
+  const baseWin  = Math.floor(hiloBaseBet * hiloTotalMulti);
+  const petBonus = typeof getPetBonus === 'function' ? getPetBonus() : 0;
+  const bonusWin = Math.floor(baseWin * petBonus);
+  const totalWin = baseWin + bonusWin;
+
+  hiloCashoutBtn.textContent = `Забрать +${totalWin} OWY`;
+}
+
+function resetHiloRoundState() {
+  hiloInRound     = false;
+  hiloIsBusy      = false;
+  hiloRound       = 1;
+  hiloBaseBet     = 0;
+  hiloTotalMulti  = 1.0;
+
+  if (!hiloCurrentCard) {
+    buildHiloDeck();
+    hiloCurrentCard = drawHiloCard();
+  }
+
+  hiloNextCard = null;
+  updateHiloRoundLabel();
+  updateHiloCardsUI();
+  updateHiloCashoutBtnLabel();
+  if (hiloCashoutBtn) hiloCashoutBtn.disabled = true;
+}
+
+function openHilo() {
+  if (!hiloOverlay) return;
+  if (!hiloCurrentCard) {
+    buildHiloDeck();
+    hiloCurrentCard = drawHiloCard();
+  }
+  resetHiloRoundState();
+  hiloOverlay.style.display = 'flex';
+  if (hiloStatusEl) {
+    hiloStatusEl.textContent = 'Ставь и жми кнопку, чтобы начать серию.';
+  }
+}
+
+function closeHilo() {
+  if (hiloOverlay) hiloOverlay.style.display = 'none';
+}
+
+if (hiloOpenBtn) hiloOpenBtn.addEventListener('click', openHilo);
+if (hiloBackBtn) hiloBackBtn.addEventListener('click', closeHilo);
+
+function playHilo(prediction) {
+  if (hiloIsBusy) return;
+
+  let betVal;
+
+  // === НОВАЯ СЕРИЯ: списываем ставку КАЖДЫЙ РАЗ ===
+  if (!hiloInRound) {
+    betVal = parseInt(hiloBetInput.value, 10);
+
+    if (isNaN(betVal) || betVal < 10) {
+      if (hiloStatusEl) {
+        hiloStatusEl.textContent = 'Минимальная ставка — 10 OWY 🤨';
+      }
+      return;
+    }
+    if (betVal > demoBalance) {
+      if (hiloStatusEl) {
+        hiloStatusEl.textContent = 'Недостаточно баланса для этой ставки 😔';
+      }
+      return;
     }
 
-    // сбрасываем серию
-    hiloRound      = 1;
-    hiloIsBusy     = false;
-    hiloInRound    = false;
-    hiloBaseBet    = 0;
+    demoBalance -= betVal;
+    saveBalance();
+    updateBalanceView();
+
+    hiloBaseBet    = betVal;
     hiloTotalMulti = 1.0;
-    hiloStreak     = 0;
-
-    updateHiloUI();
+    hiloRound      = 1;
+    hiloInRound    = true;
 
     if (hiloStatusEl) {
-      hiloStatusEl.textContent =
-        'Введи ставку один раз, угадывай карты подряд. Кэш-аут забирает ставку × текущий множитель серии.';
+      hiloStatusEl.textContent = 'Серия началась. Угадай, выше или ниже будет следующая карта.';
     }
-
-    if (hiloCashoutBtn) {
-      hiloCashoutBtn.disabled = true;
-      hiloCashoutBtn.textContent = 'Кэш-аут x1.00';
-    }
+    if (hiloCashoutBtn) hiloCashoutBtn.disabled = true;
+  } else {
+    // продолжаем серию — ставка та же, баланс второй раз не трогаем
+    betVal = hiloBaseBet;
   }
 
-  function closeHilo() {
-    if (!hiloOverlay) return;
-    hiloOverlay.style.display = 'none';
+  hiloIsBusy = true;
+
+  if (!hiloCurrentCard) {
+    hiloCurrentCard = drawHiloCard();
   }
 
-  // сыграть шаг серии (выбор выше/ниже)
-  function playHilo(direction) {
-    if (hiloIsBusy) return;
-    if (!hiloCurrentCard) hiloCurrentCard = hiloRandomCard();
+  const stepMulti = getHiloStepMulti(prediction, hiloCurrentCard);
+  if (hiloOddsLabelEl) {
+    hiloOddsLabelEl.textContent =
+      `Текущий шаг: ~x${stepMulti.toFixed(2)} при правильном ответе.`;
+  }
 
-    let betVal = parseInt(hiloBetInput.value, 10);
+  // тянем следующую карту
+  hiloNextCard = drawHiloCard();
 
-    // если серии ещё нет — это старт, списываем ставку
-    if (!hiloInRound) {
-      if (isNaN(betVal) || betVal < 10) {
-        if (hiloStatusEl) {
-          hiloStatusEl.textContent = 'Минимальная ставка — 10 OWY 🤨';
-        }
-        return;
-      }
-      if (betVal > demoBalance) {
-        if (hiloStatusEl) {
-          hiloStatusEl.textContent = 'Недостаточно баланса для такой ставки 😔';
-        }
-        return;
-      }
+  if (hiloNextCardEl) {
+    hiloNextCardEl.classList.add('hilo-card-flip');
+    setTimeout(() => {
+      hiloNextCardEl.textContent = formatHiloCard(hiloNextCard);
+      hiloNextCardEl.classList.remove('hilo-card-flip');
+    }, 120);
+  }
 
-      demoBalance -= betVal;
-      saveBalance();
-      updateBalanceView();
+  // после короткой "анимации" считаем результат
+  setTimeout(() => {
+    const curIdx  = rankIndex(hiloCurrentCard);
+    const nextIdx = rankIndex(hiloNextCard);
 
-      hiloBaseBet    = betVal;
-      hiloTotalMulti = 1.0;
-      hiloStreak     = 0;
-      hiloInRound    = true;
-
-      stats.hiloPlays = (stats.hiloPlays || 0) + 1;
-      saveStats();
-      updateStatsView();
+    let isWin;
+    if (prediction === 'high') {
+      isWin = nextIdx >= curIdx;  // выше ИЛИ равно
     } else {
-      // серия уже идёт — ставку из инпута игнорируем, используем ту же
-      betVal = hiloBaseBet || 0;
+      isWin = nextIdx <= curIdx;  // ниже ИЛИ равно
     }
 
-    let chosenMulti = direction === 'low' ? hiloLowMulti : hiloHighMulti;
-    if (!chosenMulti || chosenMulti <= 1) {
-      chosenMulti = 2.0;
-    }
-
-    const nextCard = hiloRandomCard();
-    const win = direction === 'low'
-      ? (nextCard.rank <= hiloCurrentCard.rank)
-      : (nextCard.rank >= hiloCurrentCard.rank);
-
-    // показываем новую карту во вторую ячейку
-    if (hiloNextCardEl) {
-      hiloNextCardEl.textContent = hiloCardLabel(nextCard);
-    }
-
-    hiloIsBusy = true;
-    vibrate(40);
-
-    if (win) {
+    if (isWin) {
       // продолжаем серию
-      hiloStreak += 1;
-      hiloTotalMulti *= chosenMulti;
-
-      stats.xp += 3;
-      if (hiloTotalMulti > stats.bestMulti) {
-        stats.bestMulti = hiloTotalMulti;
-      }
-      saveStats();
-      updateStatsView();
+      hiloTotalMulti *= stepMulti;
+      hiloRound += 1;
 
       if (hiloStatusEl) {
-        const dirText = direction === 'low' ? 'ниже или равно' : 'выше или равно';
         hiloStatusEl.textContent =
-          `Выпала ${hiloCardLabel(nextCard)} — это ${dirText}. ` +
-          `Серия ${hiloStreak} карт, текущий множитель x${hiloTotalMulti.toFixed(2)}. ` +
-          `Можешь нажать кэшаут, чтобы забрать выигрыш.`;
+          `Угадал! Текущий множитель серии: x${hiloTotalMulti.toFixed(2)}. ` +
+          `Можешь продолжать или забрать.`;
       }
 
       if (hiloCashoutBtn) {
         hiloCashoutBtn.disabled = false;
       }
+      updateHiloCashoutBtnLabel();
     } else {
-      // серия сгорела
-      stats.xp += 1;
+      // проигрыш — ставка сгорела, серия ОБНУЛЯЕТСЯ
+      if (hiloStatusEl) {
+        hiloStatusEl.textContent =
+          `Промах. Ставка ${betVal} OWY сгорела. Начни новую серию, если хочешь ещё раз.`;
+      }
+
+      // немного XP за попытку
+      stats.xp += 2;
       saveStats();
       updateStatsView();
 
-      if (hiloStatusEl) {
-        hiloStatusEl.textContent =
-          `Выпала ${hiloCardLabel(nextCard)} — ставка не сыграла, серия оборвалась 💀`;
-      }
-
-      hiloInRound    = false;
-      hiloBaseBet    = 0;
-      hiloTotalMulti = 1.0;
-      hiloStreak     = 0;
-      hiloRound      = 1;
-
-      if (hiloCashoutBtn) {
-        hiloCashoutBtn.disabled = true;
-        hiloCashoutBtn.textContent = 'Кэш-аут x1.00';
-      }
+      resetHiloRoundState(); // здесь и сбрасываются hiloInRound + hiloBaseBet
     }
 
-    setTimeout(() => {
-      // переносим новую карту в "текущую" и идём дальше (или начинаем заново)
-      hiloCurrentCard = nextCard;
-      if (hiloInRound) {
-        hiloRound += 1;
-      } else {
-        hiloRound = 1;
-      }
-      hiloIsBusy = false;
-      updateHiloUI();
-    }, 900);
+    hiloCurrentCard = hiloNextCard;
+    updateHiloCardsUI();
+
+    hiloIsBusy = false;
+  }, 600);
+}
+
+function hiloCashout() {
+  if (!hiloInRound || !hiloBaseBet || hiloTotalMulti <= 1.0) return;
+
+  const baseWin  = Math.floor(hiloBaseBet * hiloTotalMulti);
+  const petBonus = typeof getPetBonus === 'function' ? getPetBonus() : 0;
+  const bonusWin = Math.floor(baseWin * petBonus);
+  const totalWin = baseWin + bonusWin;
+
+  demoBalance += totalWin;
+  saveBalance();
+  updateBalanceView();
+
+  stats.xp += 5;
+  if (hiloTotalMulti > stats.bestMulti) {
+    stats.bestMulti = hiloTotalMulti;
+  }
+  saveStats();
+  updateStatsView();
+
+  if (hiloStatusEl) {
+    if (petBonus > 0 && bonusWin > 0) {
+      hiloStatusEl.textContent =
+        `Кэшаут x${hiloTotalMulti.toFixed(2)} — на баланс +${totalWin} OWY ` +
+        `(включая +${bonusWin} от Fluffie 🧿).`;
+    } else {
+      hiloStatusEl.textContent =
+        `Кэшаут x${hiloTotalMulti.toFixed(2)} — на баланс +${totalWin} OWY.`;
+    }
   }
 
-  // кэшаут по текущему множителю серии
-  function hiloCashout() {
-    if (!hiloInRound || !hiloBaseBet || hiloStreak === 0) {
-      if (hiloStatusEl) {
-        hiloStatusEl.textContent =
-          'Сначала должен быть хотя бы один успешный ход, чтобы был кэшаут 🙂';
-      }
-      return;
-    }
+  resetHiloRoundState();
+}
 
-    const baseWin  = Math.floor(hiloBaseBet * hiloTotalMulti);
-    const petBonus = getPetBonus();
-    const bonusWin = Math.floor(baseWin * petBonus);
-    const totalWin = baseWin + bonusWin;
+if (hiloLowBtn)  hiloLowBtn.addEventListener('click', () => playHilo('low'));
+if (hiloHighBtn) hiloHighBtn.addEventListener('click', () => playHilo('high'));
+if (hiloCashoutBtn) hiloCashoutBtn.addEventListener('click', hiloCashout);
 
-    demoBalance += totalWin;
-    saveBalance();
-    updateBalanceView();
+// === END HILO ===
 
-    stats.xp += 6;
-    if (hiloTotalMulti > stats.bestMulti) {
-      stats.bestMulti = hiloTotalMulti;
-    }
-    saveStats();
-    updateStatsView();
-
-    if (hiloStatusEl) {
-      if (bonusWin > 0) {
-        hiloStatusEl.textContent =
-          `Кэш-аут! Серия из ${hiloStreak} верных карт, множитель x${hiloTotalMulti.toFixed(2)}. ` +
-          `Ты получил +${totalWin} OWY (включая +${bonusWin} от Fluffie 🧿).`;
-      } else {
-        hiloStatusEl.textContent =
-          `Кэш-аут! Серия из ${hiloStreak} верных карт, множитель x${hiloTotalMulti.toFixed(2)}. ` +
-          `Ты получил +${totalWin} OWY.`;
-      }
-    }
-
-    // сбрасываем серию
-    hiloInRound    = false;
-    hiloBaseBet    = 0;
-    hiloTotalMulti = 1.0;
-    hiloStreak     = 0;
-    hiloRound      = 1;
-
-    if (hiloCashoutBtn) {
-      hiloCashoutBtn.disabled = true;
-      hiloCashoutBtn.textContent = 'Кэш-аут x1.00';
-    }
-
-    vibrate(70);
-  }
-
-  // события
-  if (hiloOpenBtn)  hiloOpenBtn.addEventListener('click', openHilo);
-  if (hiloBackBtn)  hiloBackBtn.addEventListener('click', closeHilo);
-  if (hiloLowBtn)   hiloLowBtn.addEventListener('click', () => playHilo('low'));
-  if (hiloHighBtn)  hiloHighBtn.addEventListener('click', () => playHilo('high'));
-  if (hiloCashoutBtn) {
-    hiloCashoutBtn.addEventListener('click', hiloCashout);
-  }
-    
   // === RUSH GLOBAL ENGINE ===
   const RUSH_PATH_MAX_MULTI = 10;
   const RUSH_PATH_MAX_X = 220;
