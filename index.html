@@ -4808,7 +4808,6 @@ function closeTapTapOverlay() {
  // === PLINKO ===
 const PLINKO_COLS = 9;
 const PLINKO_ROWS = 16;
-const PLINKO_MAX_BALLS = 5;
 let plinkoBallsPerShot = 1; // пока 1 шар; хочешь сразу 5 — поставь 5
 
 const PLINKO_CONFIGS = {
@@ -5177,16 +5176,6 @@ updateBalanceView();
     }
   }, approxTotalTime);
 }
-
-function playPlinko() {
-  // если уже 5 шариков в полёте — не даём запускать ещё
-  if (plinkoActiveBalls >= PLINKO_MAX_BALLS) {
-    if (plinkoStatusEl) {
-      plinkoStatusEl.textContent =
-        "На доске уже 5 шариков, дождись, пока они упадут 🙂";
-    }
-    return;
-  }
 
   // анти-даблклик по кнопке
   if (plinkoStartLocked) return;
