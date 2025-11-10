@@ -5279,6 +5279,9 @@ function generatePlinkoOutcome(config) {
 function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
   if (!plinkoBallsLayer) return;
 
+  // увеличиваем счётчик активных шариков
+  plinkoActiveBalls++;
+
   const layerRect = plinkoBallsLayer.getBoundingClientRect();
 
   const { path, finalCol } = generatePlinkoOutcome(config);
@@ -5296,15 +5299,16 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
   const stepDelayStart = 360;
   const stepDelayEnd   = 240;
 
+  // анимация падения
   path.forEach((step, index) => {
     const rowRatio = step.row / totalRows;
     const y        = slotY * rowRatio;
     const colIndex = step.col;
     const x        = slotCenters[colIndex];
 
-    const t = index / path.length;
+    const t         = index / path.length;
     const stepDelay = stepDelayStart + (stepDelayEnd - stepDelayStart) * t;
-    const delay = stepDelay * index;
+    const delay     = stepDelay * index;
 
     setTimeout(() => {
       ball.style.top  = y + "px";
@@ -5315,7 +5319,38 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
   const approxTotalTime =
     (stepDelayStart + stepDelayEnd) / 2 * path.length + 120;
 
-      plinkoActiveBalls--;
+  // через ~конец анимации считаем выигрыш и обновляем стейт
+  setTimeout(() => {
+    // подсветка слота
+    const finalSlot = slots[finalCol];
+    if (finalSlot) {
+      slots.forEach(s => s.classList.remove("active"));
+      finalSlot.classList.add("active");
+    }
+
+    // считаем выигрыш
+    const baseWin   = Math.floor(bet * multiplier);
+    const petBonus  = typeof getPetBonus === 'function' ? getPetBonus() : 0;
+    const bonusWin  = Math.floor(baseWin * petBonus);
+    const winAmount = baseWin + bonusWin;
+
+    if (winAmount > 0) {
+      demoBalance += winAmount;
+      saveBalance();
+      updateBalanceView();
+    }
+
+    // статистика + история
+    stats.xp += 3;
+    if (multiplier > stats.bestMulti) stats.bestMulti = multiplier;
+    plinkoHistory.push(multiplier);
+    if (plinkoHistory.length > 50) plinkoHistory.shift();
+    saveStats();
+    updateStatsView();
+    updatePlinkoHistory();
+
+    // один шарик отстрелялся
+    plinkoActiveBalls--;
     if (plinkoActiveBalls === 0) {
       plinkoIsRunning = false;
       if (plinkoBetInput) plinkoBetInput.disabled = false;
@@ -5334,6 +5369,9 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
         }
       }
     }
+
+    // убираем шарик из DOM
+    ball.remove();
   }, approxTotalTime);
 }
 
