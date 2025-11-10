@@ -890,88 +890,79 @@
       color: #1ddb6f;
     }
 
-/* ——— Компактный "liquid glass" бар ——— */
+/* ——— MINI LIQUID GLASS NAV (стиль как в Major) ——— */
 
 .bottom-nav {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 10px;                 /* есть воздух снизу */
+  bottom: 18px;                    /* отступ снизу */
   width: 100%;
   max-width: 420px;
-  padding: 0 16px;
-  background: transparent;      /* убираем жирный градиент */
+  display: flex;
+  justify-content: center;
+  pointer-events: none;            /* чтобы клики шли только по кнопкам */
   z-index: 40;
 }
 
 .bottom-nav-inner {
-  background: rgba(8, 10, 16, 0.72);       /* более прозрачное стекло */
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  pointer-events: auto;
   display: flex;
   justify-content: space-around;
-  padding: 6px 10px;                        /* меньше высота */
+  align-items: center;
+
+  /* компактная капсула */
+  width: 88%;
+  max-width: 300px;
+  padding: 6px 10px;
+
+  background: rgba(10, 12, 19, 0.6);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
 }
 
-/* сами табы — без большой подложки */
+/* Иконки и подписи */
 
 .nav-item {
-  position: relative;
   flex: 1;
   text-align: center;
-  font-size: 11px;
-  color: #8f93a2;
+  color: #9094a5;
+  font-size: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 3px;
   cursor: pointer;
-  padding: 4px 0;
-  border-radius: 999px;
-  transition: color 0.18s ease;
+  border-radius: 12px;
+  transition: color 0.2s ease;
 }
-
-/* полностью отключаем подсветку всей таблетки */
-.nav-item::before {
-  content: none !important;
-}
-
-.nav-label {
-  font-size: 10px;
-}
-
-/* иконка */
 
 .nav-item span:first-child {
-  position: relative;
-  font-size: 17px;
-  padding: 4px;                 /* кругленькая "кнопка" вокруг иконки */
-  border-radius: 999px;
-  transition:
-    background 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.18s ease;
+  font-size: 18px;
+  transition: all 0.2s ease;
 }
 
-/* активный таб — светится ТОЛЬКО иконка */
+/* активный таб — светится только иконка */
 
 .nav-item.active span:first-child {
-  background: radial-gradient(
-    circle at top,
-    rgba(90, 150, 255, 0.75),
-    rgba(10, 16, 32, 0.95)
-  );
-  box-shadow: 0 0 14px rgba(90, 150, 255, 0.9);
+  color: #d6e3ff;
+  text-shadow: 0 0 10px rgba(120, 180, 255, 0.8);
   transform: translateY(-1px);
 }
 
-/* текст активного просто чуть ярче */
-
 .nav-item.active {
-  color: #e8eeff;
+  color: #eaeef9;
+}
+
+/* чуть приглушаем фон (Major-style blur) */
+html, body {
+  background-color: #05060a;
+  overflow-x: hidden;
 }
  
     /* OVERLAYS */
