@@ -867,55 +867,128 @@
       color: #1ddb6f;
     }
 
-    /* BOTTOM NAV */
+ /* === BOTTOM NAV — glass, как в Major / Ton === */
 
-    .bottom-nav {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 0;
-      width: 100%;
-      max-width: 420px;
-      padding: 6px 10px 10px;
-      background: linear-gradient(to top, #05060a, rgba(5, 6, 10, 0.85), transparent);
-    }
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  width: 100%;
+  max-width: 420px;
 
-    .bottom-nav-inner {
-      background: rgba(8, 10, 16, 0.95);
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      justify-content: space-around;
-      padding: 6px 4px;
-      backdrop-filter: blur(12px);
-    }
+  padding: 0 14px;
+  box-sizing: border-box;
 
-    .nav-item {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      color: #7f8491;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      cursor: pointer;
-      padding: 4px 0;
-      border-radius: 12px;
-    }
+  z-index: 40;
+  pointer-events: none; /* чтобы не блокировать оверлеи */
+}
 
-    .nav-item span {
-      font-size: 16px;
-    }
+.bottom-nav-inner {
+  pointer-events: auto;
 
-    .nav-item.active {
-      color: #e7fdf0;
-      background: rgba(29, 219, 111, 0.08);
-    }
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
 
-    .nav-label {
-      font-size: 10px;
-    }
+  padding: 6px 10px 10px;
+  border-radius: 26px;
+
+  background:
+    radial-gradient(circle at 0% -40%, rgba(59,130,246,0.3), transparent 55%),
+    radial-gradient(circle at 100% -40%, rgba(129,140,248,0.35), transparent 55%),
+    rgba(12, 14, 18, 0.92);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(0, 0, 0, 0.7);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+/* кнопка-таба */
+
+.nav-item {
+  position: relative;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+
+  padding: 8px 4px 6px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3af;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* фон активного таба (синяя таблетка под иконкой) */
+
+.nav-item::before {
+  content: "";
+  position: absolute;
+  inset: 2px 4px 4px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% -60%, rgba(59,130,246,0.95), rgba(37,99,235,0.8));
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.18s ease-out,
+    transform 0.18s ease-out;
+  z-index: -1;
+}
+
+.nav-item.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* иконка + подпись */
+
+.nav-icon {
+  font-size: 20px;
+  line-height: 1;
+  margin-bottom: 1px;
+  transform: translateY(0);
+  transition: transform 0.16s ease-out, filter 0.16s ease-out;
+}
+
+.nav-label {
+  font-size: 11px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* активный таб — белый текст и лёгкий подъём иконки */
+
+.nav-item.active {
+  color: #ffffff;
+}
+
+.nav-item.active .nav-icon {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 4px 8px rgba(59,130,246,0.8));
+}
+
+/* лёгкий ховер / тап (для десктопа тоже красиво) */
+
+.nav-item:active:not(.active) .nav-icon {
+  transform: translateY(1px) scale(0.96);
+}
 
     /* OVERLAYS */
 
@@ -2083,20 +2156,27 @@
     </main> 
 
     <!-- NAV -->
-   <nav class="bottom-nav">
+  <nav class="bottom-nav">
   <div class="bottom-nav-inner">
-    <div class="nav-item active" id="nav-home">
-      <span>🏠</span>
-      <div class="nav-label">Главная</div>
-    </div>
-    <div class="nav-item" id="nav-pet">
-      <span>🧿</span>
-      <div class="nav-label">Питомец</div>
-    </div>
-    <div class="nav-item" id="nav-profile">
-      <span>👤</span>
-      <div class="nav-label">Профиль</div>
-    </div>
+    <button class="nav-item active" id="nav-casino" type="button">
+      <span class="nav-icon">🎰</span>
+      <span class="nav-label">Casino</span>
+    </button>
+
+    <button class="nav-item" id="nav-bets" type="button">
+      <span class="nav-icon">📈</span>
+      <span class="nav-label">Bets</span>
+    </button>
+
+    <button class="nav-item" id="nav-tasks" type="button">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Tasks</span>
+    </button>
+
+    <button class="nav-item" id="nav-pet" type="button">
+      <span class="nav-icon">🧿</span>
+      <span class="nav-label">Fluffie</span>
+    </button>
   </div>
 </nav>
 
