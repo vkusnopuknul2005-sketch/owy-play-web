@@ -890,55 +890,106 @@
       color: #1ddb6f;
     }
 
-    /* BOTTOM NAV */
+ /* === LIQUID GLASS BOTTOM NAV === */
 
-    .bottom-nav {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 0;
-      width: 100%;
-      max-width: 420px;
-      padding: 6px 10px 10px;
-      background: linear-gradient(to top, #05060a, rgba(5, 6, 10, 0.85), transparent);
-    }
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: 420px;
 
-    .bottom-nav-inner {
-      background: rgba(8, 10, 16, 0.95);
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      display: flex;
-      justify-content: space-around;
-      padding: 6px 4px;
-      backdrop-filter: blur(12px);
-    }
+  padding: 0 16px 14px;
+  /* мягкий градиент от низа экрана */
+  background: linear-gradient(
+    to top,
+    rgba(3, 4, 7, 0.95),
+    rgba(3, 4, 7, 0.65),
+    transparent 70%
+  );
+  z-index: 40;
+}
 
-    .nav-item {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      color: #7f8491;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      cursor: pointer;
-      padding: 4px 0;
-      border-radius: 12px;
-    }
+.bottom-nav-inner {
+  background: rgba(10, 12, 19, 0.78);        /* полупрозрачное "стекло" */
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(0, 0, 0, 0.6);            /* лёгкий ободок */
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 10px;
+}
 
-    .nav-item span {
-      font-size: 16px;
-    }
+/* сами табы */
 
-    .nav-item.active {
-      color: #e7fdf0;
-      background: rgba(29, 219, 111, 0.08);
-    }
+.nav-item {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: #8f93a2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 6px 0;
+  border-radius: 999px;
+  transition:
+    color 0.18s ease,
+    transform 0.16s ease;
+}
 
-    .nav-label {
-      font-size: 10px;
-    }
+/* лёгкая подсветка "капли" под активным табом */
+.nav-item::before {
+  content: "";
+  position: absolute;
+  inset: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    background 0.2s ease;
+  z-index: -1;
+}
+
+.nav-item span {
+  font-size: 17px;
+}
+
+.nav-label {
+  font-size: 10px;
+}
+
+/* АКТИВНЫЙ ТАБ — ярче, с голубым свечением */
+.nav-item.active {
+  color: #eaf0ff;
+  transform: translateY(-1px);
+}
+
+.nav-item.active::before {
+  opacity: 1;
+  transform: scale(1.02);
+  background: radial-gradient(
+    circle at top,
+    rgba(80, 140, 255, 0.55),
+    rgba(10, 14, 24, 0.7)
+  );
+  box-shadow: 0 0 14px rgba(80, 140, 255, 0.9);
+}
+
+/* чуть подсветить иконку у активного */
+.nav-item.active span:first-child {
+  filter: drop-shadow(0 0 8px rgba(80, 140, 255, 0.9));
+}
 
     /* OVERLAYS */
 
