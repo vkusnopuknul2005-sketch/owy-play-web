@@ -153,37 +153,36 @@
   100% { transform: translateX(120%); }
 }
 
-/* === TOP HEADER: логотип слева, баланс по центру, профиль справа === */
+/* === TOP HEADER (логотип + баланс + профиль) === */
 
 .header {
-  padding: 10px 12px 6px;
+  padding: 8px 10px 4px;
   border-bottom: none;
 }
 
 .header-top-row {
-  max-width: 420px;
+  max-width: 360px;
   margin: 0 auto;
-  position: relative;
-  height: 36px;
   display: flex;
   align-items: center;
-  justify-content: center; /* баланс ровно по центру */
+  justify-content: space-between;
+  gap: 8px;
 }
 
-/* слева — OWY Play */
+/* слева — логотип-чип, кликает на Casino */
 .header-logo-chip {
-  position: absolute;
-  left: 0;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(29, 219, 111, 0.45);
-  background: rgba(6, 8, 12, 0.96);
+  background: rgba(6, 8, 12, 0.95);
+  border: 1px solid rgba(29, 219, 111, 0.5);
   color: #e7fdf0;
   font-size: 11px;
   font-weight: 600;
+  cursor: pointer;
 }
 
 .header-logo-chip .logo-dot {
@@ -194,9 +193,10 @@
   box-shadow: 0 0 10px rgba(29, 219, 111, 0.7);
 }
 
-/* центр — маленькая капсула, не на всю ширину */
+/* центр — маленькая пилюля баланса, как в TonPlay */
 .header-balance-pill {
-  padding: 5px 16px 6px;
+  flex: 0 1 56%;
+  padding: 5px 12px 6px;
   border-radius: 999px;
   background: radial-gradient(
     circle at top,
@@ -206,8 +206,6 @@
   border: 1px solid rgba(29, 219, 111, 0.5);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.85);
   text-align: center;
-  min-width: 170px;
-  max-width: 220px;
 }
 
 .header-balance-pill .balance-label {
@@ -216,7 +214,7 @@
 }
 
 .header-balance-pill .balance-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -225,22 +223,27 @@
   color: #6b7080;
 }
 
-/* справа — кружок профиля */
+/* справа — аватар, фиксированный размер */
 .header-profile-chip {
-  position: absolute;
-  right: 0;
-  width: 32px;
-  height: 32px;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
   border: none;
   background: radial-gradient(circle at top, #1ddb6f, #0f7b45);
   box-shadow: 0 0 12px rgba(29, 219, 111, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 13px;
   font-weight: 600;
   color: #05060a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.header-logo-chip:active,
+.header-profile-chip:active {
+  transform: scale(0.97);
 }
 
 /* === CASINO / MINI GAMES (зелёная тема) === */
@@ -2133,7 +2136,7 @@ html, body {
 </header>
 
     <main class="content">
-      <!-- HOME -->
+     <!-- HOME / CASINO -->
 <section id="home-screen">
   <!-- верхний баннер Casino -->
   <div class="casino-banner">
@@ -2143,12 +2146,12 @@ html, body {
     </div>
   </div>
 
-  <!-- пока один таб -->
+  <!-- табы сверху (пока один) -->
   <div class="casino-tabs">
     <button class="casino-tab-pill casino-tab-pill-active" type="button">
       Mini games
     </button>
-    <!-- потом можно добавить "Providers", "Live" и т.д. -->
+    <!-- потом можно добавить Providers / Live и т.д. -->
   </div>
 
   <div class="casino-section-title">Mini games</div>
@@ -2159,7 +2162,7 @@ html, body {
     <button class="casino-game-card" type="button"
             onclick="document.getElementById('rush-open')?.click()">
       <div class="casino-game-thumb">
-        <div class="casino-game-thumb-placeholder">?</div>
+        <div class="casino-game-placeholder">?</div>
       </div>
       <div class="casino-game-name">Rush</div>
       <div class="casino-game-sub">Лови множитель вовремя</div>
@@ -2169,7 +2172,7 @@ html, body {
     <button class="casino-game-card" type="button"
             onclick="document.getElementById('double-open')?.click()">
       <div class="casino-game-thumb">
-        <div class="casino-game-thumb-placeholder">?</div>
+        <div class="casino-game-placeholder">?</div>
       </div>
       <div class="casino-game-name">Double</div>
       <div class="casino-game-sub">Выбери цвет x2 или x14</div>
@@ -2179,7 +2182,7 @@ html, body {
     <button class="casino-game-card" type="button"
             onclick="document.getElementById('plinko-open')?.click()">
       <div class="casino-game-thumb">
-        <div class="casino-game-thumb-placeholder">?</div>
+        <div class="casino-game-placeholder">?</div>
       </div>
       <div class="casino-game-name">Plinko</div>
       <div class="casino-game-sub">Шарики и пины</div>
@@ -2189,90 +2192,90 @@ html, body {
     <button class="casino-game-card" type="button"
             onclick="document.getElementById('hilo-open')?.click()">
       <div class="casino-game-thumb">
-        <div class="casino-game-thumb-placeholder">?</div>
+        <div class="casino-game-placeholder">?</div>
       </div>
-      <div class="casino-game-name">HiLo карты</div>
+      <div class="casino-game-name">HiLo</div>
       <div class="casino-game-sub">Выше или ниже?</div>
     </button>
-
-    <!-- дальше по этому же шаблону добавишь новые игры -->
   </div>
 </section>
 
+<!-- BETS -->
 <section id="bets-screen" style="display:none;">
   <div class="section-title">Bets</div>
   <p class="hint-text">Раздел ставок скоро подключим 😉</p>
 </section>
 
+<!-- TASKS -->
 <section id="tasks-screen" style="display:none;">
   <div class="section-title">Tasks</div>
   <p class="hint-text">Задания с наградами Fluffie и OWY появятся позже.</p>
 </section>
 
-      <!-- PROFILE -->
-      <section id="profile-screen" style="display:none;">
-        <div class="section-title">Личный профиль</div>
-        <div class="profile-card">
-          <div class="profile-line">
-            <span>OWY ID</span>
-            <span id="profile-id">—</span>
-          </div>
-          <div class="profile-line">
-            <span>Баланс</span>
-            <span class="profile-balance" id="profile-balance">1 000 OWY</span>
-          </div>
+<!-- PROFILE -->
+<section id="profile-screen" style="display:none;">
+  <div class="section-title">Личный профиль</div>
+  <div class="profile-card">
+    <div class="profile-line">
+      <span>OWY ID</span>
+      <span id="profile-id">—</span>
+    </div>
+    <div class="profile-line">
+      <span>Баланс</span>
+      <span class="profile-balance" id="profile-balance">1 000 OWY</span>
+    </div>
 
-          <div class="rank-row">
-            <span>Ранг: <span id="rank-label">BRONZE I</span></span>
-            <span id="xp-label">0 / 100 XP</span>
-          </div>
-          <div class="xp-bar">
-            <div class="xp-bar-fill" id="xp-bar-fill"></div>
-          </div>
+    <div class="rank-row">
+      <span>Ранг: <span id="rank-label">BRONZE I</span></span>
+      <span id="xp-label">0 / 100 XP</span>
+    </div>
+    <div class="xp-bar">
+      <div class="xp-bar-fill" id="xp-bar-fill"></div>
+    </div>
 
-          <div class="stats-row" id="stats-row">
-            Rush: 0 игр • Plinko: 0 игр • Лучший множитель: x1.00
-          </div>
+    <div class="stats-row" id="stats-row">
+      Rush: 0 игр • Plinko: 0 игр • Лучший множитель: x1.00
+    </div>
 
-          <div class="profile-section-title">
-            <span class="dot"></span>
-            <span>Миссии дня (демо)</span>
-          </div>
-          <ul class="missions-list">
-            <li id="mission-1"><span>⬜</span><span>Сыграй Rush 5 раз</span></li>
-            <li id="mission-2"><span>⬜</span><span>Сыграй Plinko 3 раза</span></li>
-            <li id="mission-3"><span>⬜</span><span>Сыграй обе игры сегодня</span></li>
-          </ul>
+    <div class="profile-section-title">
+      <span class="dot"></span>
+      <span>Миссии дня (демо)</span>
+    </div>
+    <ul class="missions-list">
+      <li id="mission-1"><span>⬜</span><span>Сыграй Rush 5 раз</span></li>
+      <li id="mission-2"><span>⬜</span><span>Сыграй Plinko 3 раза</span></li>
+      <li id="mission-3"><span>⬜</span><span>Сыграй обе игры сегодня</span></li>
+    </ul>
 
-          <div class="profile-section-title">
-            <span class="dot"></span>
-            <span>Персональные данные</span>
-          </div>
+    <div class="profile-section-title">
+      <span class="dot"></span>
+      <span>Персональные данные</span>
+    </div>
 
-          <div class="profile-field">
-            <label for="profile-name">Отображаемое имя</label>
-            <input id="profile-name" type="text" placeholder="Как тебя называть в OWY">
-          </div>
+    <div class="profile-field">
+      <label for="profile-name">Отображаемое имя</label>
+      <input id="profile-name" type="text" placeholder="Как тебя называть в OWY">
+    </div>
 
-          <div class="profile-field">
-            <label for="profile-username">OWY username</label>
-            <input id="profile-username" type="text" placeholder="@nickname">
-          </div>
+    <div class="profile-field">
+      <label for="profile-username">OWY username</label>
+      <input id="profile-username" type="text" placeholder="@nickname">
+    </div>
 
-          <div class="profile-field">
-            <label for="profile-birthdate">Дата рождения</label>
-            <input id="profile-birthdate" type="date">
-          </div>
+    <div class="profile-field">
+      <label for="profile-birthdate">Дата рождения</label>
+      <input id="profile-birthdate" type="date">
+    </div>
 
-          <div class="profile-field">
-            <label for="profile-gender">Пол</label>
-            <select id="profile-gender">
-              <option value="">Не указывать</option>
-              <option value="male">Мужской</option>
-              <option value="female">Женский</option>
-              <option value="other">Другое</option>
-            </select>
-          </div>
+    <div class="profile-field">
+      <label for="profile-gender">Пол</label>
+      <select id="profile-gender">
+        <option value="">Не указывать</option>
+        <option value="male">Мужской</option>
+        <option value="female">Женский</option>
+        <option value="other">Другое</option>
+      </select>
+    </div>
 
           <div class="profile-buttons">
             <button class="btn btn-primary" id="profile-save">Сохранить профиль</button>
@@ -2841,6 +2844,21 @@ const navBets   = document.getElementById('nav-bets');
 const navTasks  = document.getElementById('nav-tasks');
 const navPetNav = document.getElementById('nav-pet');
 const navMenu   = document.getElementById('nav-menu');
+
+const headerLogoBtn    = document.getElementById('header-logo-btn');
+const headerProfileBtn = document.getElementById('header-profile-btn');
+
+if (headerLogoBtn) {
+  headerLogoBtn.addEventListener('click', () => {
+    setActiveTab('casino');   // логотип всегда ведёт на Casino
+  });
+}
+
+if (headerProfileBtn) {
+  headerProfileBtn.addEventListener('click', () => {
+    setActiveTab('profile');  // аватар → вкладка профиль
+  });
+}
 
 // topbar buttons
 const logoBtn          = document.getElementById('logo-btn');
