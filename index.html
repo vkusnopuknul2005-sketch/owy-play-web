@@ -172,8 +172,8 @@
 /* === TOP HEADER (логотип + баланс + профиль) === */
 
 .header {
-  padding: 8px 10px 4px;
-  border-bottom: none;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .header-top-row {
@@ -189,8 +189,9 @@
 .header-logo-chip {
   flex-shrink: 0;
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(6, 8, 12, 0.95);
@@ -199,6 +200,30 @@
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.header-logo-mark {
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+  letter-spacing: 0.03em;
+}
+
+.header-logo-ow {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.header-logo-y {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1ddb6f;
+}
+
+.header-logo-sub {
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.9;
 }
 
 .header-logo-chip .logo-dot {
@@ -247,7 +272,7 @@
   border-radius: 999px;
   border: none;
   background: radial-gradient(circle at top, #1ddb6f, #0f7b45);
-  box-shadow: 0 0 12px rgba(29, 219, 111, 0.6);
+  box-shadow: 0 0 8px rgba(29, 219, 111, 0.55); /* было 12px */
   font-size: 13px;
   font-weight: 600;
   color: #05060a;
@@ -256,7 +281,6 @@
   justify-content: center;
   cursor: pointer;
 }
-
 .header-logo-chip:active,
 .header-profile-chip:active {
   transform: scale(0.97);
@@ -2131,13 +2155,15 @@ html, body {
 
 <header class="header">
   <div class="header-top-row">
-    <!-- слева: логотип-кнопка -->
+    <!-- слева: логотип-кнопка OWY Play -->
     <button class="header-logo-chip" type="button" id="header-logo-btn">
-      <span class="logo-dot"></span>
-      <span>OWY Play</span>
+      <div class="header-logo-mark">
+        <span class="header-logo-ow">OW</span><span class="header-logo-y">Y</span>
+      </div>
+      <div class="header-logo-sub">PLAY</div>
     </button>
 
-    <!-- центр: маленькая капсула баланса -->
+    <!-- центр: капсула баланса -->
     <div class="header-balance-pill">
       <div class="balance-label">Баланс</div>
       <div class="balance-value">60 453 OWY</div>
@@ -2174,46 +2200,42 @@ html, body {
 
   <!-- горизонтальный список игр -->
   <div class="casino-games-scroll">
-    <!-- Rush -->
-    <button class="casino-game-card" type="button"
-            onclick="document.getElementById('rush-open')?.click()">
-      <div class="casino-game-thumb">
-        <div class="casino-game-placeholder">?</div>
-      </div>
-      <div class="casino-game-name">Rush</div>
-      <div class="casino-game-sub">Лови множитель вовремя</div>
-    </button>
+  <!-- Rush -->
+  <button class="casino-game-card" type="button" id="card-rush">
+    <div class="casino-game-thumb">
+      <div class="casino-game-thumb-placeholder">?</div>
+    </div>
+    <div class="casino-game-name">Rush</div>
+    <div class="casino-game-sub">Лови множитель вовремя</div>
+  </button>
 
-    <!-- Double -->
-    <button class="casino-game-card" type="button"
-            onclick="document.getElementById('double-open')?.click()">
-      <div class="casino-game-thumb">
-        <div class="casino-game-placeholder">?</div>
-      </div>
-      <div class="casino-game-name">Double</div>
-      <div class="casino-game-sub">Выбери цвет x2 или x14</div>
-    </button>
+  <!-- Double -->
+  <button class="casino-game-card" type="button" id="card-double">
+    <div class="casino-game-thumb">
+      <div class="casino-game-thumb-placeholder">?</div>
+    </div>
+    <div class="casino-game-name">Double</div>
+    <div class="casino-game-sub">Выбери цвет x2 или x14</div>
+  </button>
 
-    <!-- Plinko -->
-    <button class="casino-game-card" type="button"
-            onclick="document.getElementById('plinko-open')?.click()">
-      <div class="casino-game-thumb">
-        <div class="casino-game-placeholder">?</div>
-      </div>
-      <div class="casino-game-name">Plinko</div>
-      <div class="casino-game-sub">Шарики и пины</div>
-    </button>
+  <!-- Plinko -->
+  <button class="casino-game-card" type="button" id="card-plinko">
+    <div class="casino-game-thumb">
+      <div class="casino-game-thumb-placeholder">?</div>
+    </div>
+    <div class="casino-game-name">Plinko</div>
+    <div class="casino-game-sub">Шарики и пины</div>
+  </button>
 
-    <!-- HiLo -->
-    <button class="casino-game-card" type="button"
-            onclick="document.getElementById('hilo-open')?.click()">
-      <div class="casino-game-thumb">
-        <div class="casino-game-placeholder">?</div>
-      </div>
-      <div class="casino-game-name">HiLo</div>
-      <div class="casino-game-sub">Выше или ниже?</div>
-    </button>
-  </div>
+  <!-- HiLo -->
+  <button class="casino-game-card" type="button" id="card-hilo">
+    <div class="casino-game-thumb">
+      <div class="casino-game-thumb-placeholder">?</div>
+    </div>
+    <div class="casino-game-name">HiLo</div>
+    <div class="casino-game-sub">Выше или ниже?</div>
+  </button>
+</div>
 </section>
 
 <!-- BETS -->
@@ -2501,9 +2523,9 @@ html, body {
     </div>
 
     <div class="nav-item" id="nav-pet">
-      <span>🧿</span>
-      <div class="nav-label">Fluffie</div>
-    </button>
+  <span>🧿</span>
+  <div class="nav-label">Fluffie</div>
+</div>
   </div>
 </nav>
 
@@ -2861,20 +2883,18 @@ const navPetNav = document.getElementById('nav-pet');
 const navMenu   = document.getElementById('nav-menu');
 
 // top header buttons (логотип + аватар)
-const headerLogoBtn    = document.getElementById('logo-btn');
+const headerLogoBtn    = document.getElementById('header-logo-btn');
 const headerProfileBtn = document.getElementById('header-profile-btn');
 
 if (headerLogoBtn) {
   headerLogoBtn.addEventListener('click', () => {
-    // логотип всегда ведёт на Casino
-    setActiveTab('casino');
+    showScreen('casino');   // функция ниже, которая уже рулит табами
   });
 }
 
 if (headerProfileBtn) {
   headerProfileBtn.addEventListener('click', () => {
-    // аватар → профиль
-    setActiveTab('profile');
+    showScreen('profile');
   });
 }
 
@@ -3064,12 +3084,6 @@ if (navPetNav) navPetNav.addEventListener('click', () => showScreen('pet'));
 if (navMenu) navMenu.addEventListener('click', () => {
   // сюда потом сделаем отдельное меню / оверлей
 });
-
-// логотип → Casino
-if (logoBtn) logoBtn.addEventListener('click', () => showScreen('casino'));
-
-// аватар → профиль
-if (headerProfileBtn) headerProfileBtn.addEventListener('click', () => showScreen('profile'));
 
 // по умолчанию всегда Casino
 showScreen('casino');
@@ -4603,6 +4617,62 @@ function getHiloStepMulti(prediction, card) {
   const { low, high } = calcHiloStepMultipliers(rank || '7'); // дефолт — середина
 
   return prediction === 'high' ? high : low;
+}
+
+// карточки на главном экране
+const cardRush   = document.getElementById('card-rush');
+const cardDouble = document.getElementById('card-double');
+const cardPlinko = document.getElementById('card-plinko');
+const cardHilo   = document.getElementById('card-hilo');
+
+// открыть нужный оверлей по клику на карточку
+if (cardRush && rushOverlay) {
+  cardRush.addEventListener('click', () => {
+    rushOverlay.style.display = 'flex';
+  });
+}
+
+if (cardDouble && doubleOverlay) {
+  cardDouble.addEventListener('click', () => {
+    doubleOverlay.style.display = 'flex';
+  });
+}
+
+if (cardPlinko && plinkoOverlay) {
+  cardPlinko.addEventListener('click', () => {
+    plinkoOverlay.style.display = 'flex';
+  });
+}
+
+if (cardHilo && hiloOverlay) {
+  cardHilo.addEventListener('click', () => {
+    hiloOverlay.style.display = 'flex';
+  });
+}
+
+// back-кнопки закрывают оверлеи (если вдруг ещё не было)
+if (rushBackBtn && rushOverlay) {
+  rushBackBtn.addEventListener('click', () => {
+    rushOverlay.style.display = 'none';
+  });
+}
+
+if (plinkoBackBtn && plinkoOverlay) {
+  plinkoBackBtn.addEventListener('click', () => {
+    plinkoOverlay.style.display = 'none';
+  });
+}
+
+if (doubleBackBtn && doubleOverlay) {
+  doubleBackBtn.addEventListener('click', () => {
+    doubleOverlay.style.display = 'none';
+  });
+}
+
+if (hiloBackBtn && hiloOverlay) {
+  hiloBackBtn.addEventListener('click', () => {
+    hiloOverlay.style.display = 'none';
+  });
 }
 
 // === UI helper'ы ===
