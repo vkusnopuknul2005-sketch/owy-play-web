@@ -3683,21 +3683,19 @@ let doubleWheelInited = false;
     });
   }
 
-  // посчитали размеры
-  recalcDoubleGeometry();
+// посчитали размеры
+recalcDoubleGeometry();
 
-  const loopLen = DOUBLE_SLOTS.length;
+const loopLen = DOUBLE_SLOTS.length;
 
-  // всегда держим текущий индекс в районе 2-го круга,
-  // чтобы было место прокрутиться вперёд
-  doubleCurrentIndex    = loopLen * 2;
-  doubleSpinFromIndex   = doubleCurrentIndex;
-  doubleSpinTargetIndex = doubleCurrentIndex;
+// всегда держим текущий индекс в районе 2-го круга,
+// чтобы было место прокрутиться вперёд
+doubleCurrentIndex    = loopLen * 2;
+doubleSpinFromIndex   = doubleCurrentIndex;
+doubleSpinTargetIndex = doubleCurrentIndex;
+syncDoubleWheel();
 
-  syncDoubleWheel();
-}
-
-  function normalizeDoubleIndexToMiddle(idx) {
+function normalizeDoubleIndexToMiddle(idx) {
   const loopLen = DOUBLE_SLOTS.length;
   const middleLoop = 2; // тот же самый, что в buildDoubleWheel
   const local = ((idx % loopLen) + loopLen) % loopLen; // 0..loopLen
