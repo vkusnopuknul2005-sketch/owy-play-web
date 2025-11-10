@@ -4967,10 +4967,9 @@ function endTapTapGame(skipReward) {
         `Игра окончена: ${taptapScore} очков. Fluffie получил +${xpGain} XP, +${moodGain} к настроению и +${coinGain} монет 🪙`;
     }
   } else {
-    ...
-  }
     if (taptapStatusEl) {
-      taptapStatusEl.textContent = `Игра остановлена. Результат: ${taptapScore} очков.`;
+      taptapStatusEl.textContent =
+        `Игра остановлена. Результат: ${taptapScore} очков.`;
     }
   }
 
