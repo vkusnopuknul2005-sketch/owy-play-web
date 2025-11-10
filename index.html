@@ -172,118 +172,72 @@
 /* === TOP HEADER (логотип + баланс + профиль) === */
 
 .header {
-  padding: 10px 14px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  width: 100%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.header-top-row {
-  max-width: 360px;
-  margin: 0 auto;
+.header-row {
+  width: 100%;
+  max-width: 400px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  padding: 0 14px;
 }
 
-/* слева — логотип-чип, кликает на Casino */
-.header-logo-chip {
-  flex-shrink: 0;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(6, 8, 12, 0.95);
-  border: 1px solid rgba(29, 219, 111, 0.5);
-  color: #e7fdf0;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
+/* === ЛОГОТИП === */
+.header-logo img {
+  height: 22px;
+  width: auto;
+  display: block;
+  filter: brightness(1.2);
 }
 
-.header-logo-mark {
-  display: flex;
-  align-items: baseline;
-  gap: 1px;
-  letter-spacing: 0.03em;
-}
-
-.header-logo-ow {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.header-logo-y {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1ddb6f;
-}
-
-.header-logo-sub {
-  font-size: 10px;
-  line-height: 1;
-  opacity: 0.9;
-}
-
-.header-logo-chip .logo-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #1ddb6f;
-  box-shadow: 0 0 10px rgba(29, 219, 111, 0.7);
-}
-
-/* центр — маленькая пилюля баланса, как в TonPlay */
-.header-balance-pill {
-  flex: 0 1 56%;
-  padding: 5px 12px 6px;
-  border-radius: 999px;
-  background: radial-gradient(
-    circle at top,
-    rgba(29, 219, 111, 0.18),
-    rgba(3, 4, 8, 0.98)
-  );
-  border: 1px solid rgba(29, 219, 111, 0.5);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.85);
+/* === БАЛАНС === */
+.header-balance {
   text-align: center;
+  flex-grow: 1;
+  color: #e9e9e9;
+  line-height: 1.2;
 }
 
-.header-balance-pill .balance-label {
-  font-size: 10px;
-  color: #9ea2b0;
-}
-
-.header-balance-pill .balance-value {
+.header-balance-amount {
   font-size: 14px;
   font-weight: 600;
+  color: #1ddb6f; /* фирменный зелёный OWY */
 }
 
-.header-balance-pill .balance-demo-tag {
-  font-size: 9px;
-  color: #6b7080;
+.header-balance-sub {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 2px;
 }
 
-/* справа — аватар, фиксированный размер */
-.header-profile-chip {
-  flex-shrink: 0;
+/* === ПРОФИЛЬ (АВАТАР) === */
+.header-profile {
+  background: radial-gradient(circle at top, #1ddb6f, #0d6e3f);
+  color: #05060a;
+  border: none;
+  border-radius: 50%;
   width: 30px;
   height: 30px;
-  border-radius: 999px;
-  border: none;
-  background: radial-gradient(circle at top, #1ddb6f, #0f7b45);
-  box-shadow: 0 0 8px rgba(29, 219, 111, 0.55); /* было 12px */
-  font-size: 13px;
-  font-weight: 600;
-  color: #05060a;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(29, 219, 111, 0.45);
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.header-logo-chip:active,
-.header-profile-chip:active {
-  transform: scale(0.97);
+
+.header-profile:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(29, 219, 111, 0.6);
 }
 
 /* === CASINO / MINI GAMES (зелёная тема) === */
@@ -2154,25 +2108,21 @@ html, body {
 </div>
 
 <header class="header">
-  <div class="header-top-row">
-    <!-- слева: логотип-кнопка OWY Play -->
-    <button class="header-logo-chip" type="button" id="header-logo-btn">
-      <div class="header-logo-mark">
-        <span class="header-logo-ow">OW</span><span class="header-logo-y">Y</span>
-      </div>
-      <div class="header-logo-sub">PLAY</div>
-    </button>
-
-    <!-- центр: капсула баланса -->
-    <div class="header-balance-pill">
-      <div class="balance-label">Баланс</div>
-      <div class="balance-value">60 453 OWY</div>
-      <div class="balance-demo-tag">Demo режим • без реальных денег</div>
+  <div class="header-row">
+    <!-- Логотип слева -->
+    <div class="header-logo">
+      <img src="owy_logo.png" alt="OWY Play">
     </div>
 
-    <!-- справа: профиль -->
-    <button class="header-profile-chip" type="button" id="header-profile-btn">
-      <span id="header-profile-initials">EA</span>
+    <!-- Баланс по центру -->
+    <div class="header-balance">
+      <div class="header-balance-amount">60 453 OWY</div>
+      <div class="header-balance-sub">Demo режим • без реальных денег</div>
+    </div>
+
+    <!-- Профиль справа -->
+    <button class="header-profile" id="header-profile-btn">
+      <span>EA</span>
     </button>
   </div>
 </header>
@@ -2885,16 +2835,9 @@ const navMenu   = document.getElementById('nav-menu');
 // top header buttons (логотип + аватар)
 const headerLogoBtn    = document.getElementById('header-logo-btn');
 const headerProfileBtn = document.getElementById('header-profile-btn');
-
-if (headerLogoBtn) {
-  headerLogoBtn.addEventListener('click', () => {
-    showScreen('casino');   // функция ниже, которая уже рулит табами
-  });
-}
-
 if (headerProfileBtn) {
   headerProfileBtn.addEventListener('click', () => {
-    showScreen('profile');
+    showScreen('profile'); // функция уже есть, переключает на вкладку профиля
   });
 }
 
