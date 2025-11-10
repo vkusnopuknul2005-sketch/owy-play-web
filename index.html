@@ -153,50 +153,78 @@
   100% { transform: translateX(120%); }
 }
 
-    /* HEADER */
+.header {
+  padding: 10px 14px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #14151a;
+  gap: 8px;
+}
 
-    .header {
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #14151a;
-    }
+.header-logo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: radial-gradient(circle at top, rgba(8,10,16,0.95), #05060a);
+  color: #f5f5f5;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      font-size: 18px;
-    }
+.header-logo-btn:active {
+  transform: scale(0.97);
+}
 
-    .logo-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #1ddb6f;
-      box-shadow: 0 0 12px rgba(29, 219, 111, 0.8);
-    }
+.header-logo-text {
+  white-space: nowrap;
+}
 
-    .balance {
-      text-align: right;
-    }
+.header-balance-pill {
+  flex: 1;
+  min-width: 0;
+  margin: 0 4px;
+  padding: 6px 10px 7px;
+  border-radius: 999px;
+  background: radial-gradient(circle at top, #141a24, #06070b);
+  border: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+}
 
-    .balance-label {
-      font-size: 11px;
-      color: #8c8f9a;
-    }
+.header-balance-pill .balance-label {
+  font-size: 10px;
+  color: #8c8f9a;
+}
 
-    .balance-value {
-      font-size: 16px;
-      font-weight: 600;
-    }
+.header-balance-pill .balance-value {
+  font-size: 15px;
+  font-weight: 600;
+}
 
-    .balance-demo-tag {
-      font-size: 10px;
-      color: #5f6370;
-    }
+.header-balance-pill .balance-demo-tag {
+  font-size: 9px;
+  color: #555a66;
+}
+
+.header-profile-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: radial-gradient(circle at top, #19202a, #06070b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.header-profile-avatar {
+  font-size: 14px;
+}
 
     /* MAIN */
 
@@ -1743,6 +1771,116 @@ html, body {
   background: rgba(255,164,81,0.18);
 }
 
+/* === CASINO MAIN SCREEN === */
+
+.casino-promo {
+  margin: 6px 0 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: radial-gradient(circle at top left, #26203a, #0b0614);
+  border: 1px solid rgba(142, 194, 255, 0.5);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.8);
+}
+
+.casino-promo-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.casino-promo-sub {
+  font-size: 11px;
+  color: #cfd2de;
+}
+
+.casino-tabs-row {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+
+.casino-tab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(8,10,16,0.95);
+  font-size: 12px;
+  color: #cfd2de;
+}
+
+.casino-tab-active {
+  background: #2563eb;
+  border-color: rgba(37,99,235,0.9);
+  color: #f5f5f5;
+  box-shadow: 0 0 14px rgba(37,99,235,0.7);
+}
+
+.casino-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+/* горизонтальный скролл игр */
+
+.casino-games-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  margin-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.casino-games-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.casino-game-card {
+  min-width: 140px;
+  max-width: 160px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: radial-gradient(circle at top, #151722, #05060a);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.8);
+  padding: 8px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.casino-game-card:active {
+  transform: scale(0.97);
+}
+
+.casino-game-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  background: #11131b;
+}
+
+.casino-game-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.casino-game-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.casino-game-sub {
+  font-size: 10px;
+  color: #9ea2b0;
+}
+
     /* HILO */
 
     .hilo-sub {
@@ -1829,56 +1967,101 @@ html, body {
   </div>
 </div>
 
-    <header class="header">
-      <div class="logo">
-        <div class="logo-dot"></div>
-        <span>OWY Play</span>
-      </div>
-      <div class="balance">
-        <div class="balance-label">Баланс</div>
-        <div class="balance-value">1 000 OWY</div>
-        <div class="balance-demo-tag">Demo режим • без реальных денег</div>
-      </div>
-    </header>
+<header class="header">
+  <!-- ЛОГО → всегда ведёт на Casino -->
+  <button class="header-logo-btn" id="logo-btn" type="button">
+    <div class="logo-dot"></div>
+    <span class="header-logo-text">OWY Play</span>
+  </button>
+
+  <!-- БАЛАНС В ЦЕНТРЕ -->
+  <div class="header-balance-pill">
+    <div class="balance-label">Баланс</div>
+    <div class="balance-value">1 000 OWY</div>
+    <div class="balance-demo-tag">Demo режим • без реальных денег</div>
+  </div>
+
+  <!-- ПРОФИЛЬ СПРАВА -->
+  <button class="header-profile-btn" id="header-profile-btn" type="button">
+    <span class="header-profile-avatar">EA</span>
+  </button>
+</header>
 
     <main class="content">
       <!-- HOME -->
-      <section id="home-screen">
-        <div class="cards big-cards">
-          <div class="rush-banner" id="rush-open">
-            <img src="rush-banner.png" alt="Rush banner">
-          </div>
-<!-- Double banner -->
-<div class="rush-banner" id="double-open">
-  <img src="double-banner.png" alt="Double banner">
-</div>
+<section id="home-screen">
+  <!-- ПРОМО-БАННЕР (потом сюда воткнёшь реальные баннеры / слайдер) -->
+  <div class="casino-promo">
+    <div class="casino-promo-main">
+      <div class="casino-promo-title">OWY Play • mini games</div>
+      <div class="casino-promo-sub">Играй в демо, качай Fluffie и собирай опыт.</div>
+    </div>
+  </div>
 
-<!-- Plinko banner -->
-<div class="rush-banner" id="plinko-open">
-  <img src="plinko-banner.png" alt="Plinko banner">
-</div>
+  <!-- ТАБЫ НА БУДУЩЕЕ (пока только Mini games) -->
+  <div class="casino-tabs-row">
+    <button class="casino-tab casino-tab-active">Mini games</button>
+  </div>
 
-        <!-- HiLo banner -->
-        <div class="hilo-banner" id="hilo-open">
-          <div class="hilo-banner-left">
-            <div class="hilo-badge">новая игра</div>
-            <div class="hilo-title">HiLo карты</div>
-            <div class="hilo-subtitle">
-              Выше или ниже? Мгновенные раунды, коэффициенты и бонус от Fluffie.
-            </div>
-          </div>
-          <div class="hilo-banner-right">
-            <div class="hilo-card-mini prev">7♦</div>
-            <div class="hilo-card-mini next"><span>?</span></div>
-          </div>
-        </div>
+  <!-- ГОРИЗОНТАЛЬНЫЙ СПИСОК ИГР -->
+  <div class="casino-row-header">
+    <div class="section-title" style="margin-bottom: 0;">Mini games</div>
+  </div>
 
-    <!-- /NEW -->
+  <div class="casino-games-scroll">
+    <!-- Rush -->
+<button class="casino-game-card" type="button" onclick="openRush()">
+  <div class="casino-game-thumb">
+    <img src="rush-card.png" alt="Rush">
+  </div>
+  <div class="casino-game-name">Rush</div>
+  <div class="casino-game-sub">Лови множитель вовремя</div>
+</button>
 
-        <div class="hint-text bottom-hint" id="hint-text">
-          🤖 OWY совет: попробуй Rush с небольшим автовыводом.
-        </div>
-      </section>
+<!-- Double -->
+<button class="casino-game-card" type="button" onclick="openDouble()">
+  <div class="casino-game-thumb">
+    <img src="double-card.png" alt="Double">
+  </div>
+  <div class="casino-game-name">Double</div>
+  <div class="casino-game-sub">Выбери цвет x2 или x14</div>
+</button>
+
+<!-- Plinko -->
+<button class="casino-game-card" type="button" onclick="openPlinko()">
+  <div class="casino-game-thumb">
+    <img src="plinko-card.png" alt="Plinko">
+  </div>
+  <div class="casino-game-name">Plinko</div>
+  <div class="casino-game-sub">Шарики и пины</div>
+</button>
+
+<!-- HiLo -->
+<button class="casino-game-card" type="button" onclick="openHilo()">
+  <div class="casino-game-thumb">
+    <img src="hilo-card.png" alt="HiLo">
+  </div>
+  <div class="casino-game-name">HiLo карты</div>
+  <div class="casino-game-sub">Выше или ниже?</div>
+</button>
+
+    <!-- сюда добавишь остальные игры тем же паттерном -->
+  </div>
+
+  <div class="hint-text bottom-hint" id="hint-text">
+    🤖 OWY совет: начни с Rush и попробуй аккуратный автовывод.
+  </div>
+</section>
+
+<section id="bets-screen" style="display:none;">
+  <div class="section-title">Bets</div>
+  <p class="hint-text">Раздел ставок скоро подключим 😉</p>
+</section>
+
+<section id="tasks-screen" style="display:none;">
+  <div class="section-title">Tasks</div>
+  <p class="hint-text">Задания с наградами Fluffie и OWY появятся позже.</p>
+</section>
 
       <!-- PROFILE -->
       <section id="profile-screen" style="display:none;">
@@ -2135,20 +2318,31 @@ html, body {
       </section>
     </main> 
 
-    <!-- NAV -->
-   <nav class="bottom-nav">
+ <nav class="bottom-nav">
   <div class="bottom-nav-inner">
-    <div class="nav-item active" id="nav-home">
-      <span>🏠</span>
-      <div class="nav-label">Главная</div>
+    <div class="nav-item active" id="nav-casino">
+      <span>🎰</span>
+      <div class="nav-label">Casino</div>
     </div>
+
+    <div class="nav-item" id="nav-bets">
+      <span>📈</span>
+      <div class="nav-label">Bets</div>
+    </div>
+
+    <div class="nav-item" id="nav-tasks">
+      <span>📋</span>
+      <div class="nav-label">Tasks</div>
+    </div>
+
     <div class="nav-item" id="nav-pet">
       <span>🧿</span>
-      <div class="nav-label">Питомец</div>
+      <div class="nav-label">Fluffie</div>
     </div>
-    <div class="nav-item" id="nav-profile">
-      <span>👤</span>
-      <div class="nav-label">Профиль</div>
+
+    <div class="nav-item" id="nav-menu">
+      <span>☰</span>
+      <div class="nav-label">Меню</div>
     </div>
   </div>
 </nav>
@@ -2497,6 +2691,20 @@ html, body {
   const navPet           = document.getElementById('nav-pet');
   const hintTextEl       = document.getElementById('hint-text');
 
+const betsScreen   = document.getElementById('bets-screen');
+const tasksScreen  = document.getElementById('tasks-screen');
+
+// bottom nav
+const navCasino = document.getElementById('nav-casino');
+const navBets   = document.getElementById('nav-bets');
+const navTasks  = document.getElementById('nav-tasks');
+const navPetNav = document.getElementById('nav-pet');
+const navMenu   = document.getElementById('nav-menu');
+
+// topbar buttons
+const logoBtn          = document.getElementById('logo-btn');
+const headerProfileBtn = document.getElementById('header-profile-btn');
+
   const petScreen        = document.getElementById('pet-screen');
   const petEmptyStateEl  = document.getElementById('pet-empty-state');
   const petMainStateEl   = document.getElementById('pet-main-state');
@@ -2652,6 +2860,46 @@ function createMatch3Grid() {
     match3Grid.push(row);
   }
 }
+
+function showScreen(name) {
+  // показываем нужный экран
+  if (homeScreen)    homeScreen.style.display    = (name === 'casino') ? 'block' : 'none';
+  if (betsScreen)    betsScreen.style.display    = (name === 'bets')   ? 'block' : 'none';
+  if (tasksScreen)   tasksScreen.style.display   = (name === 'tasks')  ? 'block' : 'none';
+  if (petScreen)     petScreen.style.display     = (name === 'pet')    ? 'block' : 'none';
+  if (profileScreen) profileScreen.style.display = (name === 'profile')? 'block' : 'none';
+
+  // подсветка нижнего бара
+  [navCasino, navBets, navTasks, navPetNav, navMenu].forEach(el => {
+    if (!el) return;
+    el.classList.remove('active');
+  });
+  if (name === 'casino' && navCasino) navCasino.classList.add('active');
+  if (name === 'bets'   && navBets)   navBets.classList.add('active');
+  if (name === 'tasks'  && navTasks)  navTasks.classList.add('active');
+  if (name === 'pet'    && navPetNav) navPetNav.classList.add('active');
+  if (name === 'menu'   && navMenu)   navMenu.classList.add('active');
+}
+
+// обработчики кликов
+if (navCasino) navCasino.addEventListener('click', () => showScreen('casino'));
+if (navBets)   navBets.addEventListener('click',   () => showScreen('bets'));
+if (navTasks)  navTasks.addEventListener('click',  () => showScreen('tasks'));
+if (navPetNav) navPetNav.addEventListener('click', () => showScreen('pet'));
+
+// меню пока просто остаётся на текущем экране
+if (navMenu) navMenu.addEventListener('click', () => {
+  // сюда потом сделаем отдельное меню / оверлей
+});
+
+// логотип → Casino
+if (logoBtn) logoBtn.addEventListener('click', () => showScreen('casino'));
+
+// аватар → профиль
+if (headerProfileBtn) headerProfileBtn.addEventListener('click', () => showScreen('profile'));
+
+// по умолчанию всегда Casino
+showScreen('casino');
 
 function renderMatch3Grid() {
   if (!match3BoardEl) return;
@@ -5507,10 +5755,7 @@ function closeDouble() {
 if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
 if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
 
-
-
-
- // === INIT ===
+// === INIT ===
 loadBalance();
 loadProfileInfo();
 loadStats();
@@ -5520,21 +5765,25 @@ updateStatsView();
 loadPet();
 applyPetDecay();
 
+// наполняем историю краша демо-значениями
 for (let i = 0; i < 15; i++) {
   crashHistory.push(generateCrashMultiplier());
 }
 updateRushHistory();
 updatePlinkoHistory();
 
-setActiveTab('home');
+// старую навигацию больше не используем, иначе падает
+// setActiveTab('home');
+
 renderPlinkoPegs();
 renderPlinkoConfig();
 initPhrases();
 
-// истории хватает, само колесо строим при первом openDouble
+// Double — истории хватает, само колесо строим при первом openDouble
 updateDoubleHistoryView();
 startNewDoubleRound();
 
+// Rush
 let lastTs = performance.now();
 startNewRushRound();
 
