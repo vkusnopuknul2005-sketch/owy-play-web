@@ -3393,19 +3393,18 @@ const petGameScoreEl   = document.getElementById('pet-game-score');
 const petGameTimerEl   = document.getElementById('pet-game-timer');
 const petGameNoteEl    = document.getElementById('pet-game-note');
 
-  function hideSplash() {
+function hideSplash() {
   if (!splashEl) return;
 
-  // плавно прячем (класс .splash-hide уже есть в CSS выше)
+  // добавляем класс с плавным исчезновением
   splashEl.classList.add('splash-hide');
 
-  // после анимации полностью убираем из потока
+  // после анимации убираем сплэш из потока
   setTimeout(() => {
-    if (splashEl) splashEl.style.display = 'none';
+    splashEl.style.display = 'none';
   }, 400);
 }
 
-// ждём, пока браузер прогрузит ВСЁ (HTML + CSS + картинки)
 window.addEventListener('load', hideSplash);
 
   function vibrate(ms) {
