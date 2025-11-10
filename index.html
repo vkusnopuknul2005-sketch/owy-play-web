@@ -3287,104 +3287,107 @@ function applyPetDecay() {
   }
 
   function updatePetUI() {
-    if (!petEmptyStateEl || !petMainStateEl) return;
+  if (!petEmptyStateEl || !petMainStateEl) return;
 
-    const hasPet = !!petData.name;
+  const hasPet = !!petData.name;
 
-    if (!hasPet) {
-      petEmptyStateEl.style.display = '';
-      petMainStateEl.style.display  = 'none';
-      return;
-    }
+  if (!hasPet) {
+    petEmptyStateEl.style.display = '';
+    petMainStateEl.style.display  = 'none';
+    return;
+  }
 
-    petEmptyStateEl.style.display = 'none';
-    petMainStateEl.style.display  = '';
+  petEmptyStateEl.style.display = 'none';
+  petMainStateEl.style.display  = '';
 
-    // уровень из общего XP
-    const lvlInfo = calcPetLevelFromXp(petData.xp || 0);
-    petData.level = lvlInfo.level;
+  // уровень из общего XP
+  const lvlInfo = calcPetLevelFromXp(petData.xp || 0);
+  petData.level = lvlInfo.level;
 
-    // имя и подзаголовок
-    if (petNameLabelEl) petNameLabelEl.textContent = petData.name;
-    if (petSubLabelEl) {
-      petSubLabelEl.textContent =
-        `${getColorLabel(petData.color)} • LVL ${petData.level}`;
-    }
+  // имя и подзаголовок
+  if (petNameLabelEl) petNameLabelEl.textContent = petData.name;
+  if (petSubLabelEl) {
+    petSubLabelEl.textContent =
+      `${getColorLabel(petData.color)} • LVL ${petData.level}`;
+  }
 
-    // картинка
-    if (petImageEl) {
-      petImageEl.src = getColorImage(petData.color);
-    }
+  // картинка
+  if (petImageEl) {
+    petImageEl.src = getColorImage(petData.color);
+  }
 
-    // настроение / энергия / сытость
-    const mood   = Math.max(0, Math.min(100, petData.mood));
-    const energy = Math.max(0, Math.min(100, petData.energy));
-    const hunger = Math.max(0, Math.min(100, petData.hunger || 0)); // 0 — голоден
+  // настроение / энергия / сытость
+  const mood   = Math.max(0, Math.min(100, petData.mood));
+  const energy = Math.max(0, Math.min(100, petData.energy));
+  const hunger = Math.max(0, Math.min(100, petData.hunger || 0)); // 0 — голоден
 
-    if (petMoodFillEl)   petMoodFillEl.style.width   = mood   + '%';
-    if (petEnergyFillEl) petEnergyFillEl.style.width = energy + '%';
-    if (petHungerFillEl) petHungerFillEl.style.width = hunger + '%';
+  if (petMoodFillEl)   petMoodFillEl.style.width   = mood   + '%';
+  if (petEnergyFillEl) petEnergyFillEl.style.width = energy + '%';
+  if (petHungerFillEl) petHungerFillEl.style.width = hunger + '%';
 
-    // чип настроения
-    let moodEmoji = '😊';
-    if (mood < 30) moodEmoji = '😢';
-    else if (mood < 60) moodEmoji = '😐';
-    else if (mood > 90) moodEmoji = '🤩';
+  // чип настроения
+  let moodEmoji = '😊';
+  if (mood < 30) moodEmoji = '😢';
+  else if (mood < 60) moodEmoji = '😐';
+  else if (mood > 90) moodEmoji = '🤩';
 
-    if (petMoodChipEl) {
-      petMoodChipEl.textContent = `Настроение: ${moodEmoji}`;
-    }
+  if (petMoodChipEl) {
+    petMoodChipEl.textContent = `Настроение: ${moodEmoji}`;
+  }
 
-    // XP бар
-    if (petXpLabelEl) {
-      if (lvlInfo.xpToNext === null) {
-        petXpLabelEl.textContent = `${petData.xp} XP • максимальный уровень`;
-      } else {
-        petXpLabelEl.textContent =
-          `${lvlInfo.xpInLevel} / ${lvlInfo.xpToNext} XP до LVL ${petData.level + 1}`;
-      }
-    }
-
-    if (petXpFillEl) {
-      if (lvlInfo.xpToNext === null) {
-        petXpFillEl.style.width = '100%';
-      } else {
-        const perc = Math.max(0, Math.min(100,
-          (lvlInfo.xpInLevel / lvlInfo.xpToNext) * 100
-        ));
-        petXpFillEl.style.width = perc + '%';
-      }
-        // монеты Fluffie
-    const coins = typeof petData.coins === 'number' ? petData.coins : 0;
-    if (petCoinsMainEl) {
-      petCoinsMainEl.textContent = coins.toString();
-    }
-    if (petCoinsShopEl) {
-      petCoinsShopEl.textContent = coins.toString();
-    }
-
-    // Бонус к выигрышу
-    if (petBonusBadgeEl) {
-      const bonus = getPetBonus();
-      const pct   = Math.round(bonus * 1000) / 10; // 0.1%
-      petBonusBadgeEl.textContent =
-        `Бонус к выигрышу: +${pct.toFixed(1)}%`;
-    }
-
-    // текстовая подсказка
-    if (petNoteEl) {
-      if (hunger < 25) {
-        petNoteEl.textContent = `${petData.name} очень голоден. Покорми его скорее 🍪`;
-      } else if (mood < 30) {
-        petNoteEl.textContent = `${petData.name} грустит. Поиграй с ним или покорми.`;
-      } else if (energy < 30) {
-        petNoteEl.textContent = `${petData.name} устал. Отправь его поспать 😴`;
-      } else {
-        petNoteEl.textContent =
-          `${petData.name} чувствует себя отлично ✨ LVL ${petData.level}`;
-      }
+  // XP бар
+  if (petXpLabelEl) {
+    if (lvlInfo.xpToNext === null) {
+      petXpLabelEl.textContent = `${petData.xp} XP • максимальный уровень`;
+    } else {
+      petXpLabelEl.textContent =
+        `${lvlInfo.xpInLevel} / ${lvlInfo.xpToNext} XP до LVL ${petData.level + 1}`;
     }
   }
+
+  if (petXpFillEl) {
+    if (lvlInfo.xpToNext === null) {
+      petXpFillEl.style.width = '100%';
+    } else {
+      const perc = Math.max(
+        0,
+        Math.min(100, (lvlInfo.xpInLevel / lvlInfo.xpToNext) * 100)
+      );
+      petXpFillEl.style.width = perc + '%';
+    }
+  }
+
+  // монеты Fluffie
+  const coins = typeof petData.coins === 'number' ? petData.coins : 0;
+  if (petCoinsMainEl) {
+    petCoinsMainEl.textContent = coins.toString();
+  }
+  if (petCoinsShopEl) {
+    petCoinsShopEl.textContent = coins.toString();
+  }
+
+  // Бонус к выигрышу
+  if (petBonusBadgeEl) {
+    const bonus = getPetBonus();
+    const pct   = Math.round(bonus * 1000) / 10; // 0.1%
+    petBonusBadgeEl.textContent =
+      `Бонус к выигрышу: +${pct.toFixed(1)}%`;
+  }
+
+  // текстовая подсказка
+  if (petNoteEl) {
+    if (hunger < 25) {
+      petNoteEl.textContent = `${petData.name} очень голоден. Покорми его скорее 🍪`;
+    } else if (mood < 30) {
+      petNoteEl.textContent = `${petData.name} грустит. Поиграй с ним или покорми.`;
+    } else if (energy < 30) {
+      petNoteEl.textContent = `${petData.name} устал. Отправь его поспать 😴`;
+    } else {
+      petNoteEl.textContent =
+        `${petData.name} чувствует себя отлично ✨ LVL ${petData.level}`;
+    }
+  }
+}
 
   // выбор пола
   if (petGenderBtns && petGenderBtns.length) {
