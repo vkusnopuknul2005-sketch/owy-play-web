@@ -2451,7 +2451,6 @@
 
   const hintTextEl       = document.getElementById('hint-text');
 
-  const petScreen        = document.getElementById('pet-screen');
   const petEmptyStateEl  = document.getElementById('pet-empty-state');
   const petMainStateEl   = document.getElementById('pet-main-state');
   const petNameInput     = document.getElementById('pet-name-input');
@@ -2949,8 +2948,23 @@ const petGameNoteEl    = document.getElementById('pet-game-note');
   }, 400);
 }
 
-// ждём, пока браузер прогрузит ВСЁ (HTML + CSS + картинки)
-window.addEventListener('load', hideSplash);
+// убираем сплэш после загрузки DOM или через запасной таймер
+function initSplashHide() {
+  // 1) если DOM готов — прячем
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    hideSplash();
+  } else {
+    window.addEventListener('load', hideSplash);
+    document.addEventListener('DOMContentLoaded', hideSplash);
+  }
+
+  // 2) запасной таймер (если WebView не вызывает load)
+  setTimeout(() => {
+    hideSplash();
+  }, 2500); // через 2.5 секунды максимум скрываем
+}
+
+initSplashHide();
 
   function vibrate(ms) {
     if (navigator && navigator.vibrate) navigator.vibrate(ms);
@@ -3694,6 +3708,7 @@ doubleCurrentIndex    = loopLen * 2;
 doubleSpinFromIndex   = doubleCurrentIndex;
 doubleSpinTargetIndex = doubleCurrentIndex;
 syncDoubleWheel();
+ }
 
 function normalizeDoubleIndexToMiddle(idx) {
   const loopLen = DOUBLE_SLOTS.length;
