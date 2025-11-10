@@ -359,6 +359,19 @@
       box-shadow: 0 0 10px rgba(29,219,111,0.35);
     }
 
+.pet-coins-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #cfd2de;
+}
+
+.pet-coins-value {
+  font-weight: 600;
+}
+
        .pet-card {
       border-radius: 22px;
       padding: 18px 14px 16px;
@@ -605,6 +618,16 @@
 
 .pet-shop-card {
   padding-bottom: 14px;
+}
+
+.pet-shop-balance {
+  font-size: 12px;
+  color: #cfd2de;
+  margin-top: 10px;
+}
+
+.pet-shop-balance span {
+  font-weight: 600;
 }
 
 .pet-shop-items {
@@ -2023,7 +2046,7 @@
     <div class="pet-chip" id="pet-mood-chip">Настроение: 😊</div>
   </div>
 
-  <div class="pet-xp-row">
+   <div class="pet-xp-row">
     <div class="pet-xp-label" id="pet-xp-label">
       0 / 40 XP до LVL 2
     </div>
@@ -2034,6 +2057,13 @@
       Бонус к выигрышу: +0.0%
     </div>
   </div>
+
+  <div class="pet-coins-row">
+    <span>Монеты Fluffie</span>
+    <span class="pet-coins-value" id="pet-coins-main">0</span>
+  </div>
+
+  <div class="pet-image-wrap">
 
   <div class="pet-image-wrap">
     <img id="pet-image" src="purplefluffie.png" alt="Fluffie" />
@@ -2154,8 +2184,90 @@
       <button class="btn btn-ghost" id="pet-shop-close">Закрыть</button>
     </div>
 
+    <div class="pet-shop-balance">
+      Баланс монет Fluffie: <span id="pet-coins-shop">0</span>
+    </div>
+
     <div class="pet-shop-items">
-      ...
+      <!-- ОБМЕН OWY → МОНЕТЫ FLUFFIE -->
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">+20 монет Fluffie</div>
+          <div class="pet-shop-item-desc">Обменяй 50 OWY на монеты для питомца.</div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">-50 OWY</div>
+          <button class="btn btn-primary pet-shop-buy" data-item="coins-20">
+            Купить
+          </button>
+        </div>
+      </div>
+
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">+60 монет Fluffie</div>
+          <div class="pet-shop-item-desc">Чуть выгоднее курс: 120 OWY → 60 монет.</div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">-120 OWY</div>
+          <button class="btn btn-primary pet-shop-buy" data-item="coins-60">
+            Купить
+          </button>
+        </div>
+      </div>
+
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">+150 монет Fluffie</div>
+          <div class="pet-shop-item-desc">Максимально выгодный обмен для гриндеров.</div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">-250 OWY</div>
+          <button class="btn btn-primary pet-shop-buy" data-item="coins-150">
+            Купить
+          </button>
+        </div>
+      </div>
+
+      <!-- ТРАТИМ МОНЕТЫ FLUFFIE -->
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">Корм “Любимчик”</div>
+          <div class="pet-shop-item-desc">+сытость, +настроение, немного XP.</div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">-10 монет</div>
+          <button class="btn btn-ghost pet-shop-buy" data-item="cookie">
+            Дать
+          </button>
+        </div>
+      </div>
+
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">Энергетик</div>
+          <div class="pet-shop-item-desc">+энергия, но слегка проголодается.</div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">-14 монет</div>
+          <button class="btn btn-ghost pet-shop-buy" data-item="energy">
+            Дать
+          </button>
+        </div>
+      </div>
+
+      <div class="pet-shop-item">
+        <div class="pet-shop-item-main">
+          <div class="pet-shop-item-name">Подарок Fluffie</div>
+          <div class="pet-shop-item-desc">Сильно поднимает настроение и XP.</div>
+        </div>
+        <div class="pet-shop-item-side">
+          <div class="pet-shop-price">-22 монеты</div>
+          <button class="btn btn-ghost pet-shop-buy" data-item="gift">
+            Подарить
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="pet-shop-note" id="pet-shop-note">
@@ -2379,6 +2491,8 @@
   const petXpLabelEl     = document.getElementById('pet-xp-label');      // NEW
   const petXpFillEl      = document.getElementById('pet-xp-fill');       // NEW
   const petBonusBadgeEl  = document.getElementById('pet-bonus-badge');   // NEW
+  const petCoinsMainEl   = document.getElementById('pet-coins-main');
+  const petCoinsShopEl   = document.getElementById('pet-coins-shop');
   const petNoteEl        = document.getElementById('pet-note');
   const petResetBtn      = document.getElementById('pet-reset-btn');
   const petActionBtns    = document.querySelectorAll('.pet-action-btn');
@@ -2814,14 +2928,16 @@ function endMatch3Game(skipReward) {
   }
 
   if (!skipReward && petData && petData.name) {
-    // Простая формула: 1 XP за каждые 50 очков
-    const xpGain = Math.max(1, Math.floor(match3Score / 50));
-    const moodGain = Math.min(15, Math.floor(match3Score / 40));
+    // XP, настроение и монеты Fluffie
+    const xpGain    = Math.max(1, Math.floor(match3Score / 50));
+    const moodGain  = Math.min(15, Math.floor(match3Score / 40));
+    const coinGain  = Math.max(1, Math.floor(match3Score / 60));
 
-    petData.xp     = (petData.xp || 0) + xpGain;
-    petData.mood   = Math.min(100, petData.mood + moodGain);
-    petData.energy = Math.max(0,  petData.energy - 10);
-    petData.hunger = Math.max(0,  (petData.hunger || 0) - 8);
+    petData.xp      = (petData.xp || 0) + xpGain;
+    petData.mood    = Math.min(100, petData.mood + moodGain);
+    petData.energy  = Math.max(0,  petData.energy - 10);
+    petData.hunger  = Math.max(0,  (petData.hunger || 0) - 8);
+    petData.coins   = (petData.coins || 0) + coinGain;
     petData.lastUpdateAt = Date.now();
 
     const info = calcPetLevelFromXp(petData.xp || 0);
@@ -2831,7 +2947,7 @@ function endMatch3Game(skipReward) {
 
     if (match3StatusEl) {
       match3StatusEl.textContent =
-        `Игра окончена: ${match3Score} очков. Fluffie получил +${xpGain} XP и +${moodGain} к настроению 🎮`;
+        `Игра окончена: ${match3Score} очков. Fluffie получил +${xpGain} XP, +${moodGain} к настроению и +${coinGain} монет 🪙`;
     }
   }
 
@@ -3072,6 +3188,7 @@ let petData = {
   hunger: 70,  // 0..100 (0 — голоден)
   xp: 0,       // общий XP питомца
   level: 1,
+  coins: 0,    // монеты Fluffie
   createdAt: null,
   lastUpdateAt: null
 };
@@ -3087,6 +3204,7 @@ let petData = {
     // дефолты для старых сохранений
     if (typeof petData.hunger !== 'number') petData.hunger = 70;
     if (typeof petData.xp     !== 'number') petData.xp     = 0;
+    if (typeof petData.coins  !== 'number') petData.coins  = 0;
 
     const lvlInfo = calcPetLevelFromXp(petData.xp);
     petData.level = lvlInfo.level;
@@ -3236,6 +3354,13 @@ function applyPetDecay() {
         ));
         petXpFillEl.style.width = perc + '%';
       }
+        // монеты Fluffie
+    const coins = typeof petData.coins === 'number' ? petData.coins : 0;
+    if (petCoinsMainEl) {
+      petCoinsMainEl.textContent = coins.toString();
+    }
+    if (petCoinsShopEl) {
+      petCoinsShopEl.textContent = coins.toString();
     }
 
     // Бонус к выигрышу
@@ -3310,6 +3435,7 @@ if (petCreateBtn) {
 }
 
   // действия с питомцем
+// действия с питомцем
 if (petActionBtns && petActionBtns.length) {
   petActionBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3318,14 +3444,28 @@ if (petActionBtns && petActionBtns.length) {
       const action = btn.dataset.action;
 
       if (action === 'feed') {
-        petData.hunger = Math.min(100, (petData.hunger || 0) + 20);
-        petData.mood   = Math.min(100, petData.mood + 8);
-        petData.energy = Math.min(100, petData.energy + 10);
-        petData.xp     = (petData.xp || 0) + 3;
+        const FEED_COST = 3;
+        const currentCoins = petData.coins || 0;
+
+        if (currentCoins < FEED_COST) {
+          if (petNoteEl) {
+            petNoteEl.textContent =
+              'Не хватает монет Fluffie, чтобы покормить. Сыграй мини-игру или купи монеты в магазине 🪙';
+          }
+          vibrate(40);
+          return;
+        }
+
+        petData.coins  = currentCoins - FEED_COST;
+        petData.hunger = Math.min(100, (petData.hunger || 0) + 16);
+        petData.mood   = Math.min(100, petData.mood + 6);
+        petData.energy = Math.min(100, petData.energy + 4);
+        petData.xp     = (petData.xp || 0) + 2;
+
       } else if (action === 'play') {
-        // ТЕПЕРЬ ТОЛЬКО ОТКРЫВАЕМ МЕНЮ МИНИ-ИГР
+        // только открываем меню мини-игр
         openMiniOverlay();
-        return; // дальше не трогаем статы и savePet — сделаем это после игры
+
       } else if (action === 'rest') {
         petData.energy = Math.min(100, petData.energy + 20);
         petData.mood   = Math.max(0,  petData.mood - 3);
@@ -3351,90 +3491,133 @@ if (petActionBtns && petActionBtns.length) {
 }
 
   function openPetShop() {
-    if (!petShopOverlay) return;
-    petShopOverlay.style.display = 'flex';
-    if (petShopNoteEl) {
-      petShopNoteEl.textContent = 'Купи что-нибудь вкусное для Fluffie 🍪';
-    }
+  if (!petShopOverlay) return;
+  petShopOverlay.style.display = 'flex';
+
+  if (petShopNoteEl) {
+    petShopNoteEl.textContent = 'Купи что-нибудь вкусное для Fluffie 🍪';
   }
+  updatePetUI(); // чтобы баланс монет точно обновился
+}
 
   function closePetShop() {
     if (!petShopOverlay) return;
     petShopOverlay.style.display = 'none';
   }
 
-  function handlePetShopBuy(item) {
-    if (!petData.name) {
+ function handlePetShopBuy(item) {
+  if (!petData.name) {
+    if (petShopNoteEl) {
+      petShopNoteEl.textContent =
+        'Сначала создай питомца, а потом уже балуй его покупками 🙂';
+    }
+    vibrate(40);
+    return;
+  }
+
+  // 1) ОБМЕН OWY → МОНЕТЫ FLUFFIE
+  if (item === 'coins-20' || item === 'coins-60' || item === 'coins-150') {
+    let owCost = 0;
+    let coins  = 0;
+
+    if (item === 'coins-20') {
+      owCost = 50;
+      coins  = 20;
+    } else if (item === 'coins-60') {
+      owCost = 120;
+      coins  = 60;
+    } else if (item === 'coins-150') {
+      owCost = 250;
+      coins  = 150;
+    }
+
+    if (demoBalance < owCost) {
       if (petShopNoteEl) {
-        petShopNoteEl.textContent =
-          'Сначала создай питомца, а потом уже балуй его покупками 🙂';
+        petShopNoteEl.textContent = 'Недостаточно OWY для обмена 😔';
       }
       vibrate(40);
       return;
     }
 
-    let cost = 0;
-    let mood = 0, energy = 0, hunger = 0, xp = 0;
-    let itemLabel = '';
-
-    if (item === 'cookie') {
-      cost = 20;
-      hunger = +15;
-      mood   = +5;
-      xp     = 3;
-      itemLabel = 'печеньку';
-    } else if (item === 'energy') {
-      cost = 35;
-      energy = +25;
-      hunger = -5;
-      xp     = 4;
-      itemLabel = 'энергетик';
-    } else if (item === 'gift') {
-      cost = 50;
-      mood = +20;
-      xp   = 8;
-      itemLabel = 'подарок';
-    } else {
-      return;
-    }
-
-    if (demoBalance < cost) {
-      if (petShopNoteEl) {
-        petShopNoteEl.textContent = 'Недостаточно OWY для этой покупки 😔';
-      }
-      vibrate(40);
-      return;
-    }
-
-    // списываем демо-баланс
-    demoBalance -= cost;
+    demoBalance -= owCost;
     saveBalance();
     updateBalanceView();
 
-    // применяем эффект к Fluffie
-    petData.mood   = Math.max(0, Math.min(100, petData.mood + mood));
-    petData.energy = Math.max(0, Math.min(100, petData.energy + energy));
-    petData.hunger = Math.max(0, Math.min(100, (petData.hunger || 0) + hunger));
-    petData.xp     = (petData.xp || 0) + xp;
-
-    const lvlInfo = calcPetLevelFromXp(petData.xp || 0);
-    petData.level      = lvlInfo.level;
+    petData.coins = (petData.coins || 0) + coins;
     petData.lastUpdateAt = Date.now();
 
     savePet();
     updatePetUI();
 
-    // общий XP профиля слегка подрастёт тоже
-    stats.xp += Math.max(1, xp);
-    saveStats();
-    updateStatsView();
-
     if (petShopNoteEl) {
       petShopNoteEl.textContent =
-        `${petData.name} получил ${itemLabel}! XP +${xp}, настроение/энергия обновлены ✨`;
+        `Обмен выполнен: +${coins} монет Fluffie за ${owCost} OWY 🪙`;
     }
-    vibrate(60);
+    vibrate(50);
+    return;
   }
+
+  // 2) ТРАТИМ МОНЕТЫ FLUFFIE НА КОРМ / БУСТЫ
+  let costCoins = 0;
+  let mood = 0, energy = 0, hunger = 0, xp = 0;
+  let itemLabel = '';
+
+  if (item === 'cookie') {
+    costCoins = 10;
+    hunger    = +18;
+    mood      = +8;
+    xp        = 3;
+    itemLabel = 'печеньку';
+  } else if (item === 'energy') {
+    costCoins = 14;
+    energy    = +30;
+    hunger    = -6;
+    xp        = 4;
+    itemLabel = 'энергетик';
+  } else if (item === 'gift') {
+    costCoins = 22;
+    mood      = +25;
+    xp        = 8;
+    itemLabel = 'подарок';
+  } else {
+    return;
+  }
+
+  const currentCoins = petData.coins || 0;
+  if (currentCoins < costCoins) {
+    if (petShopNoteEl) {
+      petShopNoteEl.textContent =
+        'Недостаточно монет Fluffie. Сыграй мини-игры или купи монеты в обменнике 🪙';
+    }
+    vibrate(40);
+    return;
+  }
+
+  petData.coins = currentCoins - costCoins;
+
+  petData.mood   = Math.max(0, Math.min(100, petData.mood + mood));
+  petData.energy = Math.max(0, Math.min(100, petData.energy + energy));
+  petData.hunger = Math.max(0, Math.min(100, (petData.hunger || 0) + hunger));
+  petData.xp     = (petData.xp || 0) + xp;
+
+  const lvlInfo = calcPetLevelFromXp(petData.xp || 0);
+  petData.level       = lvlInfo.level;
+  petData.lastUpdateAt = Date.now();
+
+  savePet();
+  updatePetUI();
+
+  // общий XP профиля немного растёт
+  stats.xp += Math.max(1, xp);
+  saveStats();
+  updateStatsView();
+
+  if (petShopNoteEl) {
+    petShopNoteEl.textContent =
+      `${petData.name} получил ${itemLabel}! XP +${xp}, настроение/энергия обновлены ✨`;
+  }
+  vibrate(60);
+}
 
 // сброс питомца
 if (petResetBtn) {
@@ -4762,14 +4945,16 @@ function endTapTapGame(skipReward) {
   }
 
   if (!skipReward && petData && petData.name) {
-    // простая формула: XP и настроение
-    const xpGain   = Math.max(1, Math.floor(taptapScore / 5));
-    const moodGain = Math.min(20, Math.floor(taptapScore / 4));
+    // простая формула: XP, настроение и монеты
+    const xpGain    = Math.max(1, Math.floor(taptapScore / 5));
+    const moodGain  = Math.min(20, Math.floor(taptapScore / 4));
+    const coinGain  = Math.max(1, Math.floor(taptapScore / 10));
 
-    petData.xp     = (petData.xp || 0) + xpGain;
-    petData.mood   = Math.min(100, petData.mood + moodGain);
-    petData.energy = Math.max(0,  petData.energy - 8);
-    petData.hunger = Math.max(0,  (petData.hunger || 0) - 5);
+    petData.xp      = (petData.xp || 0) + xpGain;
+    petData.mood    = Math.min(100, petData.mood + moodGain);
+    petData.energy  = Math.max(0,  petData.energy - 8);
+    petData.hunger  = Math.max(0,  (petData.hunger || 0) - 5);
+    petData.coins   = (petData.coins || 0) + coinGain;
     petData.lastUpdateAt = Date.now();
 
     const info = calcPetLevelFromXp(petData.xp || 0);
@@ -4779,9 +4964,11 @@ function endTapTapGame(skipReward) {
 
     if (taptapStatusEl) {
       taptapStatusEl.textContent =
-        `Игра окончена: ${taptapScore} очков. Fluffie получил +${xpGain} XP и +${moodGain} к настроению 🎯`;
+        `Игра окончена: ${taptapScore} очков. Fluffie получил +${xpGain} XP, +${moodGain} к настроению и +${coinGain} монет 🪙`;
     }
   } else {
+    ...
+  }
     if (taptapStatusEl) {
       taptapStatusEl.textContent = `Игра остановлена. Результат: ${taptapScore} очков.`;
     }
