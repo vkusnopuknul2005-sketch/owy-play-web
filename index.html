@@ -1733,7 +1733,7 @@ html, body {
   opacity: 0;
 }
 
-/* === DOUBLE === */
+/* === DOUBLE WHEEL === */
 
 .double-wheel-wrap {
   margin: 10px 0 16px;
@@ -4140,18 +4140,39 @@ if (petShopBuyBtns && petShopBuyBtns.length) {
 let doubleWheelInited = false;
 
  function buildDoubleWheel() {
-  if (!doubleWheelStrip) return;
-  doubleWheelStrip.innerHTML = '';
+  const strip = document.getElementById("double-wheel-strip");
+  if (!strip) return;
+  strip.innerHTML = "";
 
-  const repeats = 8; // было 5 — делаем ленту чуть длиннее
-  for (let r = 0; r < repeats; r++) {
-    DOUBLE_SLOTS.forEach(color => {
-      const cell = document.createElement('div');
-      cell.className = 'double-cell ' + color;
-      cell.textContent = 'x' + DOUBLE_MULTIS[color];
-      doubleWheelStrip.appendChild(cell);
-    });
+  const colors = ["blue", "green", "blue", "orange", "blue", "green", "blue", "orange"];
+  for (let i = 0; i < 40; i++) {
+    const cell = document.createElement("div");
+    cell.className = `double-cell ${colors[i % colors.length]}`;
+    cell.textContent = colors[i % colors.length] === "orange" ? "14x" : "2x";
+    strip.appendChild(cell);
   }
+}
+
+function spinDoubleWheel() {
+  const strip = document.getElementById("double-wheel-strip");
+  if (!strip) return;
+
+  strip.style.animation = "none";
+  // триггер для перезапуска анимации
+  void strip.offsetWidth;
+
+  strip.style.animation = "double-spin 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards";
+
+  // случайный результат
+  const results = ["blue", "green", "orange"];
+  const result = results[Math.floor(Math.random() * results.length)];
+
+  setTimeout(() => {
+    document.getElementById("double-status").textContent =
+      `Выпал цвет: ${result === "orange" ? "оранжевый (x14)" : result === "green" ? "зелёный (x2)" : "синий (x2)"}`;
+  }, 3000);
+}
+
 
   // посчитали размеры
   recalcDoubleGeometry();
