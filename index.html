@@ -5315,50 +5315,24 @@ function runOnePlinkoBall(bet, config, slots, slotCenters, slotY) {
   const approxTotalTime =
     (stepDelayStart + stepDelayEnd) / 2 * path.length + 120;
 
-  plinkoActiveBalls++;
-
-  setTimeout(() => {
-    if (slots[finalCol]) {
-      slots.forEach(s => s.classList.remove("active"));
-      slots[finalCol].classList.add("active");
-    }
-
-    const baseWin   = Math.floor(bet * multiplier);
-const petBonus  = getPetBonus();
-const bonusWin  = Math.floor(baseWin * petBonus);
-const winAmount = baseWin + bonusWin;
-
-demoBalance += winAmount;
-saveBalance();
-updateBalanceView();
-
-    plinkoHistory.push(multiplier);
-    updatePlinkoHistory();
-
-    if (multiplier > stats.bestMulti) {
-      stats.bestMulti = multiplier;
-      saveStats();
-      updateStatsView();
-    }
-
-    vibrate(60);
-    setTimeout(() => ball.remove(), 1000);
-
-    plinkoActiveBalls--;
+      plinkoActiveBalls--;
     if (plinkoActiveBalls === 0) {
       plinkoIsRunning = false;
       if (plinkoBetInput) plinkoBetInput.disabled = false;
       if (plinkoRiskBtns && plinkoRiskBtns.length) {
         plinkoRiskBtns.forEach(btn => btn.disabled = false);
       }
-     if (plinkoStatusEl) {
-  if (petBonus > 0 && winAmount > 0) {
-    plinkoStatusEl.textContent =
-      `Раунд завершён. Ты получил +${winAmount} OWY (включая +${bonusWin} от Fluffie 🧿)`;
-  } else {
-    plinkoStatusEl.textContent = "Раунд завершён. Запускай ещё 😉";
-  }
-}
+      if (plinkoStatusEl) {
+        if (petBonus > 0 && winAmount > 0) {
+          plinkoStatusEl.textContent =
+            `Раунд завершён. Ты получил +${winAmount} OWY (включая +${bonusWin} от Fluffie 🧿)`;
+        } else if (winAmount > 0) {
+          plinkoStatusEl.textContent =
+            `Раунд завершён. Ты получил +${winAmount} OWY`;
+        } else {
+          plinkoStatusEl.textContent = "Раунд завершён. Запускай ещё 😉";
+        }
+      }
     }
   }, approxTotalTime);
 }
@@ -5371,7 +5345,9 @@ function playPlinko() {
 
   const bet = parseInt(plinkoBetInput.value, 10);
   if (isNaN(bet) || bet < 10) {
-    if (plinkoStatusEl) plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+    if (plinkoStatusEl) {
+      plinkoStatusEl.textContent = "Минимальная ставка — 10 OWY 🤨";
+    }
     return;
   }
 
@@ -5426,19 +5402,23 @@ function playPlinko() {
   runOnePlinkoBall(bet, config, slots, slotCenters, slotY);
 }
 
-  function openPlinko() {
-    if (plinkoOverlay) plinkoOverlay.style.display = 'flex';
-    if (plinkoStatusEl) plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
+function openPlinko() {
+  if (plinkoOverlay) plinkoOverlay.style.display = 'flex';
+  if (plinkoStatusEl) {
+    plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
   }
+}
 
-  function closePlinko() {
-    if (plinkoOverlay) plinkoOverlay.style.display = 'none';
-    if (plinkoStatusEl) plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
+function closePlinko() {
+  if (plinkoOverlay) plinkoOverlay.style.display = 'none';
+  if (plinkoStatusEl) {
+    plinkoStatusEl.textContent = "Выбирай риск и запускай шар 😉";
   }
+}
 
-  if (plinkoOpenBtn)  plinkoOpenBtn.addEventListener('click', openPlinko);
-  if (plinkoBackBtn)  plinkoBackBtn.addEventListener('click', closePlinko);
-  if (plinkoStartBtn) plinkoStartBtn.addEventListener('click', playPlinko);
+if (plinkoOpenBtn)  plinkoOpenBtn.addEventListener('click', openPlinko);
+if (plinkoBackBtn)  plinkoBackBtn.addEventListener('click', closePlinko);
+if (plinkoStartBtn) plinkoStartBtn.addEventListener('click', playPlinko);
 
 function openDouble() {
   if (!doubleOverlay) return;
