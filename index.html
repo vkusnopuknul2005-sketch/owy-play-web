@@ -153,33 +153,37 @@
   100% { transform: translateX(120%); }
 }
 
-/* === TOP HEADER (логотип + баланс + профиль) === */
+/* === TOP HEADER: логотип слева, баланс по центру, профиль справа === */
 
 .header {
-  padding: 10px 12px 4px;
+  padding: 10px 12px 6px;
   border-bottom: none;
 }
 
 .header-top-row {
   max-width: 420px;
   margin: 0 auto;
+  position: relative;
+  height: 36px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center; /* баланс ровно по центру */
 }
 
-/* слева — кнопка логотипа */
+/* слева — OWY Play */
 .header-logo-chip {
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 11px;
-  background: rgba(6, 8, 12, 0.95);
-  border: 1px solid rgba(29, 219, 111, 0.5);
-  color: #e7fdf0;
-  display: flex;
+  position: absolute;
+  left: 0;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(29, 219, 111, 0.45);
+  background: rgba(6, 8, 12, 0.96);
+  color: #e7fdf0;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .header-logo-chip .logo-dot {
@@ -190,53 +194,54 @@
   box-shadow: 0 0 10px rgba(29, 219, 111, 0.7);
 }
 
-/* центр — маленькая пилюля баланса */
+/* центр — маленькая капсула, не на всю ширину */
 .header-balance-pill {
-  flex: 1;
+  padding: 5px 16px 6px;
   border-radius: 999px;
-  padding: 6px 12px 7px;
   background: radial-gradient(
-      circle at top,
-      rgba(29, 219, 111, 0.18),
-      rgba(3, 4, 8, 0.98)
+    circle at top,
+    rgba(29, 219, 111, 0.18),
+    rgba(3, 4, 8, 0.98)
   );
   border: 1px solid rgba(29, 219, 111, 0.5);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.85);
   text-align: center;
+  min-width: 170px;
+  max-width: 220px;
 }
 
-.header-balance-label {
-  font-size: 11px;
+.header-balance-pill .balance-label {
+  font-size: 10px;
   color: #9ea2b0;
 }
 
-.header-balance-value {
+.header-balance-pill .balance-value {
   font-size: 15px;
   font-weight: 600;
 }
 
-.header-balance-sub {
-  font-size: 10px;
+.header-balance-pill .balance-demo-tag {
+  font-size: 9px;
   color: #6b7080;
-  margin-top: 1px;
 }
 
-/* справа — аватар/кнопка профиля */
+/* справа — кружок профиля */
 .header-profile-chip {
+  position: absolute;
+  right: 0;
   width: 32px;
   height: 32px;
   border-radius: 999px;
   border: none;
   background: radial-gradient(circle at top, #1ddb6f, #0f7b45);
   box-shadow: 0 0 12px rgba(29, 219, 111, 0.6);
-  font-size: 13px;
-  font-weight: 600;
-  color: #05060a;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #05060a;
 }
-
 
 /* === CASINO / MINI GAMES (зелёная тема) === */
 
@@ -2107,22 +2112,22 @@ html, body {
 
 <header class="header">
   <div class="header-top-row">
-    <!-- логотип, при клике — на Casino / home -->
-    <button class="header-logo-chip" id="header-logo-btn" type="button">
+    <!-- слева: логотип-кнопка -->
+    <button class="header-logo-chip" type="button" id="header-logo-btn">
       <span class="logo-dot"></span>
       <span>OWY Play</span>
     </button>
 
-    <!-- баланс (важно: внутри остаётся .balance-value, JS к ней привязан) -->
+    <!-- центр: маленькая капсула баланса -->
     <div class="header-balance-pill">
-      <div class="header-balance-label">Баланс</div>
-      <div class="header-balance-value balance-value">1 000 OWY</div>
-      <div class="header-balance-sub">Demo режим • без реальных денег</div>
+      <div class="balance-label">Баланс</div>
+      <div class="balance-value">60 453 OWY</div>
+      <div class="balance-demo-tag">Demo режим • без реальных денег</div>
     </div>
 
-    <!-- аватар / профиль -->
-    <button class="header-profile-chip" id="header-profile-btn" type="button">
-      EA
+    <!-- справа: профиль -->
+    <button class="header-profile-chip" type="button" id="header-profile-btn">
+      <span id="header-profile-initials">EA</span>
     </button>
   </div>
 </header>
@@ -2479,12 +2484,7 @@ html, body {
     <div class="nav-item" id="nav-pet">
       <span>🧿</span>
       <div class="nav-label">Fluffie</div>
-    </div>
-
-    <div class="nav-item" id="nav-menu">
-      <span>☰</span>
-      <div class="nav-label">Меню</div>
-    </div>
+    </button>
   </div>
 </nav>
 
@@ -4112,15 +4112,6 @@ if (petShopBuyBtns && petShopBuyBtns.length) {
   if (navHome)    navHome.addEventListener('click', () => setActiveTab('home'));
   if (navProfile) navProfile.addEventListener('click', () => setActiveTab('profile'));
   if (navPet)     navPet.addEventListener('click', () => setActiveTab('pet'));
-
-  // === HINTS ===
-  const hintPhrases = [
-    "🤖 OWY совет: попробуй Rush с небольшим автовыводом.",
-    "🤖 OWY совет: Plinko High риск — только если готов к боли.",
-    "🤖 OWY совет: начни с Mid Plinko и посмотри, как сыпет.",
-    "🤖 OWY совет: не забывай забрать раньше краша 😉",
-    "🤖 OWY совет: чередуй Rush и Plinko, чтобы прочувствовать математику."
-  ];
 
   function initPhrases() {
     if (!hintTextEl) return;
