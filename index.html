@@ -890,42 +890,33 @@
       color: #1ddb6f;
     }
 
- /* === LIQUID GLASS BOTTOM NAV === */
+/* ——— Компактный "liquid glass" бар ——— */
 
 .bottom-nav {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 0;
+  bottom: 10px;                 /* есть воздух снизу */
   width: 100%;
   max-width: 420px;
-
-  padding: 0 16px 14px;
-  /* мягкий градиент от низа экрана */
-  background: linear-gradient(
-    to top,
-    rgba(3, 4, 7, 0.95),
-    rgba(3, 4, 7, 0.65),
-    transparent 70%
-  );
+  padding: 0 16px;
+  background: transparent;      /* убираем жирный градиент */
   z-index: 40;
 }
 
 .bottom-nav-inner {
-  background: rgba(10, 12, 19, 0.78);        /* полупрозрачное "стекло" */
-  border-radius: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.9),
-    0 0 0 1px rgba(0, 0, 0, 0.6);            /* лёгкий ободок */
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  background: rgba(8, 10, 16, 0.72);       /* более прозрачное стекло */
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   display: flex;
   justify-content: space-around;
-  padding: 8px 10px;
+  padding: 6px 10px;                        /* меньше высота */
 }
 
-/* сами табы */
+/* сами табы — без большой подложки */
 
 .nav-item {
   position: relative;
@@ -936,61 +927,53 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   cursor: pointer;
-  padding: 6px 0;
+  padding: 4px 0;
   border-radius: 999px;
-  transition:
-    color 0.18s ease,
-    transform 0.16s ease;
+  transition: color 0.18s ease;
 }
 
-/* лёгкая подсветка "капли" под активным табом */
+/* полностью отключаем подсветку всей таблетки */
 .nav-item::before {
-  content: "";
-  position: absolute;
-  inset: 4px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.02);
-  opacity: 0;
-  transform: scale(0.96);
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease,
-    background 0.2s ease;
-  z-index: -1;
-}
-
-.nav-item span {
-  font-size: 17px;
+  content: none !important;
 }
 
 .nav-label {
   font-size: 10px;
 }
 
-/* АКТИВНЫЙ ТАБ — ярче, с голубым свечением */
-.nav-item.active {
-  color: #eaf0ff;
+/* иконка */
+
+.nav-item span:first-child {
+  position: relative;
+  font-size: 17px;
+  padding: 4px;                 /* кругленькая "кнопка" вокруг иконки */
+  border-radius: 999px;
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+/* активный таб — светится ТОЛЬКО иконка */
+
+.nav-item.active span:first-child {
+  background: radial-gradient(
+    circle at top,
+    rgba(90, 150, 255, 0.75),
+    rgba(10, 16, 32, 0.95)
+  );
+  box-shadow: 0 0 14px rgba(90, 150, 255, 0.9);
   transform: translateY(-1px);
 }
 
-.nav-item.active::before {
-  opacity: 1;
-  transform: scale(1.02);
-  background: radial-gradient(
-    circle at top,
-    rgba(80, 140, 255, 0.55),
-    rgba(10, 14, 24, 0.7)
-  );
-  box-shadow: 0 0 14px rgba(80, 140, 255, 0.9);
-}
+/* текст активного просто чуть ярче */
 
-/* чуть подсветить иконку у активного */
-.nav-item.active span:first-child {
-  filter: drop-shadow(0 0 8px rgba(80, 140, 255, 0.9));
+.nav-item.active {
+  color: #e8eeff;
 }
-
+ 
     /* OVERLAYS */
 
     .overlay {
