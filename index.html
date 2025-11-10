@@ -153,77 +153,215 @@
   100% { transform: translateX(120%); }
 }
 
+/* === TOP HEADER (логотип + баланс + профиль) === */
+
 .header {
-  padding: 10px 14px 12px;
+  padding: 10px 12px 4px;
+  border-bottom: none;
+}
+
+.header-top-row {
+  max-width: 420px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #14151a;
   gap: 8px;
 }
 
-.header-logo-btn {
-  display: inline-flex;
+/* слева — кнопка логотипа */
+.header-logo-chip {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  background: rgba(6, 8, 12, 0.95);
+  border: 1px solid rgba(29, 219, 111, 0.5);
+  color: #e7fdf0;
+  display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: radial-gradient(circle at top, rgba(8,10,16,0.95), #05060a);
-  color: #f5f5f5;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
 }
 
-.header-logo-btn:active {
-  transform: scale(0.97);
+.header-logo-chip .logo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1ddb6f;
+  box-shadow: 0 0 10px rgba(29, 219, 111, 0.7);
 }
 
-.header-logo-text {
-  white-space: nowrap;
-}
-
+/* центр — маленькая пилюля баланса */
 .header-balance-pill {
   flex: 1;
-  min-width: 0;
-  margin: 0 4px;
-  padding: 6px 10px 7px;
   border-radius: 999px;
-  background: radial-gradient(circle at top, #141a24, #06070b);
-  border: 1px solid rgba(255,255,255,0.06);
+  padding: 6px 12px 7px;
+  background: radial-gradient(
+      circle at top,
+      rgba(29, 219, 111, 0.18),
+      rgba(3, 4, 8, 0.98)
+  );
+  border: 1px solid rgba(29, 219, 111, 0.5);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.85);
   text-align: center;
 }
 
-.header-balance-pill .balance-label {
-  font-size: 10px;
-  color: #8c8f9a;
+.header-balance-label {
+  font-size: 11px;
+  color: #9ea2b0;
 }
 
-.header-balance-pill .balance-value {
+.header-balance-value {
   font-size: 15px;
   font-weight: 600;
 }
 
-.header-balance-pill .balance-demo-tag {
-  font-size: 9px;
-  color: #555a66;
+.header-balance-sub {
+  font-size: 10px;
+  color: #6b7080;
+  margin-top: 1px;
 }
 
-.header-profile-btn {
-  width: 34px;
-  height: 34px;
+/* справа — аватар/кнопка профиля */
+.header-profile-chip {
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: radial-gradient(circle at top, #19202a, #06070b);
+  border: none;
+  background: radial-gradient(circle at top, #1ddb6f, #0f7b45);
+  box-shadow: 0 0 12px rgba(29, 219, 111, 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  color: #05060a;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+/* === CASINO / MINI GAMES (зелёная тема) === */
+
+.casino-banner {
+  margin: 6px 0 12px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  background: radial-gradient(
+      circle at top left,
+      rgba(29, 219, 111, 0.26),
+      rgba(5, 6, 10, 0.98)
+  );
+  border: 1px solid rgba(29, 219, 111, 0.55);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.9);
+}
+
+.casino-banner-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.casino-banner-sub {
+  font-size: 12px;
+  color: #cfd2de;
+  margin-top: 4px;
+}
+
+/* табы над списком игр (сейчас только Mini games) */
+
+.casino-tabs {
+  margin: 4px 0 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.casino-tab-pill {
+  border-radius: 999px;
+  padding: 6px 12px 7px;
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 9, 14, 0.96);
+  color: #cfd2de;
+}
+
+.casino-tab-pill-active {
+  background: linear-gradient(135deg, #1ddb6f, #16a451);
+  border-color: rgba(29, 219, 111, 0.9);
+  color: #05060a;
+  box-shadow: 0 6px 14px rgba(29, 219, 111, 0.6);
+}
+
+/* заголовок секции игр */
+.casino-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* горизонтальный скролл мини-игр */
+
+.casino-games-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin: 4px -18px 0;
+  padding-inline: 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* отдельная карточка игры */
+.casino-game-card {
+  flex: 0 0 150px;
+  border-radius: 18px;
+  padding: 10px 10px 12px;
+  background: radial-gradient(circle at top, #161a23, #05060a);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
   cursor: pointer;
 }
 
-.header-profile-avatar {
-  font-size: 14px;
+.casino-game-card:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.9);
+  border-color: rgba(29, 219, 111, 0.5);
+}
+
+/* заглушка вместо картинки */
+.casino-game-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  background: radial-gradient(circle at top, #171b24, #05060a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.casino-game-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #5f6370;
+}
+
+/* подписи */
+.casino-game-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1ddb6f;
+}
+
+.casino-game-sub {
+  font-size: 11px;
+  color: #9ea2b0;
 }
 
     /* MAIN */
@@ -1968,88 +2106,91 @@ html, body {
 </div>
 
 <header class="header">
-  <!-- ЛОГО → всегда ведёт на Casino -->
-  <button class="header-logo-btn" id="logo-btn" type="button">
-    <div class="logo-dot"></div>
-    <span class="header-logo-text">OWY Play</span>
-  </button>
+  <div class="header-top-row">
+    <!-- логотип, при клике — на Casino / home -->
+    <button class="header-logo-chip" id="header-logo-btn" type="button">
+      <span class="logo-dot"></span>
+      <span>OWY Play</span>
+    </button>
 
-  <!-- БАЛАНС В ЦЕНТРЕ -->
-  <div class="header-balance-pill">
-    <div class="balance-label">Баланс</div>
-    <div class="balance-value">1 000 OWY</div>
-    <div class="balance-demo-tag">Demo режим • без реальных денег</div>
+    <!-- баланс (важно: внутри остаётся .balance-value, JS к ней привязан) -->
+    <div class="header-balance-pill">
+      <div class="header-balance-label">Баланс</div>
+      <div class="header-balance-value balance-value">1 000 OWY</div>
+      <div class="header-balance-sub">Demo режим • без реальных денег</div>
+    </div>
+
+    <!-- аватар / профиль -->
+    <button class="header-profile-chip" id="header-profile-btn" type="button">
+      EA
+    </button>
   </div>
-
-  <!-- ПРОФИЛЬ СПРАВА -->
-  <button class="header-profile-btn" id="header-profile-btn" type="button">
-    <span class="header-profile-avatar">EA</span>
-  </button>
 </header>
 
     <main class="content">
       <!-- HOME -->
 <section id="home-screen">
-  <!-- ПРОМО-БАННЕР (потом сюда воткнёшь реальные баннеры / слайдер) -->
-  <div class="casino-promo">
-    <div class="casino-promo-main">
-      <div class="casino-promo-title">OWY Play • mini games</div>
-      <div class="casino-promo-sub">Играй в демо, качай Fluffie и собирай опыт.</div>
+  <!-- верхний баннер Casino -->
+  <div class="casino-banner">
+    <div class="casino-banner-title">OWY Play • mini games</div>
+    <div class="casino-banner-sub">
+      Играй в демо, качай Fluffie и собирай опыт.
     </div>
   </div>
 
-  <!-- ТАБЫ НА БУДУЩЕЕ (пока только Mini games) -->
-  <div class="casino-tabs-row">
-    <button class="casino-tab casino-tab-active">Mini games</button>
+  <!-- пока один таб -->
+  <div class="casino-tabs">
+    <button class="casino-tab-pill casino-tab-pill-active" type="button">
+      Mini games
+    </button>
+    <!-- потом можно добавить "Providers", "Live" и т.д. -->
   </div>
 
-  <!-- ГОРИЗОНТАЛЬНЫЙ СПИСОК ИГР -->
-  <div class="casino-row-header">
-    <div class="section-title" style="margin-bottom: 0;">Mini games</div>
-  </div>
+  <div class="casino-section-title">Mini games</div>
 
+  <!-- горизонтальный список игр -->
   <div class="casino-games-scroll">
     <!-- Rush -->
-<button class="casino-game-card" type="button" onclick="openRush()">
-  <div class="casino-game-thumb">
-    <img src="rush-card.png" alt="Rush">
-  </div>
-  <div class="casino-game-name">Rush</div>
-  <div class="casino-game-sub">Лови множитель вовремя</div>
-</button>
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('rush-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-thumb-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">Rush</div>
+      <div class="casino-game-sub">Лови множитель вовремя</div>
+    </button>
 
-<!-- Double -->
-<button class="casino-game-card" type="button" onclick="openDouble()">
-  <div class="casino-game-thumb">
-    <img src="double-card.png" alt="Double">
-  </div>
-  <div class="casino-game-name">Double</div>
-  <div class="casino-game-sub">Выбери цвет x2 или x14</div>
-</button>
+    <!-- Double -->
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('double-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-thumb-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">Double</div>
+      <div class="casino-game-sub">Выбери цвет x2 или x14</div>
+    </button>
 
-<!-- Plinko -->
-<button class="casino-game-card" type="button" onclick="openPlinko()">
-  <div class="casino-game-thumb">
-    <img src="plinko-card.png" alt="Plinko">
-  </div>
-  <div class="casino-game-name">Plinko</div>
-  <div class="casino-game-sub">Шарики и пины</div>
-</button>
+    <!-- Plinko -->
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('plinko-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-thumb-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">Plinko</div>
+      <div class="casino-game-sub">Шарики и пины</div>
+    </button>
 
-<!-- HiLo -->
-<button class="casino-game-card" type="button" onclick="openHilo()">
-  <div class="casino-game-thumb">
-    <img src="hilo-card.png" alt="HiLo">
-  </div>
-  <div class="casino-game-name">HiLo карты</div>
-  <div class="casino-game-sub">Выше или ниже?</div>
-</button>
+    <!-- HiLo -->
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('hilo-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-thumb-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">HiLo карты</div>
+      <div class="casino-game-sub">Выше или ниже?</div>
+    </button>
 
-    <!-- сюда добавишь остальные игры тем же паттерном -->
-  </div>
-
-  <div class="hint-text bottom-hint" id="hint-text">
-    🤖 OWY совет: начни с Rush и попробуй аккуратный автовывод.
+    <!-- дальше по этому же шаблону добавишь новые игры -->
   </div>
 </section>
 
