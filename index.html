@@ -256,6 +256,33 @@
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.9);
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.app {
+  max-width: 420px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* чтобы скроллилась только полоса игр, а не вся страница */
+.casino-games-scroll {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px 24px;
+  margin: 0 -16px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.casino-game-card {
+  flex: 0 0 160px;
+}
+
+
 .casino-banner-title {
   font-size: 15px;
   font-weight: 600;
@@ -2216,7 +2243,8 @@ html, body {
 </header>
 
     <main class="content">
-     <!-- HOME / CASINO -->
+
+<!-- HOME -->
 <section id="home-screen">
   <!-- верхний баннер Casino -->
   <div class="casino-banner">
@@ -2226,55 +2254,71 @@ html, body {
     </div>
   </div>
 
-  <!-- табы сверху (пока один) -->
+  <!-- табы над списком игр (пока один) -->
   <div class="casino-tabs">
     <button class="casino-tab-pill casino-tab-pill-active" type="button">
       Mini games
     </button>
-    <!-- потом можно добавить Providers / Live и т.д. -->
+    <!-- позже добавим Providers / Live и т.п. -->
   </div>
 
   <div class="casino-section-title">Mini games</div>
 
-  <!-- горизонтальный список игр -->
+  <!-- горизонтальный список игр — ВАЖНО: ОДИН casino-games-scroll и один </div> -->
   <div class="casino-games-scroll">
-  <!-- Rush -->
-  <button class="casino-game-card" type="button" id="card-rush">
-    <div class="casino-game-thumb">
-      <div class="casino-game-thumb-placeholder">?</div>
-    </div>
-    <div class="casino-game-name">Rush</div>
-    <div class="casino-game-sub">Лови множитель вовремя</div>
-  </button>
+    <!-- Rush -->
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('rush-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">Rush</div>
+      <div class="casino-game-sub">Лови множитель вовремя</div>
+    </button>
 
-  <!-- Double -->
-  <button class="casino-game-card" type="button" id="card-double">
-    <div class="casino-game-thumb">
-      <div class="casino-game-thumb-placeholder">?</div>
-    </div>
-    <div class="casino-game-name">Double</div>
-    <div class="casino-game-sub">Выбери цвет x2 или x14</div>
-  </button>
+    <!-- Double -->
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('double-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">Double</div>
+      <div class="casino-game-sub">Выбери цвет x2 или x14</div>
+    </button>
 
-  <!-- Plinko -->
-  <button class="casino-game-card" type="button" id="card-plinko">
-    <div class="casino-game-thumb">
-      <div class="casino-game-thumb-placeholder">?</div>
-    </div>
-    <div class="casino-game-name">Plinko</div>
-    <div class="casino-game-sub">Шарики и пины</div>
-  </button>
+    <!-- Plinko -->
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('plinko-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">Plinko</div>
+      <div class="casino-game-sub">Шарики и пины</div>
+    </button>
 
-  <!-- HiLo -->
-  <button class="casino-game-card" type="button" id="card-hilo">
-    <div class="casino-game-thumb">
-      <div class="casino-game-thumb-placeholder">?</div>
-    </div>
-    <div class="casino-game-name">HiLo</div>
-    <div class="casino-game-sub">Выше или ниже?</div>
-  </button>
-</div>
+    <!-- HiLo -->
+    <button class="casino-game-card" type="button"
+            onclick="document.getElementById('hilo-open')?.click()">
+      <div class="casino-game-thumb">
+        <div class="casino-game-placeholder">?</div>
+      </div>
+      <div class="casino-game-name">HiLo</div>
+      <div class="casino-game-sub">Выше или ниже?</div>
+    </button>
+  </div>
 </section>
+
+<!-- дальше сразу идут остальные секции, НИЧЕГО внутрь casino-games-scroll не суём -->
+<section id="bets-screen" style="display:none;">
+  <div class="section-title">Bets</div>
+  <p class="hint-text">Раздел ставок скоро подключим 😉</p>
+</section>
+
+<section id="tasks-screen" style="display:none;">
+  <div class="section-title">Tasks</div>
+  <p class="hint-text">Задания с наградами Fluffie и OWY появятся позже.</p>
+</section>
+
 
 <!-- BETS -->
 <section id="bets-screen" style="display:none;">
@@ -6056,62 +6100,60 @@ function closeDouble() {
 if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
 if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
 
-  // === INIT ===
-  (function initApp() {
-    // баланс / профиль / статистика / питомец
-    loadBalance();
-    loadProfileInfo();
-    loadStats();
-    initProfile();
-    updateBalanceView();
-    updateStatsView();
-    loadPet();
+// === INIT ===
+(function initApp() {
+  // баланс / профиль / статистика / питомец
+  loadBalance();
+  loadProfileInfo();
+  loadStats();
+  initProfile();
+  updateBalanceView();
+  updateStatsView();
+  loadPet();
+  applyPetDecay();
+
+  // наполняем историю краша демо-значениями
+  crashHistory = [];
+  for (let i = 0; i < 15; i++) {
+    crashHistory.push(generateCrashMultiplier());
+  }
+  updateRushHistory();
+  updatePlinkoHistory();
+
+  // setActiveTab('home');  // старую навигацию не трогаем
+
+  // Plinko
+  renderPlinkoPegs();
+  renderPlinkoConfig();
+
+  // подсказка (если вообще нужна)
+  initPhrases();
+
+  // Double
+  updateDoubleHistoryView();
+  startNewDoubleRound();
+
+  // Rush
+  let lastTs = performance.now();
+  startNewRushRound();
+
+  // игровой цикл Rush + Double
+  setInterval(() => {
+    const now  = performance.now();
+    const dtMs = now - lastTs;
+    lastTs     = now;
+
+    const dt = dtMs / 1000;
+
+    tickRush(dt);
+    tickDouble(dt);
+  }, 16);
+
+  // деградация Fluffie
+  setInterval(() => {
     applyPetDecay();
-
-    // наполняем историю краша демо-значениями
-    crashHistory = [];
-    for (let i = 0; i < 15; i++) {
-      crashHistory.push(generateCrashMultiplier());
-    }
-    updateRushHistory();
-    updatePlinkoHistory();
-
-    // старую навигацию не трогаем, чтобы не падало
-    // setActiveTab('home');
-
-    // Plinko — пины + конфиг
-    renderPlinkoPegs();
-    renderPlinkoConfig();
-
-    // подсказка на главном экране
-    initPhrases();
-
-    // Double — сразу только история,
-    // колесо строим при первом openDouble()
-    updateDoubleHistoryView();
-    startNewDoubleRound();
-
-    // Rush
-    let lastTs = performance.now();
-    startNewRushRound();
-
-    // игровой цикл Rush + Double
-    setInterval(() => {
-      const now  = performance.now();
-      const dtMs = now - lastTs;
-      lastTs     = now;
-
-      const dt = dtMs / 1000;
-
-      tickRush(dt);
-      tickDouble(dt);
-    }, 16);
-
-    // деградация настроения/энергии Fluffie раз в 3 минуты
-    setInterval(() => {
-      applyPetDecay();
-    }, 180000);
-  })();
+  }, 180000);
+})();
 </script>
 </body>
 </html>
