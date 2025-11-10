@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -877,11 +877,12 @@
   width: 100%;
   max-width: 420px;
 
-  padding: 0 14px;
+  /* меньше отступы, чтобы бар был компактнее */
+  padding: 0 0;
   box-sizing: border-box;
 
   z-index: 40;
-  pointer-events: none; /* чтобы не блокировать оверлеи */
+  pointer-events: none;
 }
 
 .bottom-nav-inner {
@@ -892,18 +893,21 @@
   justify-content: space-between;
   gap: 4px;
 
-  padding: 6px 10px 10px;
+  /* сам бар делаем уже, как в Major */
+  max-width: 360px;
+  margin: 0 auto;
+
+  padding: 6px 12px 10px;
   border-radius: 26px;
 
   background:
-    radial-gradient(circle at 0% -40%, rgba(59,130,246,0.3), transparent 55%),
-    radial-gradient(circle at 100% -40%, rgba(129,140,248,0.35), transparent 55%),
-    rgba(12, 14, 18, 0.92);
+    radial-gradient(circle at 0% -40%, rgba(59,130,246,0.22), transparent 55%),
+    radial-gradient(circle at 100% -40%, rgba(129,140,248,0.26), transparent 55%),
+    rgba(12, 14, 18, 0.82);
 
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.75),
-    0 0 0 1px rgba(0, 0, 0, 0.7);
+    0 18px 40px rgba(0, 0, 0, 0.8);
 
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
@@ -2437,9 +2441,14 @@
 
   const homeScreen       = document.getElementById('home-screen');
   const profileScreen    = document.getElementById('profile-screen');
-  const navHome          = document.getElementById('nav-home');
-  const navProfile       = document.getElementById('nav-profile');
+  const petScreen        = document.getElementById('pet-screen');
+
+  // новые id снизу в навигации
+  const navCasino        = document.getElementById('nav-casino');
+  const navBets          = document.getElementById('nav-bets');
+  const navTasks         = document.getElementById('nav-tasks');
   const navPet           = document.getElementById('nav-pet');
+
   const hintTextEl       = document.getElementById('hint-text');
 
   const petScreen        = document.getElementById('pet-screen');
@@ -3564,26 +3573,29 @@ if (petShopBuyBtns && petShopBuyBtns.length) {
   });
 }
 
-  // === NAV ===
-    function setActiveTab(tab) {
+    // === NAV ===
+  function setActiveTab(tab) {
     if (!homeScreen || !profileScreen || !petScreen) return;
 
-    // сбрасываем актив
-    [navHome, navProfile, navPet].forEach(el => {
+    // сбрасываем актив для всех табов
+    [navCasino, navBets, navTasks, navPet].forEach(el => {
       if (!el) return;
       el.classList.remove('active');
     });
 
     // скрываем все экраны
-    homeScreen.style.display    = 'none';
-    profileScreen.style.display = 'none';
-    petScreen.style.display     = 'none';
+    homeScreen.style.display    = 'none';   // Casino
+    profileScreen.style.display = 'none';   // временно и для Bets, и для Tasks
+    petScreen.style.display     = 'none';   // Fluffie
 
-    if (tab === 'home') {
-      navHome.classList.add('active');
+    if (tab === 'casino') {
+      navCasino.classList.add('active');
       homeScreen.style.display = '';
-    } else if (tab === 'profile') {
-      navProfile.classList.add('active');
+    } else if (tab === 'bets') {
+      navBets.classList.add('active');
+      profileScreen.style.display = '';
+    } else if (tab === 'tasks') {
+      navTasks.classList.add('active');
       profileScreen.style.display = '';
     } else if (tab === 'pet') {
       navPet.classList.add('active');
@@ -3591,9 +3603,10 @@ if (petShopBuyBtns && petShopBuyBtns.length) {
     }
   }
 
-  if (navHome)    navHome.addEventListener('click', () => setActiveTab('home'));
-  if (navProfile) navProfile.addEventListener('click', () => setActiveTab('profile'));
-  if (navPet)     navPet.addEventListener('click', () => setActiveTab('pet'));
+  if (navCasino) navCasino.addEventListener('click', () => setActiveTab('casino'));
+  if (navBets)   navBets.addEventListener('click',   () => setActiveTab('bets'));
+  if (navTasks)  navTasks.addEventListener('click',  () => setActiveTab('tasks'));
+  if (navPet)    navPet.addEventListener('click',    () => setActiveTab('pet'));
 
   // === HINTS ===
   const hintPhrases = [
@@ -5376,7 +5389,7 @@ for (let i = 0; i < 15; i++) {
 updateRushHistory();
 updatePlinkoHistory();
 
-setActiveTab('home');
+setActiveTab('casino');
 renderPlinkoPegs();
 renderPlinkoConfig();
 initPhrases();
