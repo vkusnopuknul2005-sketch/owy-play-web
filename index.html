@@ -28,16 +28,17 @@
       background: radial-gradient(circle at top, #061318, #040308 60%, #020105);
     }
 
-    .app {
-      max-width: 420px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      border-left: 1px solid #14151a;
-      border-right: 1px solid #14151a;
-      position: relative;
-    }
+  .app {
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  border-left: 1px solid #14151a;
+  border-right: 1px solid #14151a;
+  position: relative;
+  overflow-x: hidden;   /* <--- добавить */
+}
 
     body.theme-neon .app {
       border-color: rgba(29,219,111,0.35);
@@ -1963,13 +1964,12 @@ html, body {
 }
 
 /* горизонтальный скролл игр */
-
 .casino-games-scroll {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding: 4px 2px 10px;
-  margin-bottom: 4px;
+  padding: 4px 0 10px;
+  margin: 4px 0 10px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -2083,6 +2083,89 @@ html, body {
       min-height: 36px;
     }
 
+/* === FINAL HEADER (логотип + баланс + профиль) === */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  background: rgba(5, 6, 10, 0.98);
+  padding: 8px 0 4px;
+}
+
+.header-row {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+}
+
+/* логотип слева */
+.header-logo-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(29, 219, 111, 0.55);
+  background: rgba(6, 8, 12, 0.96);
+  font-size: 11px;
+  color: #e7fdf0;
+}
+
+/* пилюля баланса по центру */
+.header-balance-pill {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 5px 10px 6px;
+  border-radius: 999px;
+  text-align: center;
+  background: radial-gradient(circle at top,
+    rgba(29, 219, 111, 0.22),
+    rgba(3, 4, 8, 0.98)
+  );
+  border: 1px solid rgba(29, 219, 111, 0.6);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+}
+
+.header-balance-label {
+  font-size: 10px;
+  color: #9ea2b0;
+}
+
+.header-balance-amount {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.header-balance-sub {
+  font-size: 9px;
+  color: #6b7080;
+  margin-top: 1px;
+}
+
+/* аватар профиля справа */
+.header-profile-btn {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: none;
+  background: radial-gradient(circle at top, #1ddb6f, #0f7b45);
+  box-shadow: 0 0 10px rgba(29, 219, 111, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #05060a;
+}
+
   </style>
 </head>
 <body>
@@ -2109,20 +2192,25 @@ html, body {
 
 <header class="header">
   <div class="header-row">
-    <!-- Логотип слева -->
-    <div class="header-logo">
-      <img src="owy_logo.png" alt="OWY Play">
+    <!-- слева — логотип, ведёт на главный экран Casino -->
+    <button class="header-logo-btn" id="header-logo-btn" type="button">
+      OWY Play
+    </button>
+
+    <!-- по центру — маленькая пилюля баланса -->
+    <div class="header-balance-pill">
+      <div class="header-balance-label">Баланс</div>
+      <div class="header-balance-amount balance-value" id="header-balance-amount">
+        0 OWY
+      </div>
+      <div class="header-balance-sub">
+        Demo режим • без реальных денег
+      </div>
     </div>
 
-    <!-- Баланс по центру -->
-    <div class="header-balance">
-      <div class="header-balance-amount">60 453 OWY</div>
-      <div class="header-balance-sub">Demo режим • без реальных денег</div>
-    </div>
-
-    <!-- Профиль справа -->
-    <button class="header-profile" id="header-profile-btn">
-      <span>EA</span>
+    <!-- справа — аватар профиля -->
+    <button class="header-profile-btn" id="header-profile-btn" type="button">
+      EA
     </button>
   </div>
 </header>
@@ -2835,9 +2923,16 @@ const navMenu   = document.getElementById('nav-menu');
 // top header buttons (логотип + аватар)
 const headerLogoBtn    = document.getElementById('header-logo-btn');
 const headerProfileBtn = document.getElementById('header-profile-btn');
+
+if (headerLogoBtn) {
+  headerLogoBtn.addEventListener('click', () => {
+    showScreen('casino');   // логотип всегда ведёт на главный экран
+  });
+}
+
 if (headerProfileBtn) {
   headerProfileBtn.addEventListener('click', () => {
-    showScreen('profile'); // функция уже есть, переключает на вкладку профиля
+    showScreen('profile');  // аватар открывает профиль
   });
 }
 
@@ -2928,6 +3023,29 @@ if (headerProfileBtn) {
   const plinkoMultsRow   = document.getElementById('plinko-mults-row');
   const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
   const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
+
+// --- карточки мини-игр на главном экране ---
+const cardRush   = document.getElementById('card-rush');
+const cardDouble = document.getElementById('card-double');
+const cardPlinko = document.getElementById('card-plinko');
+const cardHilo   = document.getElementById('card-hilo');
+
+function openOverlay(el) {
+  if (el) el.style.display = 'flex';
+}
+
+if (cardRush) {
+  cardRush.addEventListener('click', () => openOverlay(rushOverlay));
+}
+if (cardDouble) {
+  cardDouble.addEventListener('click', () => openOverlay(doubleOverlay));
+}
+if (cardPlinko) {
+  cardPlinko.addEventListener('click', () => openOverlay(plinkoOverlay));
+}
+if (cardHilo) {
+  cardHilo.addEventListener('click', () => openOverlay(hiloOverlay));
+}
 
   // === DOUBLE DOM ===
 const doubleOverlay     = document.getElementById('double-overlay');
@@ -5938,55 +6056,62 @@ function closeDouble() {
 if (doubleOpenBtn) doubleOpenBtn.addEventListener('click', openDouble);
 if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
 
-// === INIT ===
-loadBalance();
-loadProfileInfo();
-loadStats();
-initProfile();
-updateBalanceView();
-updateStatsView();
-loadPet();
-applyPetDecay();
+  // === INIT ===
+  (function initApp() {
+    // баланс / профиль / статистика / питомец
+    loadBalance();
+    loadProfileInfo();
+    loadStats();
+    initProfile();
+    updateBalanceView();
+    updateStatsView();
+    loadPet();
+    applyPetDecay();
 
-// наполняем историю краша демо-значениями
-for (let i = 0; i < 15; i++) {
-  crashHistory.push(generateCrashMultiplier());
-}
-updateRushHistory();
-updatePlinkoHistory();
+    // наполняем историю краша демо-значениями
+    crashHistory = [];
+    for (let i = 0; i < 15; i++) {
+      crashHistory.push(generateCrashMultiplier());
+    }
+    updateRushHistory();
+    updatePlinkoHistory();
 
-// старую навигацию больше не используем, иначе падает
-// setActiveTab('home');
+    // старую навигацию не трогаем, чтобы не падало
+    // setActiveTab('home');
 
-renderPlinkoPegs();
-renderPlinkoConfig();
-initPhrases();
+    // Plinko — пины + конфиг
+    renderPlinkoPegs();
+    renderPlinkoConfig();
 
-// Double — истории хватает, само колесо строим при первом openDouble
-updateDoubleHistoryView();
-startNewDoubleRound();
+    // подсказка на главном экране
+    initPhrases();
 
-// Rush
-let lastTs = performance.now();
-startNewRushRound();
+    // Double — сразу только история,
+    // колесо строим при первом openDouble()
+    updateDoubleHistoryView();
+    startNewDoubleRound();
 
-// игровой цикл Rush + Double
-setInterval(() => {
-  const now  = performance.now();
-  const dtMs = now - lastTs;
-  lastTs     = now;
+    // Rush
+    let lastTs = performance.now();
+    startNewRushRound();
 
-  const dt = dtMs / 1000;
+    // игровой цикл Rush + Double
+    setInterval(() => {
+      const now  = performance.now();
+      const dtMs = now - lastTs;
+      lastTs     = now;
 
-  tickRush(dt);
-  tickDouble(dt);
-}, 16);
+      const dt = dtMs / 1000;
 
-// деградация настроения/энергии Fluffie раз в 3 минуты
-setInterval(() => {
-  applyPetDecay();
-}, 180000);
+      tickRush(dt);
+      tickDouble(dt);
+    }, 16);
 
+    // деградация настроения/энергии Fluffie раз в 3 минуты
+    setInterval(() => {
+      applyPetDecay();
+    }, 180000);
+  })();
 </script>
 </body>
 </html>
