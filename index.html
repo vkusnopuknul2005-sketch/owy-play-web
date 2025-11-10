@@ -46,15 +46,31 @@
 
     /* SPLASH */
 
-  .splash {
-  position: absolute;
+ .splash {
+  position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top, #111821, #05060a 60%, #020105 100%);
-  transition: opacity 0.35s ease;
+  background: radial-gradient(circle at top, #050608, #020205);
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  opacity: 1;
+  pointer-events: auto;
+  transition: none;
+
+  /* автоскрытие чисто по CSS */
+  animation: owySplashHide 0.6s ease-out 0.8s forwards;
+}
+
+@keyframes owySplashHide {
+  to {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.02);
+  }
 }
 
 .splash-hide {
@@ -2826,7 +2842,6 @@ html, body {
 
   // === DOM ===
   const balanceEl        = document.querySelector('.balance-value');
-  const splashEl         = document.getElementById('splash');
 
   const homeScreen       = document.getElementById('home-screen');
   const profileScreen    = document.getElementById('profile-screen');
@@ -3392,20 +3407,6 @@ const petGameGridEl    = document.getElementById('pet-game-grid');
 const petGameScoreEl   = document.getElementById('pet-game-score');
 const petGameTimerEl   = document.getElementById('pet-game-timer');
 const petGameNoteEl    = document.getElementById('pet-game-note');
-
-function hideSplash() {
-  if (!splashEl) return;
-
-  // добавляем класс с плавным исчезновением
-  splashEl.classList.add('splash-hide');
-
-  // после анимации убираем сплэш из потока
-  setTimeout(() => {
-    splashEl.style.display = 'none';
-  }, 400);
-}
-
-window.addEventListener('load', hideSplash);
 
   function vibrate(ms) {
     if (navigator && navigator.vibrate) navigator.vibrate(ms);
