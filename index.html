@@ -156,13 +156,14 @@
     /* HEADER */
 
     .header {
-      padding: 12px 14px 10px;
-            display: grid;
+      padding: 10px 14px 6px;
+      display: grid;
       grid-template-columns: auto 1fr auto; /* слева логотип, по центру баланс, справа профиль */
       align-items: center;
-      border-bottom: 1px solid #14151a;
+      border-bottom: none;      /* убираем линию, чтобы бар слился с фоном */
+      background: transparent;  /* явный прозрачный фон, без отдельного блока */
     }
-
+    
     .logo {
       display: flex;
       align-items: center;
