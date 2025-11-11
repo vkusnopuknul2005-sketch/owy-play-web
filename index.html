@@ -157,9 +157,9 @@
 
     .header {
       padding: 12px 14px 10px;
-      display: flex;
+            display: grid;
+      grid-template-columns: auto 1fr auto; /* слева логотип, по центру баланс, справа профиль */
       align-items: center;
-      gap: 10px;
       border-bottom: 1px solid #14151a;
     }
 
@@ -189,7 +189,10 @@
       background: rgba(15, 17, 25, 0.96);
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
-    }
+      justify-self: center;   /* центрируем в средней колонке grid */
+      margin: 0 auto;         /* дополнительное выравнивание по центру */
+     }
+
 
     .balance-icon {
       width: 18px;
