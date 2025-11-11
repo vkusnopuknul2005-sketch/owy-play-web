@@ -171,50 +171,47 @@
       font-size: 16px;
     }
 
-    .logo-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #1ddb6f;
-      box-shadow: 0 0 12px rgba(29, 219, 111, 0.8);
-    }
+    .logo-img {
+  height: 26px;
+  width: auto;
+  display: block;
+}
 
         /* центральный баланс как аккуратная пилюля */
     .balance-pill {
-      flex: 1;
+      flex: 0 0 auto;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: 999px;
       background: rgba(15, 17, 25, 0.96);
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
-      min-width: 0;
     }
 
     .balance-icon {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border-radius: 999px;
       background: radial-gradient(circle at top, #46a2ff, #142334);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 11px;
      } 
 
     .balance-text {
       display: flex;
       align-items: center;
       gap: 4px;
-      font-size: 13px;
+      font-size: 12px;
       color: #f5f5f5;
     }
 
     .balance-value {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
     }
 
@@ -1857,10 +1854,9 @@
 </div>
 
     <header class="header">
-      <div class="logo">
-        <div class="logo-dot"></div>
-        <span>OWY Play</span>
-      </div>
+  <div class="logo">
+    <img src="play-logo.png" alt="OWY Play" class="logo-img">
+  </div>
       
       <div class="balance-pill">
         <div class="balance-icon">🪙</div>
@@ -1873,6 +1869,32 @@
         <span class="profile-avatar-text">EA</span>
       </button>
     </header>
+
+    <div id="balance-popup" class="overlay" style="align-items:flex-start;">
+  <div class="overlay-inner" style="padding-top:70px;">
+    <div class="profile-card">
+      <div class="section-title">Balance</div>
+
+      <div class="profile-line">
+        <span>Main balance (USD)</span>
+        <span id="balance-main-usd">0.00 $</span>
+      </div>
+
+      <div class="profile-line">
+        <span>OWY Bonus Coins</span>
+        <span id="balance-bonus-owy">0 OWY</span>
+      </div>
+
+      <div class="profile-note">
+        Все значения демо, без реальных денег.
+      </div>
+
+      <div style="margin-top:10px;">
+        <button class="btn btn-primary" id="balance-popup-close">Ок</button>
+      </div>
+    </div>
+  </div>
+</div>
 
     <main class="content">
       <!-- HOME -->
@@ -2439,10 +2461,15 @@
   // === DOM ===
   const balanceEl        = document.querySelector('.balance-value');
   const splashEl         = document.getElementById('splash');
+  const balancePopup       = document.getElementById('balance-popup');
+ const balancePopupClose  = document.getElementById('balance-popup-close');
+ const balanceMainUsdEl   = document.getElementById('balance-main-usd');
+ const balanceBonusOwyEl  = document.getElementById('balance-bonus-owy');
 
   const homeScreen       = document.getElementById('home-screen');
   const profileScreen    = document.getElementById('profile-screen');
   const petScreen        = document.getElementById('pet-screen');
+  const profileOpenBtn = document.getElementById('profile-open-btn');
 
   // новые id снизу в навигации
   const navCasino        = document.getElementById('nav-casino');
@@ -2536,6 +2563,12 @@
   const plinkoMultsRow   = document.getElementById('plinko-mults-row');
   const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
   const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
+
+if (profileOpenBtn) {
+  profileOpenBtn.addEventListener('click', () => {
+    setActiveTab('profile');
+  });
+}
 
   // === DOUBLE DOM ===
 const doubleOverlay     = document.getElementById('double-overlay');
@@ -3001,10 +3034,17 @@ const miniOpenTapTapBtn = document.getElementById('mini-open-taptap');
   }
 
   function updateBalanceView() {
-    const txt = demoBalance.toLocaleString('ru-RU') + ' OWY';
-    if (balanceEl)        balanceEl.textContent = txt;
-    if (profileBalanceEl) profileBalanceEl.textContent = txt;
-  }
+  const usd = demoBalance / 100; // пример: 100 OWY = 1.00$
+  const usdText = usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+  const owyText = demoBalance.toLocaleString('ru-RU') + ' OWY';
+
+  // в топ-баре показываем доллары
+  if (balanceEl)        balanceEl.textContent = usdText;
+  if (balanceMainUsdEl)  balanceMainUsdEl.textContent  = usdText;
+  if (balanceBonusOwyEl) balanceBonusOwyEl.textContent = owyText;
+  // в профиле можно оставить OWY, если хочешь видеть монеты
+  if (profileBalanceEl) profileBalanceEl.textContent = owyText;
+}
 
   // === PROFILE / STATS ===
   let profileData = { name: "", username: "", birthdate: "", gender: "" };
@@ -3515,6 +3555,26 @@ if (petActionBtns && petActionBtns.length) {
     saveBalance();
     updateBalanceView();
 
+    if (balanceEl && balancePopup) {
+  balanceEl.parentElement.style.cursor = 'pointer'; // вся пилюля кликабельна
+  balanceEl.parentElement.addEventListener('click', () => {
+    balancePopup.style.display = 'flex';
+  });
+}
+
+if (balancePopupClose && balancePopup) {
+  balancePopupClose.addEventListener('click', () => {
+    balancePopup.style.display = 'none';
+  });
+
+  // закрытие по клику на фон
+  balancePopup.addEventListener('click', (e) => {
+    if (e.target === balancePopup) {
+      balancePopup.style.display = 'none';
+    }
+  });
+}
+
     // применяем эффект к Fluffie
     petData.mood   = Math.max(0, Math.min(100, petData.mood + mood));
     petData.energy = Math.max(0, Math.min(100, petData.energy + energy));
@@ -3619,8 +3679,16 @@ if (petShopBuyBtns && petShopBuyBtns.length) {
   }
 
   if (navCasino) navCasino.addEventListener('click', () => setActiveTab('casino'));
-  if (navBets)   navBets.addEventListener('click',   () => setActiveTab('bets'));
-  if (navTasks)  navTasks.addEventListener('click',  () => setActiveTab('tasks'));
+  if (navBets) {
+  navBets.addEventListener('click', () => {
+    showComingSoon();
+  });
+}
+  if (navTasks) {
+  navTasks.addEventListener('click', () => {
+    showComingSoon();
+  });
+}
   if (navPet)    navPet.addEventListener('click',    () => setActiveTab('pet'));
 
   // === HINTS ===
@@ -3631,6 +3699,16 @@ if (petShopBuyBtns && petShopBuyBtns.length) {
     "🤖 OWY совет: не забывай забрать раньше краша 😉",
     "🤖 OWY совет: чередуй Rush и Plinko, чтобы прочувствовать математику."
   ];
+
+function showComingSoon() {
+  if (!hintTextEl) return;
+  hintTextEl.textContent = 'Раздел скоро появится 👀';
+  setTimeout(() => {
+    if (hintTextEl.textContent === 'Раздел скоро появится 👀') {
+      hintTextEl.textContent = '';
+    }
+  }, 2000);
+}
 
   function initPhrases() {
     if (!hintTextEl) return;
