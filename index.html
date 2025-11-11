@@ -2569,7 +2569,10 @@
 
 if (profileOpenBtn) {
   profileOpenBtn.addEventListener('click', () => {
-    setActiveTab('profile');
+       // показываем экран профиля, скрываем остальные основные экраны
+    if (homeScreen)   homeScreen.style.display   = 'none';
+    if (petScreen)    petScreen.style.display    = 'none';
+    if (profileScreen) profileScreen.style.display = 'block';
   });
 }
 
