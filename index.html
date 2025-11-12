@@ -182,7 +182,7 @@
     width: 100%;                     /* make sure it spans the app */
     isolation: isolate;              /* prevent external transforms from affecting abs children */
     padding: 10px 14px 6px 14px;
-    padding-right: calc(72px + env(safe-area-inset-right)); /* reserve more room for the profile btn */
+    padding-right: calc(14px + env(safe-area-inset-right));
     display: flex;                   /* simple scheme instead of grid */
     align-items: center;
     gap: 10px;
@@ -269,36 +269,8 @@
       font-weight: 600;
     }
 
-    .profile-btn {
-  position: absolute;          /* фиксируем в правом углу шапки */
-  top: 10px;                   /* синхронизировано с padding .header */
-  right: calc(14px + env(safe-area-inset-right));
-  z-index: 3;                  /* поверх баланса */
-
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: none;
-  outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #46a2ff, #1ddb6f);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  contain: layout paint;            /* keep its layout local (Safari rounding fix) */
-  will-change: transform;           /* smoother tap */
-  transform: translateZ(0);         /* promote to its own layer on iOS */
-}
-
-    @supports (padding: max(0px)) {
-  @media (max-width: 430px) {
-    .header { padding-right: max(72px, calc(72px + env(safe-area-inset-right))); }
-    .profile-btn { right: max(12px, calc(12px + env(safe-area-inset-right))); }
-   }
- }
-     
+  
+    
  .profile-avatar-text {
       font-size: 14px;
       font-weight: 600;
@@ -2001,9 +1973,6 @@
   </div>
 </div>
 
-      <button class="profile-btn" id="profile-open-btn" type="button">
-        <span class="profile-avatar-text">EA</span>
-      </button>
     </header>
 
  <div id="balance-popup" class="overlay" style="align-items:flex-start;">
@@ -2358,6 +2327,10 @@
       <span class="nav-icon">🧿</span>
       <span class="nav-label">Fluffie</span>
     </button>
+        <button class="nav-item" id="nav-profile" type="button">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </button>
   </div>
 </nav>
 
@@ -2612,45 +2585,7 @@
     tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   }
 
-  // === LAYOUT SAFETY GUARDS (iOS small-width fix) ===
-  function clampProfileBtnToHeader() {
-    const appEl    = document.querySelector('.app');
-    const headerEl = document.querySelector('.header');
-    const btnEl    = document.getElementById('profile-open-btn');
-    if (!appEl || !headerEl || !btnEl) return;
-
-    // reset to CSS default before measuring
-    btnEl.style.right = 'calc(14px + env(safe-area-inset-right))';
-
-    const appRect = appEl.getBoundingClientRect();
-    const btnRect = btnEl.getBoundingClientRect();
-
-    // if the button would overflow to the right, nudge it left just enough
-    const safePadding = 8; // px
-    const overflow = btnRect.right - (appRect.right - safePadding);
-    if (overflow > 0) {
-      const currRight = parseFloat(getComputedStyle(btnEl).right) || 14;
-      btnEl.style.right = (currRight + overflow) + 'px';
-    }
-  }
-
-  // run on load and when sizes might change
-  window.addEventListener('resize', clampProfileBtnToHeader, { passive: true });
-  window.addEventListener('orientationchange', clampProfileBtnToHeader, { passive: true });
-  document.addEventListener('readystatechange', () => {
-    if (document.readyState === 'complete') clampProfileBtnToHeader();
-  });
-
-  // also clamp when switching main screens (home/profile/pet)
-  function afterScreenChangeClamp() {
-    requestAnimationFrame(() => clampProfileBtnToHeader());
-  }
-
-  // safety-guard: фиксируем горизонтальную позицию окна на 0
-  window.addEventListener('scroll', () => {
-    if (window.scrollX !== 0) window.scrollTo(0, window.scrollY);
-  }, { passive: true });
-
+  
 
   // === DOM ===
 const balanceEl             = document.querySelector('.balance-value');
@@ -2665,13 +2600,35 @@ const balanceCurrencySelect = document.getElementById('balance-currency');
   const homeScreen       = document.getElementById('home-screen');
   const profileScreen    = document.getElementById('profile-screen');
   const petScreen        = document.getElementById('pet-screen');
-  const profileOpenBtn = document.getElementById('profile-open-btn');
 
   // новые id снизу в навигации
   const navCasino        = document.getElementById('nav-casino');
   const navBets          = document.getElementById('nav-bets');
   const navTasks         = document.getElementById('nav-tasks');
   const navPet           = document.getElementById('nav-pet');
+
+  const navProfile = document.getElementById('nav-profile');
+
+  function setActiveNav(btn){
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+  }
+
+  function showScreen(name){
+    if (homeScreen)   homeScreen.style.display   = (name==='home')    ? 'block' : 'none';
+    if (profileScreen)profileScreen.style.display= (name==='profile') ? 'block' : 'none';
+    if (petScreen)    petScreen.style.display    = (name==='pet')     ? 'block' : 'none';
+  }
+
+  // nav handlers
+  if (navCasino)  navCasino.addEventListener('click', ()=>{ showScreen('home');    setActiveNav(navCasino); });
+  if (navPet)     navPet.addEventListener('click',    ()=>{ showScreen('pet');     setActiveNav(navPet); });
+  if (navTasks)   navTasks.addEventListener('click',  ()=>{ showScreen('home');    setActiveNav(navTasks); });
+  if (navBets)    navBets.addEventListener('click',   ()=>{ showScreen('home');    setActiveNav(navBets); });
+  if (navProfile) navProfile.addEventListener('click',()=>{ showScreen('profile'); setActiveNav(navProfile); });
+
+  // ensure home visible by default
+  showScreen('home');
 
   const hintTextEl       = document.getElementById('hint-text');
 
@@ -2760,15 +2717,6 @@ const balanceCurrencySelect = document.getElementById('balance-currency');
   const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
   const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
 
-if (profileOpenBtn) {
-  profileOpenBtn.addEventListener('click', () => {
-       // показываем экран профиля, скрываем остальные основные экраны
-    if (homeScreen)   homeScreen.style.display   = 'none';
-    if (petScreen)    petScreen.style.display    = 'none';
-    if (profileScreen) profileScreen.style.display = 'block';
-    afterScreenChangeClamp();
-  });
-}
 
 // === POPUP БАЛАНСА ===
 if (balancePillEl && balancePopup) {
@@ -2776,7 +2724,6 @@ if (balancePillEl && balancePopup) {
     // перед показом на всякий случай обновим цифры
     updateBalanceView();
     balancePopup.style.display = 'flex';
-    clampProfileBtnToHeader();
   });
 }
 
