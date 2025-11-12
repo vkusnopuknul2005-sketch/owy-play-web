@@ -177,17 +177,19 @@
 
     /* HEADER */
 
- .header{
-  position: relative;              /* якорим абсолютные элементы внутри */
-  padding: 10px 14px 6px 14px;
-  padding-right: calc(56px + env(safe-area-inset-right));
-  display: flex;                   /* простая схема вместо grid */
-  align-items: center;
-  gap: 10px;
-  border-bottom: none;
-  background: transparent;
-  overflow: visible;
-}
+  .header{
+    position: relative;              /* anchor for absolute children */
+    width: 100%;                     /* make sure it spans the app */
+    isolation: isolate;              /* prevent external transforms from affecting abs children */
+    padding: 10px 14px 6px 14px;
+    padding-right: calc(72px + env(safe-area-inset-right)); /* reserve more room for the profile btn */
+    display: flex;                   /* simple scheme instead of grid */
+    align-items: center;
+    gap: 10px;
+    border-bottom: none;
+    background: transparent;
+    overflow: visible;
+  }
 
     /* предотвращаем распирание колонок контентом */
     .header > * { min-width: 0; }
@@ -285,16 +287,19 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  contain: layout paint;            /* keep its layout local (Safari rounding fix) */
+  will-change: transform;           /* smoother tap */
+  transform: translateZ(0);         /* promote to its own layer on iOS */
 }
 
-@supports (padding: max(0px)) {
+    @supports (padding: max(0px)) {
   @media (max-width: 430px) {
-    .header { padding-right: max(56px, calc(56px + env(safe-area-inset-right))); }
-    .profile-btn { right: max(14px, calc(14px + env(safe-area-inset-right))); }
-  }
-}
-
-    .profile-avatar-text {
+    .header { padding-right: max(72px, calc(72px + env(safe-area-inset-right))); }
+    .profile-btn { right: max(12px, calc(12px + env(safe-area-inset-right))); }
+   }
+ }
+     
+ .profile-avatar-text {
       font-size: 14px;
       font-weight: 600;
       color: #05060a;
@@ -2607,6 +2612,40 @@
     tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   }
 
+  // === LAYOUT SAFETY GUARDS (iOS small-width fix) ===
+  function clampProfileBtnToHeader() {
+    const appEl    = document.querySelector('.app');
+    const headerEl = document.querySelector('.header');
+    const btnEl    = document.getElementById('profile-open-btn');
+    if (!appEl || !headerEl || !btnEl) return;
+
+    // reset to CSS default before measuring
+    btnEl.style.right = 'calc(14px + env(safe-area-inset-right))';
+
+    const appRect = appEl.getBoundingClientRect();
+    const btnRect = btnEl.getBoundingClientRect();
+
+    // if the button would overflow to the right, nudge it left just enough
+    const safePadding = 8; // px
+    const overflow = btnRect.right - (appRect.right - safePadding);
+    if (overflow > 0) {
+      const currRight = parseFloat(getComputedStyle(btnEl).right) || 14;
+      btnEl.style.right = (currRight + overflow) + 'px';
+    }
+  }
+
+  // run on load and when sizes might change
+  window.addEventListener('resize', clampProfileBtnToHeader, { passive: true });
+  window.addEventListener('orientationchange', clampProfileBtnToHeader, { passive: true });
+  document.addEventListener('readystatechange', () => {
+    if (document.readyState === 'complete') clampProfileBtnToHeader();
+  });
+
+  // also clamp when switching main screens (home/profile/pet)
+  function afterScreenChangeClamp() {
+    requestAnimationFrame(() => clampProfileBtnToHeader());
+  }
+
   // safety-guard: фиксируем горизонтальную позицию окна на 0
   window.addEventListener('scroll', () => {
     if (window.scrollX !== 0) window.scrollTo(0, window.scrollY);
@@ -2727,6 +2766,7 @@ if (profileOpenBtn) {
     if (homeScreen)   homeScreen.style.display   = 'none';
     if (petScreen)    petScreen.style.display    = 'none';
     if (profileScreen) profileScreen.style.display = 'block';
+    afterScreenChangeClamp();
   });
 }
 
@@ -2736,6 +2776,7 @@ if (balancePillEl && balancePopup) {
     // перед показом на всякий случай обновим цифры
     updateBalanceView();
     balancePopup.style.display = 'flex';
+    clampProfileBtnToHeader();
   });
 }
 
@@ -3148,6 +3189,7 @@ function endMatch3Game(skipReward) {
 const petGameOverlay   = document.getElementById('pet-game-overlay');
 const petGameBackBtn   = document.getElementById('pet-game-back');
 const petGameGridEl    = document.getElementById('pet-game-grid');
+clampProfileBtnToHeader();
 const petGameScoreEl   = document.getElementById('pet-game-score');
 const petGameTimerEl   = document.getElementById('pet-game-timer');
 const petGameNoteEl    = document.getElementById('pet-game-note');
