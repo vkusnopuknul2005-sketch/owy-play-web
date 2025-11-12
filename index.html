@@ -2584,8 +2584,31 @@
     tg.expand();
     tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   }
-
+// ===== Splash auto-hide (robust) =====
+(function () {
+  function hideSplash() {
+    var el = document.getElementById('splash');
+    if (!el) return;
+    if (!el.classList.contains('splash-hide')) {
+      el.classList.add('splash-hide');
+    }
+    // remove from DOM after transition
+    setTimeout(function () {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }, 450);
+  }
   
+  // 1) Normal path: after full page load
+  window.addEventListener('load', hideSplash, { once: true });
+
+  // 2) Fallback: if any JS error blocks later logic, still hide after 2s
+  document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(hideSplash, 2000);
+  }, { once: true });
+})();
+</script>
+
+
 
   // === DOM ===
 const balanceEl             = document.querySelector('.balance-value');
