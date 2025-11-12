@@ -167,12 +167,12 @@
     .header {
       padding: 10px 14px 6px;
       display: grid;
-      grid-template-columns: auto 1fr auto; /* слева логотип, по центру баланс, справа профиль */
+      grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); /* симметричная сетка: центр авто, края гибкие */
       align-items: center;
-      border-bottom: none;      /* убираем линию, чтобы бар слился с фоном */
-      background: transparent;  /* явный прозрачный фон, без отдельного блока */
-      overflow-x: hidden;       /* фикс: ничего не вылезает за пределы */
-     }
+      border-bottom: none;
+      background: transparent;
+      overflow-x: hidden;
+    }
 
     .logo {
       display: flex;
@@ -180,6 +180,7 @@
       gap: 6px;
       font-weight: 600;
       font-size: 16px;
+      justify-self: start;
     }
 
     .logo-img {
@@ -201,10 +202,12 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
       justify-self: center;   /* центрируем в средней колонке grid */
-      margin: 0 auto;         /* дополнительное выравнивание по центру */
       cursor: pointer;
-  transition: box-shadow 0.15s ease, transform 0.08s ease;
-}
+      transition: box-shadow 0.15s ease, transform 0.08s ease;
+      place-self: center;           /* центр строго по сетке, без распирания колонок */
+      max-width: 60vw;              /* не даём пилюле распихивать сетку */
+      white-space: nowrap;          /* одна строка внутри */
+    }
 
 .balance-pill:active {
   transform: scale(0.97);
@@ -250,7 +253,8 @@
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
       cursor: pointer;
       flex-shrink: 0;
-     }
+      justify-self: end;
+    }
 
     .profile-avatar-text {
       font-size: 14px;
