@@ -2737,7 +2737,44 @@ const balanceCurrencySelect = document.getElementById('balance-currency');
   const plinkoBoardEl    = document.getElementById('plinko-board');
   const plinkoMultsRow   = document.getElementById('plinko-mults-row');
   const plinkoBallsLayer = document.getElementById('plinko-balls-layer');
+
   const plinkoPegsLayer  = document.getElementById('plinko-pegs-layer');
+
+// === GENERIC OVERLAY HELPERS ===
+function openOverlay(el){ if(el){ el.style.display = 'flex'; } }
+function closeOverlay(el){ if(el){ el.style.display = 'none'; } }
+
+// Close on outside tap for all overlays by id (no dependency on const order)
+['rush-overlay','plinko-overlay','double-overlay','match3-overlay','taptap-overlay','mini-overlay','balance-popup','hilo-overlay']
+  .forEach(id=>{
+    const ov = document.getElementById(id);
+    if (ov) ov.addEventListener('click', (e)=>{ if (e.target === ov) closeOverlay(ov); });
+  });
+
+// === OPEN/CLOSE HANDLERS FOR MINI-GAMES ===
+// RUSH
+document.getElementById('rush-open')?.addEventListener('click', ()=> openOverlay(document.getElementById('rush-overlay')));
+document.getElementById('rush-back')?.addEventListener('click', ()=> closeOverlay(document.getElementById('rush-overlay')));
+
+// DOUBLE
+document.getElementById('double-open')?.addEventListener('click', ()=> openOverlay(document.getElementById('double-overlay')));
+document.getElementById('double-back')?.addEventListener('click', ()=> closeOverlay(document.getElementById('double-overlay')));
+
+// PLINKO
+document.getElementById('plinko-open')?.addEventListener('click', ()=> openOverlay(document.getElementById('plinko-overlay')));
+document.getElementById('plinko-back')?.addEventListener('click', ()=> closeOverlay(document.getElementById('plinko-overlay')));
+
+// HILO
+document.getElementById('hilo-open')?.addEventListener('click', ()=> openOverlay(document.getElementById('hilo-overlay')));
+document.getElementById('hilo-back')?.addEventListener('click', ()=> closeOverlay(document.getElementById('hilo-overlay')));
+
+// === MINI OVERLAY (Fluffie games) ===
+document.getElementById('mini-open-match3')?.addEventListener('click', ()=> openOverlay(document.getElementById('match3-overlay')));
+document.getElementById('mini-back')?.addEventListener('click', ()=> closeOverlay(document.getElementById('mini-overlay')));
+
+document.getElementById('match3-back')?.addEventListener('click', ()=> closeOverlay(document.getElementById('match3-overlay')));
+
+document.getElementById('taptap-back')?.addEventListener('click', ()=> closeOverlay(document.getElementById('taptap-overlay')));
 
 
 // === POPUP БАЛАНСА ===
