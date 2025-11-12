@@ -163,7 +163,7 @@
       border-bottom: none;      /* убираем линию, чтобы бар слился с фоном */
       background: transparent;  /* явный прозрачный фон, без отдельного блока */
     }
-    
+
     .logo {
       display: flex;
       align-items: center;
@@ -249,6 +249,69 @@
     }
 
     /* MAIN */
+
+    /* === MINI GAMES CAROUSEL (horizontal) === */
+    .mini-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 8px 0 8px;
+    }
+    .mini-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 2px 2px 10px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .mini-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .mini-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+    }
+    .mini-card {
+      flex: 0 0 220px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: radial-gradient(circle at top left, #151a22, #090b0f);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.8);
+      scroll-snap-align: start;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.12s ease;
+    }
+    .mini-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.7);
+      border-color: rgba(29,219,111,0.35);
+    }
+    .mini-card img {
+      display: block;
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+    }
+    .mini-card-body {
+      padding: 10px 12px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .mini-card-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .mini-chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #cfd2de;
+    }
 
     .content {
       flex: 1;
@@ -1919,39 +1982,45 @@
     <main class="content">
       <!-- HOME -->
       <section id="home-screen">
-        <div class="cards big-cards">
-          <div class="rush-banner" id="rush-open">
-            <img src="rush-banner.png" alt="Rush banner">
-          </div>
-<!-- Double banner -->
-<div class="rush-banner" id="double-open">
-  <img src="double-banner.png" alt="Double banner">
-</div>
-
-<!-- Plinko banner -->
-<div class="rush-banner" id="plinko-open">
-  <img src="plinko-banner.png" alt="Plinko banner">
-</div>
-
-        <!-- HiLo banner -->
-        <div class="hilo-banner" id="hilo-open">
-          <div class="hilo-banner-left">
-            <div class="hilo-badge">новая игра</div>
-            <div class="hilo-title">HiLo карты</div>
-            <div class="hilo-subtitle">
-              Выше или ниже? Мгновенные раунды, коэффициенты и бонус от Fluffie.
+               <div class="mini-section-title">Mini games</div>
+        <div class="mini-scroll" id="mini-scroll">
+          <div class="mini-card" id="rush-open">
+            <img src="rush-banner.png" alt="Rush">
+            <div class="mini-card-body">
+              <div class="mini-card-title">Rush</div>
+              <div class="mini-chip">Crash</div>
             </div>
           </div>
-          <div class="hilo-banner-right">
-            <div class="hilo-card-mini prev">7♦</div>
-            <div class="hilo-card-mini next"><span>?</span></div>
+
+          <div class="mini-card" id="double-open">
+            <img src="double-banner.png" alt="Double">
+            <div class="mini-card-body">
+              <div class="mini-card-title">Double</div>
+              <div class="mini-chip">2x / 14x</div>
+            </div>
+          </div>
+
+                  <div class="mini-card" id="plinko-open">
+            <img src="plinko-banner.png" alt="Plinko">
+            <div class="mini-card-body">
+              <div class="mini-card-title">Plinko</div>
+              <div class="mini-chip">Low/Mid/High</div>
+            </div>
+          </div>
+         
+          <div class="mini-card" id="hilo-open">
+            <!-- мини-вариант без картинки -->
+            <div style="height:120px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at top,#181f2c,#05060a 70%);">
+              <div class="hilo-card-mini next"><span>?</span></div>
+            </div>
+            <div class="mini-card-body">
+              <div class="mini-card-title">HiLo</div>
+              <div class="mini-chip">Cards</div>
+            </div>
           </div>
         </div>
 
-    <!-- /NEW -->
-
-      </section>
-
+  
       <!-- PROFILE -->
       <section id="profile-screen" style="display:none;">
         <div class="section-title">Личный профиль</div>
