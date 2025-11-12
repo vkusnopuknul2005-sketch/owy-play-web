@@ -28,6 +28,10 @@
       overflow-x: hidden;           /* запрет глобального горизонтального скролла */
     }
 
+    .app { overflow-x: hidden; }
+    .content { overflow-x: hidden; }
+    .mini-scroll { overscroll-behavior-x: contain; }
+
     .app, .content, .header {
       overflow-x: hidden;           /* обрезаем возможные тени/выползания внутри контейнеров */
       max-width: 100%;
@@ -167,12 +171,16 @@
     .header {
       padding: 10px 14px 6px;
       display: grid;
-      grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); /* симметричная сетка: центр авто, края гибкие */
+      grid-template-columns: auto 1fr auto; /* фиксируем лево/центр/право */
       align-items: center;
+      column-gap: 10px;
       border-bottom: none;
       background: transparent;
-      overflow-x: hidden;
+      overflow: hidden;           /* не даём контенту выпирать */
     }
+
+    /* предотвращаем распирание колонок контентом */
+    .header > * { min-width: 0; }
 
     .logo {
       display: flex;
@@ -189,7 +197,6 @@
   display: block;
 }
 
-        /* центральный баланс как аккуратная пилюля */
     .balance-pill {
       flex: 0 0 auto;
       display: inline-flex;
@@ -201,12 +208,11 @@
       background: rgba(15, 17, 25, 0.96);
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
-      justify-self: center;   /* центрируем в средней колонке grid */
+      justify-self: center;      /* центр строго в гриде */
       cursor: pointer;
       transition: box-shadow 0.15s ease, transform 0.08s ease;
-      place-self: center;           /* центр строго по сетке, без распирания колонок */
-      max-width: 60vw;              /* не даём пилюле распихивать сетку */
-      white-space: nowrap;          /* одна строка внутри */
+      max-width: min(54vw, 260px); /* не распираем сетку даже при длинных числах */
+      white-space: nowrap;        /* одна строка */
     }
 
 .balance-pill:active {
@@ -239,7 +245,6 @@
       font-weight: 600;
     }
 
-    /* кружочек профиля справа как аватар */
     .profile-btn {
       width: 32px;
       height: 32px;
@@ -253,7 +258,8 @@
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
       cursor: pointer;
       flex-shrink: 0;
-      justify-self: end;
+      justify-self: end;    /* прижимаем к правому краю колонки */
+      margin-right: 0;      /* исключаем случайные отступы */
     }
 
     .profile-avatar-text {
