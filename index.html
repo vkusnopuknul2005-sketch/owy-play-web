@@ -179,14 +179,14 @@
 
  .header{
   position: relative;              /* якорим абсолютные элементы внутри */
-  padding: 10px 14px 6px;
+  padding: 10px 14px 6px 14px;
+  padding-right: calc(56px + env(safe-area-inset-right));
   display: flex;                   /* простая схема вместо grid */
   align-items: center;
   gap: 10px;
   border-bottom: none;
   background: transparent;
   overflow: visible;
-  contain: inline-size;            /* не даём шапке раздувать страницу по X */
 }
 
     /* предотвращаем распирание колонок контентом */
@@ -265,7 +265,7 @@
     .profile-btn {
   position: absolute;          /* фиксируем в правом углу шапки */
   top: 10px;                   /* синхронизировано с padding .header */
-  right: 14px;
+  right: calc(14px + env(safe-area-inset-right));
   z-index: 3;                  /* поверх баланса */
 
   width: 32px;
@@ -280,6 +280,13 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+@supports (padding: max(0px)) {
+  @media (max-width: 430px) {
+    .header { padding-right: max(56px, calc(56px + env(safe-area-inset-right))); }
+    .profile-btn { right: max(14px, calc(14px + env(safe-area-inset-right))); }
+  }
 }
 
     .profile-avatar-text {
