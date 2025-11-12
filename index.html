@@ -227,13 +227,18 @@
       white-space: nowrap;        /* одна строка */
       min-width: 0;               /* разрешаем сжиматься в гриде */
       position:absolute;               /* центрируем независимо от компоновки */
-  left:50%;
-  transform:translateX(-50%);
-  z-index:2;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:2;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+      will-change: transform;
     }
 
 .balance-pill:active {
-  transform: scale(0.97);
+  transform: translateX(-50%) scale(0.97);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
