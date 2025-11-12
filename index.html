@@ -46,9 +46,6 @@
       overflow-x: clip;
     }
 
-    /* не даём шапке влиять на расчёт ширины страницы */
-    .header { contain: inline-size; }
-
     body.theme-neon {
       background: radial-gradient(circle at top, #061318, #040308 60%, #020105);
     }
@@ -180,28 +177,31 @@
 
     /* HEADER */
 
-    .header {
-      padding: 10px 14px 6px;
-      display: grid;
-      grid-template-columns: auto 1fr auto; /* фиксируем лево/центр/право */
-      align-items: center;
-      column-gap: 10px;
-      border-bottom: none;
-      background: transparent;
-      overflow: hidden;           /* не даём контенту выпирать */
-    }
+ .header{
+  position: relative;              /* якорим абсолютные элементы внутри */
+  padding: 10px 14px 6px;
+  display: flex;                   /* простая схема вместо grid */
+  align-items: center;
+  gap: 10px;
+  border-bottom: none;
+  background: transparent;
+  overflow: visible;
+  contain: inline-size;            /* не даём шапке раздувать страницу по X */
+}
 
     /* предотвращаем распирание колонок контентом */
     .header > * { min-width: 0; }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-      font-size: 16px;
-      justify-self: start;
-    }
+  .logo{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:600;
+  font-size:16px;
+  justify-self:start;              /* можно оставить, но не влияет во flex */
+  flex:0 0 auto;                   /* фиксированный блок слева */
+  z-index:1;
+}
 
     .logo-img {
   height: 36px;
@@ -226,6 +226,10 @@
       max-width: min(48vw, 220px); /* не распираем сетку даже при длинных числах */
       white-space: nowrap;        /* одна строка */
       min-width: 0;               /* разрешаем сжиматься в гриде */
+      position:absolute;               /* центрируем независимо от компоновки */
+  left:50%;
+  transform:translateX(-50%);
+  z-index:2;
     }
 
 .balance-pill:active {
@@ -272,7 +276,12 @@
       cursor: pointer;
       flex-shrink: 0;
       justify-self: end;    /* прижимаем к правому краю колонки */
-      margin-right: 0;      /* исключаем случайные отступы */
+      margin-right: 0;      /* исключаем случайные отступы *
+  position:absolute;               /* больше не зависит ни от grid, ни от flex */
+  top:10px;                        /* синхронизировано с padding .header */
+  right:14px;
+  z-index:3;                       /* поверх баланса */
+  margin-right:0; 
     }
 
     .profile-avatar-text {
