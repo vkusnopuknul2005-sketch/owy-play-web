@@ -263,26 +263,24 @@
     }
 
     .profile-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: none;
-      outline: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #46a2ff, #1ddb6f);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
-      cursor: pointer;
-      flex-shrink: 0;
-      justify-self: end;    /* прижимаем к правому краю колонки */
-      margin-right: 0;      /* исключаем случайные отступы *
-  position:absolute;               /* больше не зависит ни от grid, ни от flex */
-  top:10px;                        /* синхронизировано с padding .header */
-  right:14px;
-  z-index:3;                       /* поверх баланса */
-  margin-right:0; 
-    }
+  position: absolute;          /* фиксируем в правом углу шапки */
+  top: 10px;                   /* синхронизировано с padding .header */
+  right: 14px;
+  z-index: 3;                  /* поверх баланса */
+
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #46a2ff, #1ddb6f);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
 
     .profile-avatar-text {
       font-size: 14px;
