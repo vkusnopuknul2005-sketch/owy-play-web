@@ -24,6 +24,15 @@
       transition: background 0.25s ease;
     }
 
+        html, body {
+      overflow-x: hidden;           /* запрет глобального горизонтального скролла */
+    }
+
+    .app, .content, .header {
+      overflow-x: hidden;           /* обрезаем возможные тени/выползания внутри контейнеров */
+      max-width: 100%;
+    }
+
     body.theme-neon {
       background: radial-gradient(circle at top, #061318, #040308 60%, #020105);
     }
@@ -162,7 +171,8 @@
       align-items: center;
       border-bottom: none;      /* убираем линию, чтобы бар слился с фоном */
       background: transparent;  /* явный прозрачный фон, без отдельного блока */
-    }
+      overflow-x: hidden;       /* фикс: ничего не вылезает за пределы */
+     }
 
     .logo {
       display: flex;
@@ -259,11 +269,13 @@
     .mini-scroll {
       display: flex;
       gap: 12px;
-      overflow-x: auto;
+      overflow-x: auto;             /* горизонтальный скролл только здесь */
+      overflow-y: hidden;
       padding: 2px 2px 10px;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-    }
+      overscroll-behavior-inline: contain; /* не передаём жест родителю */
+     }
     .mini-scroll::-webkit-scrollbar {
       height: 6px;
     }
@@ -272,7 +284,8 @@
       border-radius: 999px;
     }
     .mini-card {
-      flex: 0 0 220px;
+      flex: 0 0 220px;               /* фиксированная ширина айтема */
+      max-width: 220px;              /* не вырастаем сверх ширины */
       border-radius: 16px;
       overflow: hidden;
       background: radial-gradient(circle at top left, #151a22, #090b0f);
@@ -999,7 +1012,8 @@
     backdrop-filter: blur(10px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
     z-index: 100;
-  }
+    overflow-x: hidden;
+   }
 
 /* Кнопки */
 
@@ -1073,7 +1087,8 @@
       justify-content: center;
       align-items: center;
       z-index: 50;
-    }
+      overflow-x: hidden;
+     }
 
     .overlay-inner {
       width: 100%;
