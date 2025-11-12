@@ -24,8 +24,10 @@
       transition: background 0.25s ease;
     }
 
-        html, body {
-      overflow-x: hidden;           /* запрет глобального горизонтального скролла */
+      :root, html, body {
+      overflow-x: clip;               /* надёжнее скрывает горизонтальный скролл в iOS */
+      width: 100%;
+      max-width: 100%;
     }
 
     .app { overflow-x: hidden; }
@@ -36,6 +38,16 @@
       overflow-x: hidden;           /* обрезаем возможные тени/выползания внутри контейнеров */
       max-width: 100%;
     }
+
+        /* гарантируем, что секции и оверлеи никогда не раздувают ширину */
+    #home-screen, #profile-screen, #pet-screen,
+    .overlay, .overlay-inner {
+      max-width: 100%;
+      overflow-x: clip;
+    }
+
+    /* не даём шапке влиять на расчёт ширины страницы */
+    .header { contain: inline-size; }
 
     body.theme-neon {
       background: radial-gradient(circle at top, #061318, #040308 60%, #020105);
@@ -211,8 +223,9 @@
       justify-self: center;      /* центр строго в гриде */
       cursor: pointer;
       transition: box-shadow 0.15s ease, transform 0.08s ease;
-      max-width: min(54vw, 260px); /* не распираем сетку даже при длинных числах */
+      max-width: min(48vw, 220px); /* не распираем сетку даже при длинных числах */
       white-space: nowrap;        /* одна строка */
+      min-width: 0;               /* разрешаем сжиматься в гриде */
     }
 
 .balance-pill:active {
@@ -2035,7 +2048,7 @@
          
           <div class="mini-card" id="hilo-open">
             <!-- мини-вариант без картинки -->
-            <div style="height:120px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at top,#181f2c,#05060a 70%);">
+                 <div style="height:120px;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at top,#181f2c,#05060a 70%);"></div>
               <div class="hilo-card-mini next"><span>?</span></div>
             </div>
             <div class="mini-card-body">
@@ -2571,6 +2584,12 @@
     tg.expand();
     tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   }
+
+  // safety-guard: фиксируем горизонтальную позицию окна на 0
+  window.addEventListener('scroll', () => {
+    if (window.scrollX !== 0) window.scrollTo(0, window.scrollY);
+  }, { passive: true });
+
 
   // === DOM ===
 const balanceEl             = document.querySelector('.balance-value');
