@@ -3243,6 +3243,54 @@ const taptapScoreEl  = document.getElementById('taptap-score');
 const taptapStatusEl = document.getElementById('taptap-status');
 const miniOpenTapTapBtn = document.getElementById('mini-open-taptap');
 
+  // === LEGACY STORAGE MIGRATION ===
+  // Если раньше использовались старые ключи localStorage без суффикса _v1,
+  // попробуем один раз их подтянуть, чтобы не потерять прогресс.
+  function migrateLegacyStorage() {
+    try {
+      // баланс
+      if (!localStorage.getItem(STORAGE_KEY_BALANCE)) {
+        const legacyBalance = localStorage.getItem('owy_balance');
+        if (legacyBalance !== null) {
+          localStorage.setItem(STORAGE_KEY_BALANCE, legacyBalance);
+        }
+      }
+
+      // профиль
+      if (!localStorage.getItem(STORAGE_KEY_PROFILE)) {
+        const legacyProfile = localStorage.getItem('owy_profile');
+        if (legacyProfile !== null) {
+          localStorage.setItem(STORAGE_KEY_PROFILE, legacyProfile);
+        }
+      }
+
+      // статистика
+      if (!localStorage.getItem(STORAGE_KEY_STATS)) {
+        const legacyStats = localStorage.getItem('owy_stats');
+        if (legacyStats !== null) {
+          localStorage.setItem(STORAGE_KEY_STATS, legacyStats);
+        }
+      }
+
+      // питомец
+      if (!localStorage.getItem(STORAGE_KEY_PET)) {
+        const legacyPet = localStorage.getItem('owy_pet');
+        if (legacyPet !== null) {
+          localStorage.setItem(STORAGE_KEY_PET, legacyPet);
+        }
+      }
+
+      // валюта
+      if (!localStorage.getItem(STORAGE_KEY_CURRENCY)) {
+        const legacyCurrency = localStorage.getItem('owy_currency');
+        if (legacyCurrency !== null) {
+          localStorage.setItem(STORAGE_KEY_CURRENCY, legacyCurrency);
+        }
+      }
+    } catch (e) {
+      // если что-то пошло не так — просто тихо пропускаем
+    }
+  }
   // === STORAGE ===
 const STORAGE_KEY_BALANCE  = 'owy_balance_v1';
 const STORAGE_KEY_PROFILE  = 'owy_profile_info_v1';
@@ -5745,6 +5793,8 @@ if (doubleBackBtn) doubleBackBtn.addEventListener('click', closeDouble);
 
 
 // === INIT ===
+// сначала пробуем подтянуть старые сохранения, если они были
+migrateLegacyStorage();
 loadBalance();
 loadCurrency();
 loadProfileInfo();
